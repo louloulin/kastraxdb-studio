@@ -290,7 +290,7 @@
 - Fixed an issue where locally stored theme colors and background colors are incompatible with the new version, causing
   page crashes
 - Logs desensitize sensitive data
-- Fix the issue of 'CLOB' not displaying specific content 【Issue #440】(https://github.com/chat2db/Chat2DB/issues/440)
+- Fix the issue of 'CLOB' not displaying specific content 【Issue #440】(https://github.com/magicdb/MagicDB/issues/440)
 - Fix the problem that non-Select does not display query results
 - Fix the problem that Oracle cannot query without schema
 - Fix the problem of special type of SQL execution error reporting
@@ -323,12 +323,12 @@
 
 ## 🐞 Bug Fixes
 
-- Repair the Scientific notation in some databases 【Issue #378】(https://github.com/chat2db/Chat2DB/issues/378)
+- Repair the Scientific notation in some databases 【Issue #378】(https://github.com/magicdb/MagicDB/issues/378)
 - Fix some cases where data is not displayed
 
 ## 🐞 问题修复
 
-- 修复部分数据库出现科学计数法的情况 【Issue #378】(https://github.com/chat2db/Chat2DB/issues/378)
+- 修复部分数据库出现科学计数法的情况 【Issue #378】(https://github.com/magicdb/MagicDB/issues/378)
 - 修复部分情况数据不展示
 
 ## 2.0.7
@@ -339,14 +339,14 @@
 
 ## 🐞 Bug Fixes
 
-- Fixed ai config issues 【Issue #346】(https://github.com/chat2db/Chat2DB/issues/346)
+- Fixed ai config issues 【Issue #346】(https://github.com/magicdb/MagicDB/issues/346)
 
 ## 2.0.6
 
 ## 🐞 Bug Fixes
 
 - Fixed: When there are too many tables under the selected library, the "New Console" button at the bottom
-  disappears 【Issue #314】(https://github.com/chat2db/Chat2DB/issues/314)
+  disappears 【Issue #314】(https://github.com/magicdb/MagicDB/issues/314)
 
 ## 2.0.5
 
@@ -359,7 +359,7 @@
 
 ## 🐞 Bug Fixes
 
-- Default return alias for returned results 【Issue #270】(https://github.com/chat2db/Chat2DB/issues/270)
+- Default return alias for returned results 【Issue #270】(https://github.com/magicdb/MagicDB/issues/270)
 - Fixed around 100 bugs, of course, many were repetitive bugs.
 
 ## 2.0.4
@@ -394,9 +394,9 @@
 ## 🐞 Bug Fixes
 
 - Fix bug where executing multiple SQL statements at once will prompt for exceptions
-- Fix getJDBCDriver error: null 【Issue #123】(https://github.com/chat2db/Chat2DB/issues/123)
+- Fix getJDBCDriver error: null 【Issue #123】(https://github.com/magicdb/MagicDB/issues/123)
 - Fixing the Hive connection and then viewing columns results in an
-  error. 【Issue #136】(https://github.com/chat2db/Chat2DB/issues/136)
+  error. 【Issue #136】(https://github.com/magicdb/MagicDB/issues/136)
 
 
 ## 2.0.0
@@ -466,7 +466,7 @@
 
 - Fixed oracle connection configuration editing and connection query issues 
 - Fix possible risks of Apikey output to logs 
-- repair bugChat2DB login web version 1.0.0 release come 🎉 🎉 🎉 🎉 🎉 🎉 🎉 🎉 🎉 
+- repair bugMagicDB login web version 1.0.0 release come 🎉 🎉 🎉 🎉 🎉 🎉 🎉 🎉 🎉 
  
 - 🌈 AI intelligent assistant, supports natural language to SQL, SQL to natural language, and SQL optimization suggestions 
 - 👭 Support team collaboration, R & D does not need to know the online database password, to solve the security problem of enterprise database account 

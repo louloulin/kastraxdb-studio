@@ -1,9 +1,9 @@
 version: '3'
 services:
-  chat2db:
-    image: chat2db/chat2db:latest
-    container_name: chat2db-latest
+  magicdb:
+    image: magicdb/magicdb:latest
+    container_name: magicdb-latest
     volumes:
-      - ~/.chat2db-docker:/root/.chat2db
+      - ~/.magicdb-docker:/root/.magicdb
     ports:
       - "10824:10824"

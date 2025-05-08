@@ -1,12 +1,12 @@
-# Chat2DB AI SQL功能使用说明
-Chat2DB包含一系列基于ChatGPT的AI SQL使用功能，主要包括自然语言转SQL、SQL解释、SQL优化和SQL转换。 使用这些AI功能，可以将自然语言转换成本地查询SQL，而不仅仅是SQL查询伪代码；可以将SQL解释成自然语言，帮助用户理解复杂的SQL；可以针对慢SQL提供全方位的优化建议，提升查询效率；可以转换不同数据库类型的SQL语言，降低数据库迁移难度等等。
+# MagicDB AI SQL功能使用说明
+MagicDB包含一系列基于ChatGPT的AI SQL使用功能，主要包括自然语言转SQL、SQL解释、SQL优化和SQL转换。 使用这些AI功能，可以将自然语言转换成本地查询SQL，而不仅仅是SQL查询伪代码；可以将SQL解释成自然语言，帮助用户理解复杂的SQL；可以针对慢SQL提供全方位的优化建议，提升查询效率；可以转换不同数据库类型的SQL语言，降低数据库迁移难度等等。
 ## 使用配置
 ### 点击设置【UI旧】
 <a><img src="https://img.alicdn.com/imgextra/i2/O1CN01hecdtO1acLegtiP9k_!!6000000003350-2-tps-2400-1600.png" width="100%"/></a>
 ### 配置AI
 #### 配置OPENAI【UI旧】
 使用OPENAI的ChatSql功能需要满足两个条件
-- 配置OPENAI_API_KEY，如没有OPENAI_API_KEY可加入答疑群根据群公告指引获取chat2db自定义key
+- 配置OPENAI_API_KEY，如没有OPENAI_API_KEY可加入答疑群根据群公告指引获取magicdb自定义key
 - 客户端网络可以连接到OPENAI官网，如果本地VPN未能全局生效，可以通过在客户端中设置网络代理HOST和PORT来保证网络连通性
 <a><img src="https://img.alicdn.com/imgextra/i2/O1CN01anrJMI1FEtSBbmTau_!!6000000000456-0-tps-1594-964.jpg" width="100%"/></a>
 #### 配置自定义AI【UI旧】

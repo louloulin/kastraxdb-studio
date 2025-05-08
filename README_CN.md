@@ -2,18 +2,18 @@
 
 
 <div align="center">
-    <a href="https://trendshift.io/repositories/11808" target="_blank"><img src="https://trendshift.io/api/badge/repositories/11808" alt="CodePhiliaX%2FChat2DB | Trendshift" style="width: 250px; height: 55px;" width="250" height="55"/></a>
+    <a href="https://trendshift.io/repositories/11808" target="_blank"><img src="https://trendshift.io/api/badge/repositories/11808" alt="CodePhiliaX%2FMagicDB | Trendshift" style="width: 250px; height: 55px;" width="250" height="55"/></a>
 </div>
 <br/>
 <p align="center">
  <a href="https://discord.com/invite/uNjb3n5JVN" target="_blank">
     <img src="https://img.shields.io/badge/-Join%20us%20on%20Discord-%237289DA.svg?style=flat&logo=discord&logoColor=white"
             alt="chat on Discord"></a>
-<a href="https://twitter.com/intent/tweet?text=Chat2DB-An%20intelligent%20and%20versatile%20general-purpose%20SQL%20client%20and%20reporting%20tool%20for%20databases%20which%20integrates%20ChatGPT%20capabilities.&url=https://github.com/chat2db/Chat2DB&hashtags=ChatGPT,AGI,SQL%20Client,Reporting%20tool" target="blank" > <img src="https://img.shields.io/twitter/follow/_Chat2DB?label=Twitter&style=social" alt=""/> </a> 
-<a href="https://t.me/share/url?text=Chat2DB-An%20intelligent%20and%20versatile%20general-purpose%20SQL%20client%20and%20reporting%20tool%20for%20databases%20which%20integrates%20ChatGPT%20capabilities.&url=https://github.com/chat2db/Chat2DB" target="_blank"><img src="https://img.shields.io/twitter/url?label=Telegram&logo=Telegram&style=social&url=https://github.com/chat2db/Chat2DB" alt="Share on Telegram"/></a>
-<a href="https://api.whatsapp.com/send?text=Chat2DB-An%20intelligent%20and%20versatile%20general-purpose%20SQL%20client%20and%20reporting%20tool%20for%20databases%20which%20integrates%20ChatGPT%20capabilities.%20https://github.com/chat2db/Chat2DB"><img src="https://img.shields.io/twitter/url?label=whatsapp&logo=whatsapp&style=social&url=https://github.com/chat2db/Chat2DB" /></a>
-<a href="https://www.reddit.com/submit?url=https://github.com/chat2db/Chat2DB&title=Chat2DB-An%20intelligent%20and%20versatile%20general-purpose%20SQL%20client%20and%20reporting%20tool%20for%20databases%20which%20integrates%20ChatGPT%20capabilities." target="blank"><img src="https://img.shields.io/twitter/url?label=Reddit&logo=Reddit&style=social&url=https://github.com/chat2db/Chat2DB" alt="Share on Reddit"/></a>
-<a href="mailto:?subject=Check%20this%20GitHub%20repository%20out.&body=Chat2DB-An%20intelligent%20and%20versatile%20general-purpose%20SQL%20client%20and%20reporting%20tool%20for%20databases%20which%20integrates%20ChatGPT%20capabilities.%3A%0Ahttps://github.com/chat2db/Chat2DB" target="_blank"><img src="https://img.shields.io/twitter/url?label=Gmail&logo=Gmail&style=social&url=https://github.com/chat2db/Chat2DB"/></a>
+<a href="https://twitter.com/intent/tweet?text=MagicDB-An%20intelligent%20and%20versatile%20general-purpose%20SQL%20client%20and%20reporting%20tool%20for%20databases%20which%20integrates%20ChatGPT%20capabilities.&url=https://github.com/magicdb/MagicDB&hashtags=ChatGPT,AGI,SQL%20Client,Reporting%20tool" target="blank" > <img src="https://img.shields.io/twitter/follow/_MagicDB?label=Twitter&style=social" alt=""/> </a> 
+<a href="https://t.me/share/url?text=MagicDB-An%20intelligent%20and%20versatile%20general-purpose%20SQL%20client%20and%20reporting%20tool%20for%20databases%20which%20integrates%20ChatGPT%20capabilities.&url=https://github.com/magicdb/MagicDB" target="_blank"><img src="https://img.shields.io/twitter/url?label=Telegram&logo=Telegram&style=social&url=https://github.com/magicdb/MagicDB" alt="Share on Telegram"/></a>
+<a href="https://api.whatsapp.com/send?text=MagicDB-An%20intelligent%20and%20versatile%20general-purpose%20SQL%20client%20and%20reporting%20tool%20for%20databases%20which%20integrates%20ChatGPT%20capabilities.%20https://github.com/magicdb/MagicDB"><img src="https://img.shields.io/twitter/url?label=whatsapp&logo=whatsapp&style=social&url=https://github.com/magicdb/MagicDB" /></a>
+<a href="https://www.reddit.com/submit?url=https://github.com/magicdb/MagicDB&title=MagicDB-An%20intelligent%20and%20versatile%20general-purpose%20SQL%20client%20and%20reporting%20tool%20for%20databases%20which%20integrates%20ChatGPT%20capabilities." target="blank"><img src="https://img.shields.io/twitter/url?label=Reddit&logo=Reddit&style=social&url=https://github.com/magicdb/MagicDB" alt="Share on Reddit"/></a>
+<a href="mailto:?subject=Check%20this%20GitHub%20repository%20out.&body=MagicDB-An%20intelligent%20and%20versatile%20general-purpose%20SQL%20client%20and%20reporting%20tool%20for%20databases%20which%20integrates%20ChatGPT%20capabilities.%3A%0Ahttps://github.com/magicdb/MagicDB" target="_blank"><img src="https://img.shields.io/twitter/url?label=Gmail&logo=Gmail&style=social&url=https://github.com/magicdb/MagicDB"/></a>
 
 </p>
 <div align="center">
@@ -31,10 +31,10 @@ https://github.com/user-attachments/assets/3c857883-8153-4bda-92b8-d25c6adb5b13
 
 
 # 
-Chat2DB 是一个智能的通用SQL客户端和数据报表工具，它集成了AI的能力。Chat2DB可以帮助您更快地编写SQL查询、管理数据库、生成报告、探索数据、并且可以与多种数据库进行交互。Chat2DB是一个开源项目，我们欢迎您的贡献。
+MagicDB 是一个智能的通用SQL客户端和数据报表工具，它集成了AI的能力。MagicDB可以帮助您更快地编写SQL查询、管理数据库、生成报告、探索数据、并且可以与多种数据库进行交互。MagicDB是一个开源项目，我们欢迎您的贡献。
 
 **1. 智能生成SQL**:
-Chat2DB Pro支持AI驱动的智能SQL开发，可以帮助您更快地编写SQL查询。
+MagicDB Pro支持AI驱动的智能SQL开发，可以帮助您更快地编写SQL查询。
 
 
 **2. 数据库管理**:
@@ -43,10 +43,10 @@ Chat2DB Pro支持AI驱动的智能SQL开发，可以帮助您更快地编写SQL�
 
 
 **3. 智能生成报表**:
-    Chat2DB Pro支持AI驱动的智能数据报表，可以帮助您更快地生成看板。
+    MagicDB Pro支持AI驱动的智能数据报表，可以帮助您更快地生成看板。
 
 **4. 数据结构同步**:
-    Chat2DB Pro支持数据库表结构同步，可以帮助您更快地同步数据库表结构。
+    MagicDB Pro支持数据库表结构同步，可以帮助您更快地同步数据库表结构。
 
 ## 功能比较
 
@@ -224,16 +224,16 @@ Insert/update
 </table>
 
 ## 下载安装
-Chat2DB 是一个跨平台的应用程序，支持Windows、MacOS和Linux。您可以从以下链接下载Chat2DB。
-- [下载 Pro 版](https://chat2db.ai/download)
-- [下载 Local 版](https://chat2db.ai/download)
-- [下载开源版](https://github.com/CodePhiliaX/Chat2DB/releases/tag/v0.3.6)
+MagicDB 是一个跨平台的应用程序，支持Windows、MacOS和Linux。您可以从以下链接下载MagicDB。
+- [下载 Pro 版](https://magicdb.ai/download)
+- [下载 Local 版](https://magicdb.ai/download)
+- [下载开源版](https://github.com/CodePhiliaX/MagicDB/releases/tag/v0.3.6)
 
 ## 社区版 Docker 安装
 
 ### 系统要求
 
-在安装 Chat2DB 之前，请确保您的系统满足以下要求：
+在安装 MagicDB 之前，请确保您的系统满足以下要求：
 - Docker 19.03.0 或更高版本
 - Docker Compose 1.25.0 或更高版本
 - CPU >= 2 Core
@@ -241,14 +241,14 @@ Chat2DB 是一个跨平台的应用程序，支持Windows、MacOS和Linux。您�
 
 
 ```bash
-  // 拉取最新客户端,然后运行docker,名字是 `chat2db` , 并且将 `/root/.chat2db` 挂载到 `~/.chat2db-docker`
-  docker run --name=chat2db -ti -p 10824:10824 -v ~/.chat2db-docker:/root/.chat2db  chat2db/chat2db:latest
+  // 拉取最新客户端,然后运行docker,名字是 `magicdb` , 并且将 `/root/.magicdb` 挂载到 `~/.magicdb-docker`
+  docker run --name=magicdb -ti -p 10824:10824 -v ~/.magicdb-docker:/root/.magicdb  magicdb/magicdb:latest
   // 这里正常会提示`Tomcat started on port(s): 10824 (http) with context path` 就可以结束了
 
-  // 如果这里提示  `The container name "/chat2db" is already in use by container`, 代表已经存在容器了 运行
-  docker start chat2db
-  // 如果想更新chat2db 则需要先rm
-  docker rm chat2db
+  // 如果这里提示  `The container name "/magicdb" is already in use by container`, 代表已经存在容器了 运行
+  docker start magicdb
+  // 如果想更新magicdb 则需要先rm
+  docker rm magicdb
 ```
 ## 代码调试
 
@@ -264,7 +264,7 @@ Chat2DB 是一个跨平台的应用程序，支持Windows、MacOS和Linux。您�
 **git clone 到本地**
 
 ```bash
-$ git clone git@github.com:chat2db/Chat2DB.git
+$ git clone git@github.com:magicdb/MagicDB.git
 ```
 
 **前端调试**
@@ -272,7 +272,7 @@ $ git clone git@github.com:chat2db/Chat2DB.git
 ```bash
 node版本必须为16及以上 
 一定要用yarn
-$ cd Chat2DB/chat2db-client
+$ cd MagicDB/magicdb-client
 $ yarn
 $ yarn run start:web
 ```
@@ -280,52 +280,52 @@ $ yarn run start:web
 **后端调试**
 
 ```bash
-$ cd ../chat2db-server
+$ cd ../magicdb-server
 $ mvn clean install # 需要安装maven 3.8以上版本
-$ cd chat2db-server/chat2db-server-start/target/
-$ java -jar -Dloader.path=./lib -Dchatgpt.apiKey=xxxxx chat2db-server-start.jar  # 需要安装java 17以上版本，启动应用 chatgpt.apiKey 需要输入ChatGPT的key,如果不输入无法使用AIGC功能
+$ cd magicdb-server/magicdb-server-start/target/
+$ java -jar -Dloader.path=./lib -Dchatgpt.apiKey=xxxxx magicdb-server-start.jar  # 需要安装java 17以上版本，启动应用 chatgpt.apiKey 需要输入ChatGPT的key,如果不输入无法使用AIGC功能
 ```
 **独立部署**
 ```bash
-# chat2db-client
+# magicdb-client
 $ npm run build:web:prod 
-$ cp -r dist ../chat2db-server/chat2db-server-start/src/main/resources/static/front 
-$ cp -r dist/index.html ../chat2db-server/chat2db-server-start/src/main/resources/thymeleaf
+$ cp -r dist ../magicdb-server/magicdb-server-start/src/main/resources/static/front 
+$ cp -r dist/index.html ../magicdb-server/magicdb-server-start/src/main/resources/thymeleaf
 
 # 再打包后端服务
 ```
 
 ##  联系我们
 
-<a><img src="https://github.com/chat2db/Chat2DB/assets/22975773/81d13eff-c615-49f5-aee3-4107089593e0" width="25%"/></a>
+<a><img src="https://github.com/magicdb/MagicDB/assets/22975773/81d13eff-c615-49f5-aee3-4107089593e0" width="25%"/></a>
 
-- Email: Chat2DB@ch2db.com
+- Email: MagicDB@ch2db.com
 - Discord: [Join our Discord server](https://discord.gg/JDkwB6JS8A)
-- Twitter: [@Chat2DB](https://x.com/Chat2DB_AI)
-- YouTube: [Chat2DB Channel](https://www.youtube.com/@chat2db.tutorial)
-- GitHub: [Chat2DB GitHub](https://github.com/codePhiliaX/chat2db)
+- Twitter: [@MagicDB](https://x.com/MagicDB_AI)
+- YouTube: [MagicDB Channel](https://www.youtube.com/@magicdb.tutorial)
+- GitHub: [MagicDB GitHub](https://github.com/codePhiliaX/magicdb)
 
 
 ##  致谢
 
-感谢所有为 Chat2DB 贡献力量的同学们~~
+感谢所有为 MagicDB 贡献力量的同学们~~
 
-<a href="https://github.com/chat2db/Chat2DB/graphs/contributors">
-  <img src="https://contrib.rocks/image?repo=chat2db/Chat2DB" />
+<a href="https://github.com/magicdb/MagicDB/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=magicdb/MagicDB" />
 </a>
 
 ## Star History
 
-<a href="https://star-history.com/#CodePhiliaX/chat2db&Date">
+<a href="https://star-history.com/#CodePhiliaX/magicdb&Date">
   <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=CodePhiliaX/chat2db&type=Date&theme=dark" />
-    <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=CodePhiliaX/chat2db&type=Date" />
-    <img alt="Star History Chart" src="https://api.star-history.com/svg?repos=CodePhiliaX/chat2db&type=Date" />
+    <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=CodePhiliaX/magicdb&type=Date&theme=dark" />
+    <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=CodePhiliaX/magicdb&type=Date" />
+    <img alt="Star History Chart" src="https://api.star-history.com/svg?repos=CodePhiliaX/magicdb&type=Date" />
   </picture>
 </a>
 
 ## License
-The primary license used by this software is the [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0), supplemented by the [Chat2DB License](./Chat2DB_LICENSE).
+The primary license used by this software is the [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0), supplemented by the [MagicDB License](./MagicDB_LICENSE).
 
 
 

@@ -1,1 +1,1 @@
-docker run --name=chat2db -p 10824:10824 -v ~/.chat2db-docker:/root/.chat2db  chat2db/chat2db:latest
+docker run --name=magicdb -p 10824:10824 -v ~/.magicdb-docker:/root/.magicdb  magicdb/magicdb:latest

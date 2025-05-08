@@ -295,7 +295,7 @@
 - 修复 sql 格式化会失败问题
 - 修复本地存储的主题色、背景色与新版本不兼容时会导致页面崩溃问题
 - 日志对敏感数据进行脱敏
-- 修复 `CLOB` 不展示具体内容的问题 [Issue #440](https://github.com/chat2db/Chat2DB/issues/440)
+- 修复 `CLOB` 不展示具体内容的问题 [Issue #440](https://github.com/magicdb/MagicDB/issues/440)
 - 修复非 Select 不展示查询结果的问题
 - 修复 Oracle 不带 schema 无法查询的问题
 - 修复特殊类型的 SQL 执行报错的问题
@@ -329,7 +329,7 @@
 
 ## 🐞 问题修复
 
-- 修复部分数据库出现科学计数法的情况 [Issue #378](https://github.com/chat2db/Chat2DB/issues/378)
+- 修复部分数据库出现科学计数法的情况 [Issue #378](https://github.com/magicdb/MagicDB/issues/378)
 - 修复部分情况数据不展示
 
 ## 2.0.7
@@ -340,13 +340,13 @@
 
 ## 🐞 问题修复
 
-- 修复 ai 配置 [Issue #346](https://github.com/chat2db/Chat2DB/issues/346)
+- 修复 ai 配置 [Issue #346](https://github.com/magicdb/MagicDB/issues/346)
 
 ## 2.0.6
 
 ## 🐞 问题修复
 
-- Fixed: 当选择的库下面表过多时最下面的“新建控制台”按钮消失 [Issue #314](https://github.com/chat2db/Chat2DB/issues/314)
+- Fixed: 当选择的库下面表过多时最下面的“新建控制台”按钮消失 [Issue #314](https://github.com/magicdb/MagicDB/issues/314)
 
 ## 2.0.5
 
@@ -360,7 +360,7 @@
 
 ## 🐞 问题修复
 
-- 返回结果默认返回别名 [Issue #270](https://github.com/chat2db/Chat2DB/issues/270)
+- 返回结果默认返回别名 [Issue #270](https://github.com/magicdb/MagicDB/issues/270)
 - 修复了 100 个左右的 bug，当然很多是重复 bug
 
 ## 2.0.4
@@ -395,8 +395,8 @@
 ## 🐞 问题修复
 
 - 修复一次性执行多条 SQL 会提示异常的 BUG
-- 修复 getJDBCDriver error: null [Issue #123](https://github.com/chat2db/Chat2DB/issues/123)
-- 修复 hive 方式连接，然后查看 columns 报错 [Issue #136](https://github.com/chat2db/Chat2DB/issues/136)
+- 修复 getJDBCDriver error: null [Issue #123](https://github.com/magicdb/MagicDB/issues/123)
+- 修复 hive 方式连接，然后查看 columns 报错 [Issue #136](https://github.com/magicdb/MagicDB/issues/136)
 
 ## 2.0.0
 
@@ -467,7 +467,7 @@
 
 ## 1.0.0
 
-Chat2DB 的 1.0.0 正式版来啦 🎉🎉🎉🎉🎉🎉🎉🎉🎉
+MagicDB 的 1.0.0 正式版来啦 🎉🎉🎉🎉🎉🎉🎉🎉🎉
 
 - 🌈 AI 智能助手，支持自然语言转 SQL、SQL 转自然语言、SQL 优化建议
 - 👭 支持团队协作，研发无需知道线上数据库密码，解决企业数据库账号安全问题
