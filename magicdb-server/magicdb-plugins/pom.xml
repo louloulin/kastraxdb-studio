@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+    <parent>
+        <groupId>ai.magicdb</groupId>
+        <artifactId>magicdb-server-parent</artifactId>
+        <version>${revision}</version>
+        <relativePath>../pom.xml</relativePath>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+    <artifactId>magicdb-plugins</artifactId>
+    <packaging>pom</packaging>
+
+    <modules>
+        <module>magicdb-mysql</module>
+        <module>magicdb-sqlserver</module>
+        <module>magicdb-postgresql</module>
+        <module>magicdb-oracle</module>
+        <module>magicdb-sqlite</module>
+        <module>magicdb-h2</module>
+        <module>magicdb-clickhouse</module>
+        <module>magicdb-oceanbase</module>
+        <module>magicdb-db2</module>
+        <module>magicdb-mariadb</module>
+        <module>magicdb-dm</module>
+        <module>magicdb-mongodb</module>
+        <module>magicdb-presto</module>
+        <module>magicdb-hive</module>
+        <module>magicdb-kingbase</module>
+        <module>magicdb-timeplus</module>
+    </modules>
+
+</project>

@@ -1,0 +1,9 @@
+package ai.magicdb.server.web.api.controller.ai.claude.model;
+
+import lombok.Data;
+
+@Data
+public class ClaudeMessageLimit {
+
+    private String type;
+}
