@@ -17,6 +17,7 @@ description = "magicdb-clickhouse"
 
 // Configure resources to include JSON files from src/main/java
 tasks.withType<ProcessResources> {
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
     from("src/main/java") {
         include("**/*.json")
     }

@@ -6,6 +6,9 @@
 
 plugins {
     id("buildlogic.java-conventions")
+    kotlin("jvm")
+    kotlin("plugin.spring")
+    id("io.freefair.lombok")
 }
 
 dependencies {
@@ -35,7 +38,23 @@ dependencies {
     api(project(":magicdb-timeplus"))
     api(libs.commons.codec.commons.codec)
     api(libs.com.squareup.okhttp3.okhttp.x1)
-    compileOnly(libs.org.mapstruct.mapstruct.processor)
+
+    // Lombok for Java
+    compileOnly("org.projectlombok:lombok:1.18.30")
+
+    // Annotation processors for Java
+    annotationProcessor("org.projectlombok:lombok:1.18.30")
+    annotationProcessor("org.projectlombok:lombok-mapstruct-binding:0.2.0")
+    annotationProcessor("org.mapstruct:mapstruct-processor:1.5.5.Final")
+}
+
+// Configure Java annotation processor options
+tasks.withType<JavaCompile>().configureEach {
+    options.isIncremental = false
+    options.compilerArgs.addAll(listOf(
+        "-Amapstruct.defaultComponentModel=spring",
+        "-Amapstruct.disableBuilders=true"
+    ))
 }
 
 description = "magicdb-server-domain-core"

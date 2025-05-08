@@ -18,6 +18,9 @@ dependencies {
     annotationProcessor("org.projectlombok:lombok:1.18.30")
     annotationProcessor("org.projectlombok:lombok-mapstruct-binding:0.2.0")
 
+    // Add MapStruct annotation processor for Java projects
+    annotationProcessor("org.mapstruct:mapstruct-processor:1.6.3")
+
     // Add Lombok for tests
     testCompileOnly("org.projectlombok:lombok:1.18.30")
     testAnnotationProcessor("org.projectlombok:lombok:1.18.30")

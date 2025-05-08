@@ -9,6 +9,12 @@ plugins {
     `kotlin-dsl`
 }
 
+dependencies {
+    // Add the Kotlin plugins to the classpath
+    implementation("org.jetbrains.kotlin:kotlin-gradle-plugin:1.8.21")
+    implementation("org.jetbrains.kotlin:kotlin-allopen:1.8.21") // For Spring plugin
+}
+
 repositories {
     // Use the plugin portal to apply community plugins in convention plugins.
     gradlePluginPortal()

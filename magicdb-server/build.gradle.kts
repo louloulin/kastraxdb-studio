@@ -8,6 +8,8 @@ plugins {
     alias(libs.plugins.spring.dependency.management) apply false
     alias(libs.plugins.kotlin.jvm) apply false
     alias(libs.plugins.kotlin.spring) apply false
+    alias(libs.plugins.kotlin.kapt) apply false
+    id("io.freefair.lombok") version "8.0.1" apply false
 }
 
 // Common configurations for all projects
