@@ -6,8 +6,6 @@
 
 plugins {
     id("buildlogic.java-conventions")
-    kotlin("jvm")
-    kotlin("plugin.spring")
     id("io.freefair.lombok")
 }
 
@@ -55,6 +53,11 @@ tasks.withType<JavaCompile>().configureEach {
         "-Amapstruct.defaultComponentModel=spring",
         "-Amapstruct.disableBuilders=true"
     ))
+}
+
+// Configure Lombok
+lombok {
+    version.set("1.18.30")
 }
 
 description = "magicdb-server-domain-core"

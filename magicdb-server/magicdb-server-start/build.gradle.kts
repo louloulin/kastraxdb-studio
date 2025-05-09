@@ -39,10 +39,10 @@ dependencies {
     // Lombok for Java
     compileOnly("org.projectlombok:lombok:1.18.30")
 
-    // Annotation processors for Java
-    annotationProcessor("org.projectlombok:lombok:1.18.30")
-    annotationProcessor("org.projectlombok:lombok-mapstruct-binding:0.2.0")
+    // Annotation processors for Java - order matters for MapStruct and Lombok integration
     annotationProcessor("org.mapstruct:mapstruct-processor:1.5.5.Final")
+    annotationProcessor("org.projectlombok:lombok-mapstruct-binding:0.2.0")
+    annotationProcessor("org.projectlombok:lombok:1.18.30")
 }
 
 // Configure Java annotation processor options
@@ -52,6 +52,16 @@ tasks.withType<JavaCompile>().configureEach {
         "-Amapstruct.defaultComponentModel=spring",
         "-Amapstruct.disableBuilders=true"
     ))
+}
+
+// Exclude conflicting SLF4J implementations
+configurations.all {
+    exclude(group = "org.slf4j", module = "slf4j-simple")
+}
+
+// Configure Lombok
+lombok {
+    version.set("1.18.30")
 }
 
 description = "magicdb-server-start"

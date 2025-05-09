@@ -5,8 +5,6 @@
 plugins {
     id("buildlogic.java-conventions")
     id("org.springframework.boot")
-    kotlin("jvm")
-    kotlin("plugin.spring")
     id("io.freefair.lombok")
 }
 
@@ -28,6 +26,7 @@ dependencies {
     api(libs.com.dtflys.forest.forest.core)
     api(libs.org.zalando.logbook.spring.boot.starter)
     api(libs.com.baomidou.mybatis.plus.boot.starter)
+    api(libs.org.mybatis.spring.mybatis.spring)
     testImplementation(libs.org.springframework.boot.spring.boot.starter.test)
     testImplementation(libs.org.freemarker.freemarker)
     testImplementation(libs.com.baomidou.mybatis.plus.generator)
@@ -38,10 +37,10 @@ dependencies {
     // Lombok for Java
     compileOnly("org.projectlombok:lombok:1.18.30")
 
-    // Annotation processors for Java
-    annotationProcessor("org.projectlombok:lombok:1.18.30")
-    annotationProcessor("org.projectlombok:lombok-mapstruct-binding:0.2.0")
+    // Annotation processors for Java - order matters for MapStruct and Lombok integration
     annotationProcessor("org.mapstruct:mapstruct-processor:1.5.5.Final")
+    annotationProcessor("org.projectlombok:lombok-mapstruct-binding:0.2.0")
+    annotationProcessor("org.projectlombok:lombok:1.18.30")
 }
 
 // Configure Java annotation processor options
@@ -49,8 +48,24 @@ tasks.withType<JavaCompile>().configureEach {
     options.isIncremental = false
     options.compilerArgs.addAll(listOf(
         "-Amapstruct.defaultComponentModel=spring",
-        "-Amapstruct.disableBuilders=true"
+        "-Amapstruct.disableBuilders=true",
+        "-Amapstruct.verbose=true",
+        "-Amapstruct.suppressGeneratorTimestamp=true",
+        "-Amapstruct.suppressGeneratorVersionInfoComment=true",
+        "-Amapstruct.unmappedTargetPolicy=IGNORE",
+        "-Amapstruct.defaultInjectionStrategy=constructor",
+        "-Amapstruct.annotationProcessorPathOptions=true"
     ))
+}
+
+// Exclude conflicting SLF4J implementations
+configurations.all {
+    exclude(group = "org.slf4j", module = "slf4j-simple")
+}
+
+// Configure Lombok
+lombok {
+    version.set("1.18.30")
 }
 
 description = "magicdb-server-web-start"

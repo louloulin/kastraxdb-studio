@@ -20,6 +20,7 @@ com-auth0-java-jwt = "4.4.0"
 com-baomidou-mybatis-plus = "3.5.3.1"
 com-baomidou-mybatis-plus-boot-starter = "3.5.3.1"
 com-baomidou-mybatis-plus-generator = "3.5.3.1"
+org-mybatis-spring-mybatis-spring = "3.0.3"
 com-deepoove-poi-tl = "1.10.5"
 com-dtflys-forest-forest-core = "1.5.32"
 com-dtflys-forest-forest-spring = "1.5.32"
@@ -118,6 +119,7 @@ org-hibernate-validator-hibernate-validator = { module = "org.hibernate.validato
 org-locationtech-jts-jts-core = { module = "org.locationtech.jts:jts-core", version.ref = "org-locationtech-jts-jts-core" }
 org-mapstruct-mapstruct = { module = "org.mapstruct:mapstruct", version.ref = "org-mapstruct-mapstruct" }
 org-mapstruct-mapstruct-processor = { module = "org.mapstruct:mapstruct-processor", version.ref = "org-mapstruct-mapstruct-processor" }
+org-mybatis-spring-mybatis-spring = { module = "org.mybatis:mybatis-spring", version.ref = "org-mybatis-spring-mybatis-spring" }
 org-slf4j-jcl-over-slf4j = { module = "org.slf4j:jcl-over-slf4j", version.ref = "org-slf4j-jcl-over-slf4j" }
 org-slf4j-log4j-over-slf4j = { module = "org.slf4j:log4j-over-slf4j", version.ref = "org-slf4j-log4j-over-slf4j" }
 org-slf4j-slf4j-api = { module = "org.slf4j:slf4j-api", version.ref = "org-slf4j-slf4j-api" }

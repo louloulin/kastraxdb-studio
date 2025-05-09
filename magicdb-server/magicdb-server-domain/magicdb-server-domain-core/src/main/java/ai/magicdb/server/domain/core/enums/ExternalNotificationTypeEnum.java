@@ -41,6 +41,11 @@ public enum ExternalNotificationTypeEnum implements BaseEnum<String> {
         return this.name();
     }
 
+    @Override
+    public String getDescription() {
+        return this.description;
+    }
+
     public static WebhookSender getWebhookSender(String platformType) {
         String lowerCasePlatformType = platformType.toLowerCase();
         switch (lowerCasePlatformType) {
