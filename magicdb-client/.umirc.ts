@@ -15,7 +15,7 @@ const chainWebpack = (config: any, { webpack }: any) => {
 };
 
 export default defineConfig({
-  title: 'Chat2DB',
+  title: 'MagicDB',
   base: '/',
   publicPath: '/',
   hash: true,

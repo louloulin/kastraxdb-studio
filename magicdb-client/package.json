@@ -23,7 +23,16 @@
     "start:main": "cross-env NODE_ENV=development electron .",
     "start:main:prod": "cross-env NODE_ENV=production electron .",
     "start:web": "cross-env UMI_ENV=local HMR=none cross-env APP_VERSION=${npm_config_app_version} umi dev",
-    "start:web:hot": "cross-env UMI_ENV=local cross-env APP_VERSION=${npm_config_app_version} umi dev"
+    "start:web:hot": "cross-env UMI_ENV=local cross-env APP_VERSION=${npm_config_app_version} umi dev",
+    "debug": "concurrently \"npm run start:web\" \"node debug-electron.js\"",
+    "debug:advanced": "concurrently \"npm run start:web\" \"electron advanced-debug.js\"",
+    "debug:delayed": "node delayed-debug.js",
+    "debug:chrome": "node enable-chrome-debugging.js",
+    "debug:renderer": "node debug-renderer.js",
+    "fix:renderer": "node fix-renderer.js",
+    "fix:direct": "node direct-fix.js",
+    "fix:final": "node final-fix.js",
+    "electron:new": "node start-electron.js"
   },
   "dependencies": {
     "@dnd-kit/modifiers": "^6.0.1",

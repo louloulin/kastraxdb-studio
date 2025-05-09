@@ -125,9 +125,9 @@ function ConsoleEditor(props: IProps, ref: ForwardedRef<IConsoleRef>) {
   // ---------------- new-code ----------------
 
   /**
-   * 当前选择的AI类型是Chat2DBAI
+   * 当前选择的AI类型是MagicDBAI
    */
-  const isChat2DBAI = useMemo(() => aiConfig?.aiSqlSource === AIType.CHAT2DBAI, [aiConfig?.aiSqlSource]);
+  const isMagicDBAI = useMemo(() => aiConfig?.aiSqlSource === AIType.CHAT2DBAI, [aiConfig?.aiSqlSource]);
 
   useEffect(() => {
     handleSelectTableSyncModel();
@@ -191,7 +191,7 @@ function ConsoleEditor(props: IProps, ref: ForwardedRef<IConsoleRef>) {
 
   const handleAiChat = async (content: string, promptType: IPromptType, _aiConfig?: IAiConfig, ext?: string) => {
     const { apiKey } = _aiConfig || aiConfig || {};
-    if (!apiKey && isChat2DBAI) {
+    if (!apiKey && isMagicDBAI) {
       handleApiKeyEmptyOrGetQrCode(true);
       return;
     }
@@ -224,7 +224,7 @@ function ConsoleEditor(props: IProps, ref: ForwardedRef<IConsoleRef>) {
         if (isEOF) {
           closeEventSource.current();
           setIsStream(false);
-          if (isChat2DBAI) {
+          if (isMagicDBAI) {
             fetchRemainingUse(apiKey);
           }
           if (isNL2SQL) {

@@ -56,7 +56,7 @@ export default memo<IProps>((props) => {
         <div className={classnames(styles.leftSlot)}>
           <BrandLogo size={20} className={styles.brandLogo} />
         </div>
-        <div className={styles.appName}>Chat2DB</div>
+        <div className={styles.appName}>MagicDB</div>
         <div className={styles.rightSlot}>{appTitleBarRightComponent}</div>
       </div>
       {(!isMac && isMac !== void 0) && (
