@@ -2,9 +2,11 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button, Dropdown, Tooltip } from 'antd';
 import classnames from 'classnames';
+import { Code2, LayoutDashboard, Database, Users, Github, LogOut, Rocket, User } from 'lucide-react';
 
 import Iconfont from '@/components/Iconfont';
 import BrandLogo from '@/components/BrandLogo';
+import Icon from '@/components/Icon';
 
 import i18n from '@/i18n';
 import { userLogout } from '@/service/user';
@@ -33,42 +35,32 @@ import Setting from '@/blocks/Setting';
 import styles from './index.less';
 import { useUpdateEffect } from '@/hooks';
 import { getLinkBasedOnTimezone } from '@/utils/timezone';
-import {
-  RocketIcon,
-  Code2Icon,
-  LayoutDashboardIcon,
-  DatabaseIcon,
-  UsersIcon,
-  GithubIcon,
-  LogOutIcon,
-  UserIcon,
-} from 'lucide-react';
 
 const initNavConfig: INavItem[] = [
   {
     key: 'workspace',
-    icon: <Code2Icon size={20} />,
+    icon: <Code2 size={20} />,
     isLoad: false,
     component: <Workspace />,
     name: i18n('workspace.title'),
   },
   {
     key: 'dashboard',
-    icon: <LayoutDashboardIcon size={20} />,
+    icon: <LayoutDashboard size={20} />,
     isLoad: false,
     component: <Dashboard />,
     name: i18n('dashboard.title'),
   },
   {
     key: 'connections',
-    icon: <DatabaseIcon size={20} />,
+    icon: <Database size={20} />,
     isLoad: false,
     component: <Connection />,
     name: i18n('connection.title'),
   },
   {
     key: 'github',
-    icon: <GithubIcon size={20} />,
+    icon: <Github size={20} />,
     isLoad: false,
     openBrowser: 'https://github.com/magicdb/MagicDB/',
     name: 'Github',
@@ -135,7 +127,7 @@ function MainPage() {
       if (userInfo.admin && !hasTeamIcon) {
         cloneNavConfig.splice(3, 0, {
           key: 'team',
-          icon: <UsersIcon size={20} />,
+          icon: <Users size={20} />,
           isLoad: activeNavKey === 'team', // 如果当前是team，直接加载
           component: <Team />,
           name: i18n('team.title'),
@@ -193,7 +185,7 @@ function MainPage() {
   return (
     <div className={styles.page}>
       <div className={styles.layoutLeft}>
-        {isMac === void 0 && <BrandLogo size={38} className={styles.brandLogo} />}
+        {isMac === void 0 && <BrandLogo size={38} variant="cursor" className={styles.brandLogo} />}
         <ul className={styles.navList}>
           {navConfig.map((item) => {
             return (
@@ -219,13 +211,13 @@ function MainPage() {
                 window.open(link, '_blank');
               }}
             >
-              <RocketIcon className={styles.rocketIcon} size={20} />
+              <Rocket className={styles.rocketIcon} size={20} />
             </div>
           </Tooltip>
           {userInfo?.roleCode !== IRole.DESKTOP && (
             <Tooltip placement="right" title={i18n('login.text.logout')}>
               <div className={styles.footerIconWrapper} onClick={handleLogout}>
-                <LogOutIcon size={20} className={styles.icon} />
+                <LogOut size={20} className={styles.icon} />
               </div>
             </Tooltip>
           )}
