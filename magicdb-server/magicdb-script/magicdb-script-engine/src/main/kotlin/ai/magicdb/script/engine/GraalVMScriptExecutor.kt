@@ -51,15 +51,16 @@ class GraalVMScriptExecutor : ScriptExecutor {
 
     override fun getSupportedLanguages(): Array<String> {
         val languages = mutableListOf<String>()
-        
+
         // 添加GraalVM支持的语言
         languages.add("js")
-        languages.add("python")
-        languages.add("wasm")
-        
+        // Python和WebAssembly需要GraalVM企业版
+        // languages.add("python")
+        // languages.add("wasm")
+
         // 添加其他支持的语言
         languages.add("kotlin")
-        
+
         return languages.toTypedArray()
     }
 }
