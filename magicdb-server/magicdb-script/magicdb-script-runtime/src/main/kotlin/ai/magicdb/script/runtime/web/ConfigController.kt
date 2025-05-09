@@ -11,14 +11,14 @@ import java.util.concurrent.ConcurrentHashMap
  *
  * @author magicdb
  */
-@RestController
-@RequestMapping("/api/config")
+@RestController("scriptConfigController")
+@RequestMapping("/api/script/config")
 class ConfigController {
     private val logger = LoggerFactory.getLogger(ConfigController::class.java)
-    
+
     // 模拟配置存储
     private val configs = ConcurrentHashMap<String, Config>()
-    
+
     init {
         // 添加默认配置
         val defaultConfigs = listOf(
@@ -79,7 +79,7 @@ class ConfigController {
                 updateTime = Date()
             )
         )
-        
+
         defaultConfigs.forEach { config ->
             configs[config.id] = config
         }
@@ -91,7 +91,7 @@ class ConfigController {
     @GetMapping
     fun getConfigList(): ResponseEntity<List<Config>> {
         logger.info("获取配置列表")
-        
+
         val configList = configs.values.toList()
         return ResponseEntity.ok(configList)
     }
@@ -102,7 +102,7 @@ class ConfigController {
     @GetMapping("/{id}")
     fun getConfig(@PathVariable id: String): ResponseEntity<Config> {
         logger.info("获取配置详情: {}", id)
-        
+
         val config = configs[id] ?: return ResponseEntity.notFound().build()
         return ResponseEntity.ok(config)
     }
@@ -113,7 +113,7 @@ class ConfigController {
     @GetMapping("/key/{key}")
     fun getConfigByKey(@PathVariable key: String): ResponseEntity<Config> {
         logger.info("根据键获取配置: {}", key)
-        
+
         val config = configs.values.find { it.key == key } ?: return ResponseEntity.notFound().build()
         return ResponseEntity.ok(config)
     }
@@ -124,10 +124,10 @@ class ConfigController {
     @PostMapping
     fun createOrUpdateConfig(@RequestBody request: ConfigRequest): ResponseEntity<Config> {
         logger.info("创建或更新配置: {}", request)
-        
+
         // 检查键是否已存在
         val existingConfig = configs.values.find { it.key == request.key }
-        
+
         val now = Date()
         val config = if (existingConfig != null) {
             // 更新配置
@@ -136,7 +136,7 @@ class ConfigController {
                 description = request.description ?: existingConfig.description,
                 updateTime = now
             )
-            
+
             configs[existingConfig.id] = updatedConfig
             updatedConfig
         } else {
@@ -149,11 +149,11 @@ class ConfigController {
                 createTime = now,
                 updateTime = now
             )
-            
+
             configs[newConfig.id] = newConfig
             newConfig
         }
-        
+
         return ResponseEntity.ok(config)
     }
 
@@ -163,11 +163,11 @@ class ConfigController {
     @DeleteMapping("/{id}")
     fun deleteConfig(@PathVariable id: String): ResponseEntity<Boolean> {
         logger.info("删除配置: {}", id)
-        
+
         if (!configs.containsKey(id)) {
             return ResponseEntity.notFound().build()
         }
-        
+
         configs.remove(id)
         return ResponseEntity.ok(true)
     }

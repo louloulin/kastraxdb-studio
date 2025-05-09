@@ -5,7 +5,7 @@ spring:
     driver-class-name: org.h2.Driver
 # The port number
 server:
-  port: 10821
+  port: 10822
 
 magicdb:
   gateway:

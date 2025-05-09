@@ -13,6 +13,7 @@ dependencies {
     api(project(":magicdb-server-web-api"))
     api(project(":magicdb-server-admin-api"))
     api(project(":magicdb-server-domain-core"))
+    api(project(":magicdb-script-runtime"))
     api(libs.org.slf4j.jcl.over.slf4j)
     api(libs.org.slf4j.log4j.over.slf4j)
     api(libs.ch.qos.logback.logback.classic)

@@ -11,8 +11,8 @@ import java.util.concurrent.ConcurrentHashMap
  *
  * @author magicdb
  */
-@RestController
-@RequestMapping("/api/user")
+@RestController("scriptUserController")
+@RequestMapping("/api/script/user")
 class UserController {
     private val logger = LoggerFactory.getLogger(UserController::class.java)
 

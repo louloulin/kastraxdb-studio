@@ -6,6 +6,7 @@ import ai.magicdb.spi.MetaData
 import ai.magicdb.spi.SqlBuilder
 import ai.magicdb.spi.ValueProcessor
 import ai.magicdb.spi.model.*
+import ai.magicdb.spi.model.Function as DbFunction
 import java.sql.Connection
 
 /**
@@ -58,7 +59,7 @@ class ScriptMetaData : MetaData {
         val table = Table()
         table.name = "scripts"
         table.type = "TABLE"
-
+        
         val pageResult = PageResult<Table>()
         pageResult.data = listOf(table)
         pageResult.total = 1
@@ -82,9 +83,9 @@ class ScriptMetaData : MetaData {
         return emptyList()
     }
 
-    override fun functions(connection: Connection, databaseName: String, schemaName: String): List<Function> {
+    override fun functions(connection: Connection, databaseName: String, schemaName: String): List<DbFunction> {
         // 脚本不支持函数
-        return emptyList<Function>()
+        return emptyList()
     }
 
     override fun triggers(connection: Connection, databaseName: String, schemaName: String): List<Trigger> {
@@ -100,38 +101,38 @@ class ScriptMetaData : MetaData {
     override fun columns(connection: Connection, databaseName: String, schemaName: String, tableName: String): List<TableColumn> {
         // 返回脚本表的列信息
         val columns = ArrayList<TableColumn>()
-
+        
         val idColumn = TableColumn()
         idColumn.name = "id"
         idColumn.columnType = "INTEGER"
         idColumn.primaryKey = true
         columns.add(idColumn)
-
+        
         val nameColumn = TableColumn()
         nameColumn.name = "name"
         nameColumn.columnType = "VARCHAR"
         columns.add(nameColumn)
-
+        
         val languageColumn = TableColumn()
         languageColumn.name = "language"
         languageColumn.columnType = "VARCHAR"
         columns.add(languageColumn)
-
+        
         val contentColumn = TableColumn()
         contentColumn.name = "content"
         contentColumn.columnType = "TEXT"
         columns.add(contentColumn)
-
+        
         val createdAtColumn = TableColumn()
         createdAtColumn.name = "created_at"
         createdAtColumn.columnType = "TIMESTAMP"
         columns.add(createdAtColumn)
-
+        
         val updatedAtColumn = TableColumn()
         updatedAtColumn.name = "updated_at"
         updatedAtColumn.columnType = "TIMESTAMP"
         columns.add(updatedAtColumn)
-
+        
         return columns
     }
 
@@ -145,9 +146,9 @@ class ScriptMetaData : MetaData {
         return emptyList()
     }
 
-    override fun function(connection: Connection, databaseName: String, schemaName: String, functionName: String): Function? {
+    override fun function(connection: Connection, databaseName: String, schemaName: String, functionName: String): DbFunction? {
         // 脚本不支持函数
-        return null as Function?
+        return null
     }
 
     override fun trigger(connection: Connection, databaseName: String, schemaName: String, triggerName: String): Trigger? {
