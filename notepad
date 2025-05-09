@@ -1,0 +1,1 @@
+按照 @magicdb-client/plan3.md 实现相关功能，前后端都是实现，后端使用kotlin，实现后增测试验证，验证通过后更新 @magicdb-client/plan3.md 标记实现的功能，前端在magicdb-client，后端在magicdb-server实现
