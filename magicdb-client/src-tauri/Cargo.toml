@@ -1,0 +1,43 @@
+[package]
+name = "magicdb"
+version = "1.0.0"
+description = "A powerful database management tool with AI capabilities"
+authors = ["fjy, hexi"]
+license = ""
+repository = "https://github.com/magicdb/MagicDB"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[build-dependencies]
+tauri-build = { version = "2.0.0", features = [] }
+
+[dependencies]
+tauri = { version = "2.0.0", features = ["api-all", "devtools"] }
+tauri-plugin-shell = { version = "2.0.0", features = ["open"] }
+tauri-plugin-dialog = "2.0.0"
+tauri-plugin-fs = "2.0.0"
+tauri-plugin-window = "2.0.0"
+tauri-plugin-http = "2.0.0"
+tauri-plugin-process = "2.0.0"
+tauri-plugin-os = "2.0.0"
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+tokio = { version = "1.28.2", features = ["full"] }
+uuid = { version = "1.3.3", features = ["v4", "serde"] }
+log = "0.4.19"
+env_logger = "0.10.0"
+chrono = { version = "0.4.26", features = ["serde"] }
+home = "0.5.5"
+
+[features]
+# this feature is used for production builds or when `devPath` points to the filesystem
+# DO NOT REMOVE!!
+custom-protocol = ["tauri/custom-protocol"]
+
+[profile.release]
+panic = "abort" # Strip expensive panic clean-up logic
+codegen-units = 1 # Compile crates one after another so the compiler can optimize better
+lto = true # Enables link to optimizations
+opt-level = "s" # Optimize for binary size
+strip = true # Remove debug symbols

@@ -1,19 +1,94 @@
+# MagicDB Client
+
+MagicDB 是一个集成 AI 能力的智能数据库客户端和智能 BI 报表工具。
+
 ## 技术选型
 
 1. 脚手架：umi v4
 2. 组件库：antd v5
-3. 状态管理库 dva
-4. 图表库
-5. 国际化
+3. 状态管理库：dva
+4. 图表库：echarts
+5. 国际化：内置
+6. 桌面应用框架：Tauri (替代 Electron)
 
-目录结构 tree ./ -L 2 -I node_modules
+## 开发环境要求
+
+- Node.js 16+
+- Rust 1.60+
+- Tauri CLI
+- 系统依赖（根据 Tauri 要求）
+
+### 安装 Rust 和 Tauri CLI
+
+```bash
+# 安装 Rust
+curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+
+# 安装 Tauri CLI
+cargo install tauri-cli
+```
 
 ## 启动项目
 
+### 安装依赖
 
-强制使用 yarn，因为环境变量、lock 文件只维护了 yarn，npm/pnpm 可能会产生意想不到的 bug node 版本要求 16 以上 `npm i -g yarn` `yarn` `yarn run build:web:prod` `cp -r dist ../magicdb-server/magicdb-server-start/src/main/resources/static/front` (复制打包结果到指定目录。windows 可能命令不一样，可以手动复制下) 之后就可以启动后端了 `mvn clean package -B '-Dmaven.test.skip=true' -f magicdb-server/pom.xml`
+```bash
+npm install
+# 或
+yarn
+```
 
-启动前端项目调试 `yarn run start:web` 注意：因为 electron 包比较难下载，如果 yarn 时 electron 下载失败或超时，可以删除掉 magicdb-client/package.json 下的 electron，再次 yarn
+### 开发模式
+
+```bash
+# 启动开发服务器（前端 + Tauri）
+npm run start
+# 或
+yarn start
+
+# 仅启动前端开发服务器
+npm run start:web
+# 或
+yarn start:web
+
+# 仅启动 Tauri 开发服务器
+npm run start:tauri
+# 或
+yarn start:tauri
+```
+
+### 构建生产版本
+
+```bash
+# 构建生产版本（前端 + Tauri）
+npm run build
+# 或
+yarn build
+
+# 仅构建前端
+npm run build:web
+# 或
+yarn build:web
+
+# 仅构建 Tauri 应用
+npm run build:tauri
+# 或
+yarn build:tauri
+```
+
+### 部署到后端
+
+```bash
+# 构建前端
+yarn run build:web:prod
+
+# 复制打包结果到指定目录
+cp -r dist ../magicdb-server/magicdb-server-start/src/main/resources/static/front
+# Windows 可能命令不一样，可以手动复制
+
+# 启动后端
+mvn clean package -B '-Dmaven.test.skip=true' -f magicdb-server/pom.xml
+```
 
 ## TS书写规范
 
@@ -46,38 +121,49 @@ i18n('home.tip.welcome', user.name); // => '欢迎您，张三！'
 i18nElement('home.tip.welcome', <b>{user.name}</b>); // => <>欢迎您，<b>张三</b>！</>'
 ```
 
-```code
-├── dist
-│   ├── index.html
-│   ├── layouts__index.async.js
-│   ├── layouts__index.chunk.css
-│   ├── p__docs.async.js
-│   ├── p__index.async.js
-│   └── umi.js
-├── package.json
-├── readme.md
-├── release
-│   ├── MagicDB-1.0.0-arm64-mac.zip
-│   ├── MagicDB-1.0.0-arm64-mac.zip.blockmap
-│   ├── MagicDB-1.0.0-arm64.dmg
-│   ├── MagicDB-1.0.0-arm64.dmg.blockmap
-│   ├── builder-debug.yml
-│   ├── builder-effective-config.yaml
-│   └── mac-arm64
-├── src
-│   ├── assets
-│   ├── blocks
-│   ├── components
-│   ├── config
-│   ├── constant
-│   ├── layouts
-│   ├── locales
-│   ├── main
-│   ├── models
-│   ├── pages
-│   ├── typings
-│   └── utils
-├── tsconfig.json
-├── typings.d.ts
-└── yarn.lock
+## 项目结构
+
 ```
+magicdb-client/
+├── dist/                  # 前端构建输出目录
+├── node_modules/          # Node.js 依赖
+├── public/                # 静态资源
+├── src/                   # 前端源代码
+│   ├── assets/            # 资源文件
+│   ├── blocks/            # 区块组件
+│   ├── components/        # React 组件
+│   ├── config/            # 配置文件
+│   ├── constant/          # 常量定义
+│   ├── layouts/           # 布局组件
+│   ├── locales/           # 国际化文件
+│   ├── main/              # 主进程代码
+│   ├── models/            # 数据模型
+│   ├── pages/             # 页面组件
+│   ├── typings/           # 类型定义
+│   └── utils/             # 工具函数
+│       └── tauri-api.ts   # Tauri API 包装器
+├── src-tauri/             # Tauri 应用源代码
+│   ├── icons/             # 应用图标
+│   ├── src/               # Rust 源代码
+│   │   └── main.rs        # Tauri 应用入口
+│   ├── build.rs           # Tauri 构建脚本
+│   ├── Cargo.toml         # Rust 依赖配置
+│   └── tauri.conf.json    # Tauri 配置
+├── release/               # 发布输出目录
+├── .gitignore             # Git 忽略文件
+├── package.json           # Node.js 依赖配置
+├── tsconfig.json          # TypeScript 配置
+├── typings.d.ts           # 全局类型定义
+└── README.md              # 项目说明
+```
+
+## Electron 到 Tauri 的迁移
+
+本项目最初使用 Electron 开发，现已迁移到 Tauri。迁移的详细信息请参阅 [TAURI-MIGRATION.md](./TAURI-MIGRATION.md)。
+
+Tauri 相比 Electron 有以下优势：
+
+1. **更小的安装包体积**：Tauri 应用程序比 Electron 应用程序小得多，因为它使用系统的原生 WebView 而不是捆绑 Chromium。
+2. **更好的性能**：Tauri 应用程序使用更少的内存和 CPU 资源。
+3. **增强的安全性**：Tauri 具有更安全的架构，具有细粒度的权限控制。
+4. **原生外观和感觉**：Tauri 应用程序在每个平台上看起来和感觉更加原生。
