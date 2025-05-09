@@ -24,7 +24,7 @@ import org.springframework.stereotype.Indexed;
  * @author Jiaju Zhuang
  */
 @SpringBootApplication
-@ComponentScan(value = {"ai.magicdb.server", "ai.magicdb.script"})
+@ComponentScan(value = {"ai.magicdb.server", "ai.magicdb.script", "ai.magicdb.dataservice"})
 @Indexed
 @EnableCaching
 @EnableScheduling

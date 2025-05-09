@@ -3,6 +3,7 @@ package ai.magicdb.dataservice.web.controller
 import ai.magicdb.dataservice.api.DataServiceManager
 import ai.magicdb.dataservice.api.model.DataService
 import ai.magicdb.dataservice.api.model.ServiceGroup
+import ai.magicdb.dataservice.api.model.ServiceParameter
 import ai.magicdb.dataservice.api.model.ServiceResult
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -14,7 +15,6 @@ import org.springframework.http.MediaType
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.*
-import java.time.LocalDateTime
 import java.util.*
 
 @WebMvcTest(DataServiceController::class)
@@ -39,9 +39,12 @@ class DataServiceControllerTest {
             language = "javascript",
             groupId = "test-group-1",
             tags = listOf("test", "example"),
-            parameters = mapOf("param1" to "string", "param2" to "number"),
-            createdAt = LocalDateTime.now(),
-            updatedAt = LocalDateTime.now(),
+            parameters = listOf(
+                ServiceParameter("param1", "string"),
+                ServiceParameter("param2", "number")
+            ),
+            createTime = Date(),
+            updateTime = Date(),
             enabled = true
         )
 
@@ -50,8 +53,8 @@ class DataServiceControllerTest {
             name = "Test Group",
             description = "A test group",
             parentId = null,
-            createdAt = LocalDateTime.now(),
-            updatedAt = LocalDateTime.now()
+            createTime = Date(),
+            updateTime = Date()
         )
     }
 
@@ -202,8 +205,8 @@ class DataServiceControllerTest {
             name = "Child Group",
             description = "A child group",
             parentId = testGroup.id,
-            createdAt = LocalDateTime.now(),
-            updatedAt = LocalDateTime.now()
+            createTime = Date(),
+            updateTime = Date()
         )
 
         `when`(dataServiceManager.getChildGroups(testGroup.id)).thenReturn(listOf(childGroup))
