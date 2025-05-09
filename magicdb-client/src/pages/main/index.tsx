@@ -33,37 +33,42 @@ import Setting from '@/blocks/Setting';
 import styles from './index.less';
 import { useUpdateEffect } from '@/hooks';
 import { getLinkBasedOnTimezone } from '@/utils/timezone';
-import { RocketIcon } from 'lucide-react';
+import {
+  RocketIcon,
+  Code2Icon,
+  LayoutDashboardIcon,
+  DatabaseIcon,
+  UsersIcon,
+  GithubIcon,
+  LogOutIcon,
+  UserIcon,
+} from 'lucide-react';
 
 const initNavConfig: INavItem[] = [
   {
     key: 'workspace',
-    icon: '\ue616',
-    iconFontSize: 16,
+    icon: <Code2Icon size={20} />,
     isLoad: false,
     component: <Workspace />,
     name: i18n('workspace.title'),
   },
   {
     key: 'dashboard',
-    icon: '\ue629',
-    iconFontSize: 24,
+    icon: <LayoutDashboardIcon size={20} />,
     isLoad: false,
     component: <Dashboard />,
     name: i18n('dashboard.title'),
   },
   {
     key: 'connections',
-    icon: '\ue622',
-    iconFontSize: 20,
+    icon: <DatabaseIcon size={20} />,
     isLoad: false,
     component: <Connection />,
     name: i18n('connection.title'),
   },
   {
     key: 'github',
-    icon: '\ue885',
-    iconFontSize: 26,
+    icon: <GithubIcon size={20} />,
     isLoad: false,
     openBrowser: 'https://github.com/magicdb/MagicDB/',
     name: 'Github',
@@ -130,8 +135,7 @@ function MainPage() {
       if (userInfo.admin && !hasTeamIcon) {
         cloneNavConfig.splice(3, 0, {
           key: 'team',
-          icon: '\ue64b',
-          iconFontSize: 24,
+          icon: <UsersIcon size={20} />,
           isLoad: activeNavKey === 'team', // 如果当前是team，直接加载
           component: <Team />,
           name: i18n('team.title'),
@@ -200,7 +204,7 @@ function MainPage() {
                   })}
                   onClick={() => switchingNav(item.key)}
                 >
-                  <Iconfont size={item.iconFontSize} className={styles.icon} code={item.icon} />
+                  <span className={styles.icon}>{item.icon}</span>
                 </li>
               </Tooltip>
             );
@@ -208,17 +212,23 @@ function MainPage() {
         </ul>
         <div className={styles.footer}>
           <Tooltip placement="right" title={i18n('setting.magicdb.pro')}>
-            <RocketIcon
-              className={styles.rocketIcon} 
+            <div
+              className={styles.footerIconWrapper}
               onClick={() => {
                 const link = getLinkBasedOnTimezone();
                 window.open(link, '_blank');
               }}
-            />
+            >
+              <RocketIcon className={styles.rocketIcon} size={20} />
+            </div>
           </Tooltip>
-          {/* <Tooltip placement="right" title="个人中心">
-            {userInfo?.roleCode !== IRole.DESKTOP ? renderUser() : null}
-          </Tooltip> */}
+          {userInfo?.roleCode !== IRole.DESKTOP && (
+            <Tooltip placement="right" title={i18n('login.text.logout')}>
+              <div className={styles.footerIconWrapper} onClick={handleLogout}>
+                <LogOutIcon size={20} className={styles.icon} />
+              </div>
+            </Tooltip>
+          )}
           <Setting className={styles.setIcon} />
         </div>
       </div>

@@ -45,16 +45,7 @@ export interface IExportRefFunction {
 }
 
 function MonacoEditor(props: IProps, ref: ForwardedRef<IExportRefFunction>) {
-  const {
-    id,
-    className,
-    language = 'sql',
-    didMount,
-    options,
-    defaultValue,
-    appendValue,
-    shortcutKey,
-  } = props;
+  const { id, className, language = 'sql', didMount, options, defaultValue, appendValue, shortcutKey } = props;
   const editorRef = useRef<IEditorIns>();
   const quickInputCommand = useRef<any>();
   const [appTheme] = useTheme();
@@ -82,20 +73,54 @@ function MonacoEditor(props: IProps, ref: ForwardedRef<IExportRefFunction>) {
     monaco.editor.defineTheme(EditorThemeType.DashboardLightTheme, {
       base: 'vs',
       inherit: true,
-      rules: [{ background: '#15161a' }] as any,
+      rules: [
+        { token: 'keyword', foreground: '#7c3aed', fontStyle: 'bold' },
+        { token: 'string', foreground: '#10b981' },
+        { token: 'number', foreground: '#f59e0b' },
+        { token: 'comment', foreground: '#9ca3af', fontStyle: 'italic' },
+        { token: 'type', foreground: '#3b82f6' },
+        { token: 'operator', foreground: '#ef4444' },
+        { token: 'identifier', foreground: '#1f2937' },
+        { token: 'function', foreground: '#6366f1' },
+      ],
       colors: {
-        'editor.foreground': '#000000',
-        'editor.background': '#f8f9fa', //背景色
+        'editor.foreground': '#1f2937',
+        'editor.background': '#ffffff',
+        'editor.lineHighlightBackground': '#f8f9fa',
+        'editor.selectionBackground': 'rgba(62, 207, 142, 0.2)',
+        'editor.selectionHighlightBackground': 'rgba(62, 207, 142, 0.1)',
+        'editorCursor.foreground': '#3ecf8e',
+        'editorLineNumber.foreground': '#d1d5db',
+        'editorLineNumber.activeForeground': '#6b7280',
+        'editorIndentGuide.background': '#f1f5f9',
+        'editorIndentGuide.activeBackground': '#e2e8f0',
       },
     });
 
     monaco.editor.defineTheme(EditorThemeType.DashboardBlackTheme, {
       base: 'vs-dark',
       inherit: true,
-      rules: [{ background: '#15161a' }] as any,
+      rules: [
+        { token: 'keyword', foreground: '#8d7aee', fontStyle: 'bold' },
+        { token: 'string', foreground: '#34d399' },
+        { token: 'number', foreground: '#fbbf24' },
+        { token: 'comment', foreground: '#6b7280', fontStyle: 'italic' },
+        { token: 'type', foreground: '#4cc9f0' },
+        { token: 'operator', foreground: '#f87171' },
+        { token: 'identifier', foreground: '#f3f4f6' },
+        { token: 'function', foreground: '#818cf8' },
+      ],
       colors: {
-        'editor.foreground': '#ffffff',
-        'editor.background': '#131418', //背景色
+        'editor.foreground': '#f3f4f6',
+        'editor.background': '#1f1f1f',
+        'editor.lineHighlightBackground': '#2a2a2a',
+        'editor.selectionBackground': 'rgba(62, 207, 142, 0.2)',
+        'editor.selectionHighlightBackground': 'rgba(62, 207, 142, 0.1)',
+        'editorCursor.foreground': '#3ecf8e',
+        'editorLineNumber.foreground': '#6b7280',
+        'editorLineNumber.activeForeground': '#9ca3af',
+        'editorIndentGuide.background': '#333333',
+        'editorIndentGuide.activeBackground': '#444444',
       },
     });
 
@@ -126,7 +151,6 @@ function MonacoEditor(props: IProps, ref: ForwardedRef<IExportRefFunction>) {
     //   editorRef.current?.removeEventListener('blur', blur);
     // };
   }, []);
-
 
   useEffect(() => {
     if (editorRef.current) {

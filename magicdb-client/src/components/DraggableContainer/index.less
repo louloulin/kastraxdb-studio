@@ -2,6 +2,7 @@
 
 .box {
   display: flex;
+
   .divider {
     width: 0px;
     position: relative;
@@ -14,18 +15,24 @@
     bottom: 0px;
     z-index: 100;
     transform: translateX(-50%);
+    transition: background-color var(--transition-fast);
+
     &:hover {
       background-color: var(--color-primary-bg);
       cursor: col-resize;
     }
   }
+
   .dragging {
+    background-color: var(--color-primary) !important;
+    opacity: 0.5;
   }
 }
 
 .box_column {
   height: 100%;
   flex-direction: column;
+
   .divider {
     height: 0px;
     width: 100%;
@@ -40,9 +47,17 @@
     left: 0;
     z-index: 100;
     transform: translateY(-50%);
+    transition: background-color var(--transition-fast);
+
     &:hover {
+      background-color: var(--color-primary-bg);
       cursor: row-resize;
     }
+  }
+
+  .dragging {
+    background-color: var(--color-primary) !important;
+    opacity: 0.5;
   }
 }
 

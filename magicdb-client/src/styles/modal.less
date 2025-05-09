@@ -1,0 +1,101 @@
+/* 
+ * 全局 Modal 样式
+ * 这些样式将覆盖 Ant Design 的默认样式
+ */
+
+/* Modal 容器 */
+.ant-modal {
+  .ant-modal-content {
+    border-radius: var(--border-radius-lg);
+    box-shadow: var(--shadow-lg);
+    overflow: hidden;
+    transition: all var(--transition-normal);
+    background-color: var(--color-bg-base);
+    
+    /* Modal 头部 */
+    .ant-modal-header {
+      padding: var(--spacing-md) var(--spacing-lg);
+      background-color: var(--color-bg-base);
+      border-bottom: 1px solid var(--color-border-secondary);
+      margin-bottom: 0;
+      transition: all var(--transition-normal);
+      
+      .ant-modal-title {
+        font-size: var(--font-size-md);
+        font-weight: var(--font-weight-semibold);
+        color: var(--color-text);
+      }
+    }
+    
+    /* Modal 关闭按钮 */
+    .ant-modal-close {
+      color: var(--color-text-tertiary);
+      transition: all var(--transition-fast);
+      
+      &:hover {
+        color: var(--color-text);
+        background-color: var(--color-hover-bg);
+      }
+    }
+    
+    /* Modal 内容 */
+    .ant-modal-body {
+      padding: var(--spacing-lg);
+      background-color: var(--color-bg-base);
+      transition: all var(--transition-normal);
+    }
+    
+    /* Modal 底部 */
+    .ant-modal-footer {
+      padding: var(--spacing-md) var(--spacing-lg);
+      background-color: var(--color-bg-subtle);
+      border-top: 1px solid var(--color-border-secondary);
+      transition: all var(--transition-normal);
+      
+      /* 按钮样式 */
+      .ant-btn {
+        border-radius: var(--border-radius-md);
+        transition: all var(--transition-normal);
+        height: 36px;
+        
+        /* 取消按钮 */
+        &.ant-btn-default {
+          border-color: var(--color-border);
+          color: var(--color-text-secondary);
+          
+          &:hover {
+            color: var(--color-text);
+            border-color: var(--color-text);
+            background-color: var(--color-hover-bg);
+          }
+        }
+        
+        /* 确认按钮 */
+        &.ant-btn-primary {
+          background-color: var(--color-primary);
+          border-color: var(--color-primary);
+          
+          &:hover {
+            background-color: var(--color-primary-hover, color-mix(in srgb, var(--color-primary), white 10%));
+            border-color: var(--color-primary-hover, color-mix(in srgb, var(--color-primary), white 10%));
+            box-shadow: var(--shadow-sm);
+          }
+        }
+      }
+    }
+  }
+}
+
+/* Modal 遮罩层 */
+.ant-modal-mask {
+  backdrop-filter: blur(2px);
+  transition: all var(--transition-normal);
+}
+
+/* Modal 动画 */
+.ant-modal-wrap {
+  .ant-modal {
+    transform-origin: center;
+    animation-duration: 0.2s;
+  }
+}

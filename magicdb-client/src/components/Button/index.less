@@ -1,0 +1,215 @@
+@import '../../styles/var.less';
+
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  white-space: nowrap;
+  text-decoration: none;
+  vertical-align: middle;
+  cursor: pointer;
+  user-select: none;
+  border: none;
+  outline: none;
+  font-weight: var(--font-weight-medium);
+  border-radius: var(--border-radius-md);
+  transition: all var(--transition-normal);
+  
+  &:focus {
+    outline: none;
+  }
+  
+  .icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .content {
+    display: inline-block;
+  }
+}
+
+/* 按钮大小 */
+.button-small {
+  height: 28px;
+  padding: 0 var(--spacing-sm);
+  font-size: var(--font-size-xs);
+  
+  .icon {
+    font-size: 14px;
+  }
+  
+  .icon + .content {
+    margin-left: var(--spacing-xs);
+  }
+  
+  .content + .icon {
+    margin-left: var(--spacing-xs);
+  }
+}
+
+.button-medium {
+  height: 36px;
+  padding: 0 var(--spacing-md);
+  font-size: var(--font-size-sm);
+  
+  .icon {
+    font-size: 16px;
+  }
+  
+  .icon + .content {
+    margin-left: var(--spacing-sm);
+  }
+  
+  .content + .icon {
+    margin-left: var(--spacing-sm);
+  }
+}
+
+.button-large {
+  height: 44px;
+  padding: 0 var(--spacing-lg);
+  font-size: var(--font-size-md);
+  
+  .icon {
+    font-size: 18px;
+  }
+  
+  .icon + .content {
+    margin-left: var(--spacing-md);
+  }
+  
+  .content + .icon {
+    margin-left: var(--spacing-md);
+  }
+}
+
+/* 按钮类型 */
+.button-primary {
+  background-color: var(--color-primary);
+  color: white;
+  
+  &:hover:not(.button-disabled) {
+    background-color: var(--color-primary-hover, color-mix(in srgb, var(--color-primary), white 10%));
+    box-shadow: var(--shadow-sm);
+  }
+  
+  &:active:not(.button-disabled) {
+    background-color: var(--color-primary-active, color-mix(in srgb, var(--color-primary), black 10%));
+  }
+}
+
+.button-secondary {
+  background-color: var(--color-bg-subtle);
+  color: var(--color-text);
+  
+  &:hover:not(.button-disabled) {
+    background-color: var(--color-hover-bg);
+    color: var(--color-primary);
+  }
+  
+  &:active:not(.button-disabled) {
+    background-color: var(--color-primary-bg);
+  }
+}
+
+.button-outline {
+  background-color: transparent;
+  color: var(--color-text);
+  border: 1px solid var(--color-border);
+  
+  &:hover:not(.button-disabled) {
+    border-color: var(--color-primary);
+    color: var(--color-primary);
+  }
+  
+  &:active:not(.button-disabled) {
+    background-color: var(--color-primary-bg);
+  }
+}
+
+.button-ghost {
+  background-color: transparent;
+  color: var(--color-text);
+  
+  &:hover:not(.button-disabled) {
+    background-color: var(--color-hover-bg);
+    color: var(--color-primary);
+  }
+  
+  &:active:not(.button-disabled) {
+    background-color: var(--color-primary-bg);
+  }
+}
+
+.button-danger {
+  background-color: var(--color-error);
+  color: white;
+  
+  &:hover:not(.button-disabled) {
+    background-color: var(--color-error-hover, color-mix(in srgb, var(--color-error), white 10%));
+    box-shadow: var(--shadow-sm);
+  }
+  
+  &:active:not(.button-disabled) {
+    background-color: var(--color-error-active, color-mix(in srgb, var(--color-error), black 10%));
+  }
+}
+
+.button-link {
+  background-color: transparent;
+  color: var(--color-primary);
+  padding: 0;
+  height: auto;
+  
+  &:hover:not(.button-disabled) {
+    text-decoration: underline;
+  }
+}
+
+/* 禁用状态 */
+.button-disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+/* 加载状态 */
+.button-loading {
+  cursor: wait;
+  
+  .content {
+    opacity: 0.8;
+  }
+}
+
+/* 块级按钮 */
+.button-block {
+  display: flex;
+  width: 100%;
+}
+
+/* 圆形按钮 */
+.button-round {
+  border-radius: var(--border-radius-full);
+}
+
+/* 仅图标按钮 */
+.button-icon-only {
+  &.button-small {
+    width: 28px;
+    padding: 0;
+  }
+  
+  &.button-medium {
+    width: 36px;
+    padding: 0;
+  }
+  
+  &.button-large {
+    width: 44px;
+    padding: 0;
+  }
+}

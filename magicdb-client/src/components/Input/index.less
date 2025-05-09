@@ -1,0 +1,142 @@
+@import '../../styles/var.less';
+
+.inputWrapper {
+  display: inline-flex;
+  align-items: center;
+  position: relative;
+  width: auto;
+  background-color: var(--color-bg-base);
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius-md);
+  transition: all var(--transition-normal);
+  
+  &:hover:not(.input-disabled) {
+    border-color: var(--color-border-hover, color-mix(in srgb, var(--color-border), var(--color-primary) 30%));
+  }
+  
+  &:focus-within:not(.input-disabled) {
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 2px var(--color-primary-bg);
+  }
+}
+
+.input {
+  width: 100%;
+  border: none;
+  outline: none;
+  background: transparent;
+  color: var(--color-text);
+  font-family: inherit;
+  
+  &::placeholder {
+    color: var(--color-text-quaternary);
+  }
+  
+  &:disabled {
+    cursor: not-allowed;
+    color: var(--color-text-tertiary);
+  }
+}
+
+/* 输入框大小 */
+.input-small {
+  height: 28px;
+  
+  .input {
+    font-size: var(--font-size-xs);
+    padding: 0 var(--spacing-sm);
+  }
+  
+  .prefix {
+    padding-left: var(--spacing-sm);
+  }
+  
+  .suffix {
+    padding-right: var(--spacing-sm);
+  }
+}
+
+.input-medium {
+  height: 36px;
+  
+  .input {
+    font-size: var(--font-size-sm);
+    padding: 0 var(--spacing-md);
+  }
+  
+  .prefix {
+    padding-left: var(--spacing-md);
+  }
+  
+  .suffix {
+    padding-right: var(--spacing-md);
+  }
+}
+
+.input-large {
+  height: 44px;
+  
+  .input {
+    font-size: var(--font-size-md);
+    padding: 0 var(--spacing-lg);
+  }
+  
+  .prefix {
+    padding-left: var(--spacing-lg);
+  }
+  
+  .suffix {
+    padding-right: var(--spacing-lg);
+  }
+}
+
+/* 前缀和后缀 */
+.prefix,
+.suffix {
+  display: flex;
+  align-items: center;
+  color: var(--color-text-tertiary);
+  font-size: inherit;
+}
+
+.input-with-prefix {
+  .input {
+    padding-left: 0;
+  }
+}
+
+.input-with-suffix {
+  .input {
+    padding-right: 0;
+  }
+}
+
+/* 状态样式 */
+.input-error {
+  border-color: var(--color-error);
+  
+  &:focus-within {
+    box-shadow: 0 0 0 2px var(--color-error-bg, rgba(239, 68, 68, 0.1));
+  }
+}
+
+.input-success {
+  border-color: var(--color-success);
+  
+  &:focus-within {
+    box-shadow: 0 0 0 2px var(--color-success-bg, rgba(16, 185, 129, 0.1));
+  }
+}
+
+.input-disabled {
+  background-color: var(--color-bg-subtle);
+  border-color: var(--color-border);
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+/* 块级输入框 */
+.input-block {
+  display: flex;
+  width: 100%;
+}

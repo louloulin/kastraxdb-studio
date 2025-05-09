@@ -27,26 +27,79 @@ export function getAntdThemeConfig(_theme: ITheme) {
 // TODO: 只插入一次
 export function injectThemeVar(token: { [key in string]: string }, _theme: ThemeType, primaryColor: PrimaryColorType) {
   let css = '';
+
+  // 处理所有token变量
   Object.keys(token).map((t) => {
     const attributeName = camelToDash(t);
     let value = token[t];
+
     // 将需要px的数字带上px
-    const joinPxArr = ['fontSize', 'borderRadius', 'borderRadiusLG'];
-    if (joinPxArr.includes(t)) {
+    const joinPxArr = [
+      'fontSize', 'fontSizeSM', 'fontSizeLG', 'fontSizeXL',
+      'borderRadius', 'borderRadiusSM', 'borderRadiusLG', 'borderRadiusXL',
+      'marginXS', 'marginSM', 'margin', 'marginMD', 'marginLG', 'marginXL',
+      'paddingXS', 'paddingSM', 'padding', 'paddingMD', 'paddingLG', 'paddingXL'
+    ];
+
+    if (joinPxArr.includes(t) && typeof value === 'number') {
       value = value + 'px';
     }
+
     css = css + `--${attributeName}: ${value};\n`;
   });
 
+  // 添加CSS变量过渡效果，使主题切换更平滑
+  const transitionCSS = `
+    transition:
+      background-color 0.3s ease,
+      color 0.3s ease,
+      border-color 0.3s ease,
+      box-shadow 0.3s ease;
+  `;
+
+  // 创建主题容器
   const container = `html[theme='${_theme}'],html[primary-color='${primaryColor}']{
     ${css}
+  }
+
+  /* 添加全局过渡效果 */
+  html {
+    ${transitionCSS}
+  }
+
+  body,
+  .ant-layout,
+  .ant-layout-header,
+  .ant-layout-footer,
+  .ant-layout-sider,
+  .ant-layout-content,
+  .ant-btn,
+  .ant-input,
+  .ant-select,
+  .ant-dropdown-menu,
+  .ant-menu,
+  .ant-table,
+  .ant-modal-content,
+  .ant-drawer-content {
+    ${transitionCSS}
   }`;
 
-  const style = document.createElement('style'); // 创建style标签
-  style.type = 'text/css';
-  style.appendChild(document.createTextNode(container));
+  // 查找是否已存在相同主题的样式标签
+  const existingStyle = document.querySelector(`style[data-theme="${_theme}-${primaryColor}"]`);
 
-  document.head.appendChild(style); // 将style标签插入到head标签中
+  if (existingStyle) {
+    // 如果存在，则更新内容
+    existingStyle.textContent = container;
+  } else {
+    // 如果不存在，则创建新标签
+    const style = document.createElement('style');
+    style.type = 'text/css';
+    style.setAttribute('data-theme', `${_theme}-${primaryColor}`);
+    style.appendChild(document.createTextNode(container));
+    document.head.appendChild(style);
+  }
+
+  // 保存主题配置到全局变量
   window._AppThemePack = token;
 }
 

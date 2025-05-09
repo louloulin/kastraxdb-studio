@@ -1,22 +1,87 @@
 @import '../theme/custom/dark.less';
 @import '../theme/custom/light.less';
 @import './antd.less';
+@import './modal.less';
 
 @font-face {
   font-family: 'HarmonyOS_Sans';
   src: url('../assets/font/HarmonyOS_Sans_Regular.woff2') format('woff2');
 }
 
+/*
+ * 全局样式变量
+ * 这些变量将被用于整个应用程序，以确保设计的一致性
+ */
+
+/* 基础变量 */
+:root {
+  /* 间距 */
+  --spacing-xxs: 2px;
+  --spacing-xs: 4px;
+  --spacing-sm: 8px;
+  --spacing-md: 12px;
+  --spacing-lg: 16px;
+  --spacing-xl: 24px;
+  --spacing-xxl: 32px;
+
+  /* 字体大小 */
+  --font-size-xs: 12px;
+  --font-size-sm: 14px;
+  --font-size-md: 16px;
+  --font-size-lg: 18px;
+  --font-size-xl: 20px;
+  --font-size-xxl: 24px;
+
+  /* 字体粗细 */
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+
+  /* 行高 */
+  --line-height-tight: 1.2;
+  --line-height-normal: 1.5;
+  --line-height-relaxed: 1.75;
+
+  /* 圆角 */
+  --border-radius-sm: 2px;
+  --border-radius-md: 4px;
+  --border-radius-lg: 8px;
+  --border-radius-xl: 12px;
+  --border-radius-full: 9999px;
+
+  /* 阴影 */
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+
+  /* 过渡 */
+  --transition-fast: 0.1s ease;
+  --transition-normal: 0.2s ease;
+  --transition-slow: 0.3s ease;
+
+  /* Z-index 层级 */
+  --z-index-dropdown: 1000;
+  --z-index-sticky: 1020;
+  --z-index-fixed: 1030;
+  --z-index-modal-backdrop: 1040;
+  --z-index-modal: 1050;
+  --z-index-popover: 1060;
+  --z-index-tooltip: 1070;
+}
+
 html,
 body {
   height: 100%;
-  color: var(--color-text);
+  color: var(--color-text-base);
   font-size: var(--font-size);
   background-color: var(--color-bg-base);
   font-family: 'HarmonyOS_Sans', 'Segoe UI', 'SF Pro Display', -apple-system, BlinkMacSystemFont, Roboto, Oxygen, Ubuntu,
     Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif, 'HarmonyOS Sans SC', 'PingFang SC', 'Hiragino Sans GB',
     'Microsoft Yahei UI', 'Microsoft Yahei', 'Source Han Sans CN', sans-serif, 'Segoe UI Emoji', 'Segoe UI Symbol',
     'Apple Color Emoji', 'Twemoji Mozilla', 'Noto Color Emoji', 'Android Emoji';
+  transition: background-color var(--transition-normal), color var(--transition-normal);
 }
 
 // 修改账号密码自动回填后input背景变色问题
@@ -26,22 +91,27 @@ input:-webkit-autofill {
   caret-color: var(--color-text) !important; // 光标的颜色
 }
 
+/* 滚动条样式 */
 * {
   ::-webkit-scrollbar {
     cursor: pointer;
-    width: 4px;
-    height: 4px;
+    width: 6px;
+    height: 6px;
     background-color: transparent;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: transparent;
   }
 
   ::-webkit-scrollbar-thumb {
     cursor: pointer;
-    background-color: transparent;
-    border-radius: 2px;
-    // transition: background-color 500ms ${token.motionEaseOut};
+    background-color: rgba(128, 128, 128, 0.2);
+    border-radius: var(--border-radius-full);
+    transition: background-color var(--transition-normal);
 
     &:hover {
-      background-color: var(--color-text);
+      background-color: rgba(128, 128, 128, 0.4);
     }
   }
 
@@ -50,10 +120,26 @@ input:-webkit-autofill {
     width: 0;
     height: 0;
   }
+}
 
-  &:hover {
-    ::-webkit-scrollbar-thumb {
-      background-color: var(--color-fill);
+/* 亮色主题滚动条 */
+html[theme='light'] * {
+  ::-webkit-scrollbar-thumb {
+    background-color: rgba(0, 0, 0, 0.2);
+
+    &:hover {
+      background-color: rgba(0, 0, 0, 0.3);
+    }
+  }
+}
+
+/* 暗色主题滚动条 */
+html[theme='dark'] * {
+  ::-webkit-scrollbar-thumb {
+    background-color: rgba(255, 255, 255, 0.2);
+
+    &:hover {
+      background-color: rgba(255, 255, 255, 0.3);
     }
   }
 }
@@ -148,4 +234,146 @@ ul,
 ol,
 li {
   list-style: none;
+}
+
+/* 通用工具类 */
+.flex {
+  display: flex;
+}
+
+.flex-col {
+  flex-direction: column;
+}
+
+.items-center {
+  align-items: center;
+}
+
+.justify-center {
+  justify-content: center;
+}
+
+.justify-between {
+  justify-content: space-between;
+}
+
+.gap-xs {
+  gap: var(--spacing-xs);
+}
+
+.gap-sm {
+  gap: var(--spacing-sm);
+}
+
+.gap-md {
+  gap: var(--spacing-md);
+}
+
+.gap-lg {
+  gap: var(--spacing-lg);
+}
+
+.w-full {
+  width: 100%;
+}
+
+.h-full {
+  height: 100%;
+}
+
+/* 文本工具类 */
+.text-xs {
+  font-size: var(--font-size-xs);
+}
+
+.text-sm {
+  font-size: var(--font-size-sm);
+}
+
+.text-md {
+  font-size: var(--font-size-md);
+}
+
+.text-lg {
+  font-size: var(--font-size-lg);
+}
+
+.text-xl {
+  font-size: var(--font-size-xl);
+}
+
+.font-medium {
+  font-weight: var(--font-weight-medium);
+}
+
+.font-semibold {
+  font-weight: var(--font-weight-semibold);
+}
+
+.font-bold {
+  font-weight: var(--font-weight-bold);
+}
+
+/* 边距工具类 */
+.m-0 {
+  margin: 0;
+}
+
+.p-0 {
+  padding: 0;
+}
+
+.p-sm {
+  padding: var(--spacing-sm);
+}
+
+.p-md {
+  padding: var(--spacing-md);
+}
+
+.p-lg {
+  padding: var(--spacing-lg);
+}
+
+/* 圆角工具类 */
+.rounded-sm {
+  border-radius: var(--border-radius-sm);
+}
+
+.rounded-md {
+  border-radius: var(--border-radius-md);
+}
+
+.rounded-lg {
+  border-radius: var(--border-radius-lg);
+}
+
+.rounded-full {
+  border-radius: var(--border-radius-full);
+}
+
+/* 阴影工具类 */
+.shadow-sm {
+  box-shadow: var(--shadow-sm);
+}
+
+.shadow-md {
+  box-shadow: var(--shadow-md);
+}
+
+.shadow-lg {
+  box-shadow: var(--shadow-lg);
+}
+
+/* 过渡工具类 */
+.transition {
+  transition: all var(--transition-normal);
+}
+
+.transition-fast {
+  transition: all var(--transition-fast);
+}
+
+.transition-slow {
+  transition: all var(--transition-slow);
 }

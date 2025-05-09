@@ -2,18 +2,36 @@
 
 .scrollBox {
   overflow-y: auto;
-  padding: 2px 6px 10px;
+  padding: var(--spacing-xs) var(--spacing-sm) var(--spacing-md);
   box-sizing: border-box;
   height: 100%;
+
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background-color: var(--color-text-quaternary);
+    border-radius: var(--border-radius-full);
+
+    &:hover {
+      background-color: var(--color-text-tertiary);
+    }
+  }
 }
 
 .treeBox {
   overflow: hidden;
   height: 100%;
+  border-radius: var(--border-radius-md);
 }
 
 .treeListHolder {
-  height: calc(var(--tree-node-count) * 26px);
+  height: calc(var(--tree-node-count) * 28px);
   min-height: 100%;
 }
 
@@ -30,34 +48,43 @@
   display: flex;
   align-items: center;
   overflow: hidden;
-  height: 26px;
-  border-radius: 4px;
+  height: 28px;
+  border-radius: var(--border-radius-md);
   opacity: 1;
   cursor: pointer;
-  transition: opacity 0.05s ease-in, height 0.1s ease-in;
+  transition: all var(--transition-normal);
   user-select: none;
-  padding-right: 6px;
+  padding-right: var(--spacing-sm);
+  margin-bottom: 2px;
+  color: var(--color-text-secondary);
 
   &:hover {
+    background-color: var(--color-hover-bg);
+    color: var(--color-text);
   }
 }
 
 .treeNodeFocus {
-  // background-color: var(--color-hover-bg);
-  // background-color: var(--color-primary-bg-hover);
-  background-color: var(--color-primary-hover);
-  // background-color: var(--color-primary);
+  background-color: var(--color-primary-bg);
+
   .right {
-    // color: var(--color-primary);
-    color: var(--color-bg-base);
+    color: var(--color-primary);
   }
+
   .indent {
     &::before {
-      opacity: 0;
+      opacity: 0.5;
+      border-color: var(--color-primary-bg-hover);
     }
   }
+
   .type {
-    color: var(--color-bg-base);
+    color: var(--color-primary);
+    opacity: 0.8;
+  }
+
+  &:hover {
+    background-color: var(--color-primary-bg-hover);
   }
 }
 
@@ -66,6 +93,7 @@
   align-items: center;
   height: 100%;
   flex-shrink: 0;
+  transition: all var(--transition-normal);
 }
 
 .right {
@@ -73,58 +101,86 @@
   display: flex;
   align-items: center;
   height: 100%;
-  padding-left: 4px;
-  border-radius: 2px;
+  padding-left: var(--spacing-xs);
+  border-radius: var(--border-radius-sm);
+  transition: color var(--transition-normal);
+
   .moreBox {
-    width: 22px;
+    width: 24px;
     height: 100%;
     display: flex;
     justify-content: center;
     align-items: center;
     opacity: 0;
+    transition: opacity var(--transition-fast);
+
+    &:hover {
+      opacity: 1;
+    }
   }
 
   .moreButton {
     flex-shrink: 0;
     transform: rotate(90deg);
+    color: var(--color-text-tertiary);
+    transition: color var(--transition-normal);
+
+    &:hover {
+      color: var(--color-primary);
+    }
   }
 }
 
 .arrows {
   flex-shrink: 0;
   height: 20px;
-  width: 18px;
+  width: 20px;
   display: flex;
   align-items: center;
+  justify-content: center;
   transform: rotate(0deg);
-  transition: transform 0.2s ease-in;
+  transition: transform var(--transition-normal);
+  color: var(--color-text-tertiary);
+  border-radius: var(--border-radius-sm);
+
+  &:hover {
+    color: var(--color-text);
+    background-color: var(--color-hover-bg);
+  }
 }
 
 .loadingArrows {
   display: flex;
+  color: var(--color-primary);
 }
 
 .arrowsIcon {
   display: inline-block;
   transform: rotate(0deg);
-  font-size: 12px;
+  font-size: 14px;
+  transition: transform var(--transition-normal);
 }
 
 .rotateArrowsIcon {
   transform: rotate(90deg);
+  color: var(--color-primary);
 }
 
 .dblclickArea {
   display: flex;
   flex: 1;
-  height: 26px;
+  height: 28px;
+  align-items: center;
+  transition: all var(--transition-normal);
 }
 
 .typeIcon {
-  height: 26px;
+  height: 28px;
   display: flex;
   align-items: center;
-  width: 20px;
+  width: 24px;
+  justify-content: center;
+  transition: all var(--transition-normal);
 }
 
 .typeImg {
@@ -132,6 +188,12 @@
   width: 20px;
   background-repeat: no-repeat;
   background-size: 20px 20px;
+  opacity: 0.8;
+  transition: opacity var(--transition-normal);
+
+  &:hover {
+    opacity: 1;
+  }
 }
 
 .contentText {
@@ -139,50 +201,59 @@
   flex: 1;
   display: flex;
   align-items: center;
+  transition: all var(--transition-normal);
 }
 
 .name {
   .f-lines(1);
   line-height: 20px;
+  font-weight: var(--font-weight-medium);
+  transition: color var(--transition-normal);
 }
 
 .type {
-  font-size: 11px;
+  font-size: 12px;
   flex-shrink: 0;
   line-height: 20px;
   color: var(--color-text-tertiary);
-  margin-left: 10px;
+  margin-left: var(--spacing-md);
+  transition: color var(--transition-normal);
 }
 
 .describe {
   flex: 1;
-  font-size: 10px;
-  margin-left: 20px;
+  font-size: 12px;
+  margin-left: var(--spacing-lg);
   color: var(--color-text-tertiary);
   .f-single-line();
+  transition: color var(--transition-normal);
 }
 
 .indent {
   width: 20px;
   height: 100%;
   position: relative;
+
   &::before {
     position: absolute;
     top: 0;
     right: 9px;
     bottom: -4px;
-    border-right: 1px solid var(--color-border);
+    border-right: 1px dotted var(--color-border-secondary);
     content: '';
+    opacity: 0.6;
+    transition: opacity var(--transition-normal), border-color var(--transition-normal);
   }
 }
 
 .hiddenTreeNode {
   height: 0;
   opacity: 0;
-  transition: opacity 0.2s ease-in, height 0.1s ease-in;
+  transition: opacity var(--transition-normal), height var(--transition-fast);
+  overflow: hidden;
 
   .arrows {
     transform: rotate(0deg);
-    transition: transform 0.2s ease-in;
+    transition: transform var(--transition-normal);
   }
 }

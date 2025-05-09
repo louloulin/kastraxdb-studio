@@ -1,18 +1,24 @@
 @import '../../../../../styles/var.less';
 
-.treeContainer{
+.treeContainer {
   flex: 1;
   height: 0px;
   display: flex;
   flex-direction: column;
+  background-color: var(--color-bg-base);
+  transition: background-color var(--transition-normal);
+  border-radius: 0 0 0 var(--border-radius-md);
+  overflow: hidden;
 }
 
-.treeBox{
+.treeBox {
   flex: 1;
   height: 0px;
+  padding: var(--spacing-xs);
+  box-sizing: border-box;
 }
 
-.leftModuleTitleShadow{
+.leftModuleTitleShadow {
   border-bottom: 1px solid var(--color-border-secondary);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
 }
-
