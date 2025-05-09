@@ -18,13 +18,13 @@ import java.util.concurrent.ConcurrentLinkedQueue
  */
 class DefaultScriptMetadataManager(private val scriptRepository: ScriptRepository) : ScriptMetadataManager {
     private val logger = LoggerFactory.getLogger(DefaultScriptMetadataManager::class.java)
-    
+
     // 脚本元数据
     private val metadataMap = ConcurrentHashMap<String, ScriptMetadata>()
-    
+
     // 脚本执行记录
     private val executionRecords = ConcurrentHashMap<String, ConcurrentLinkedQueue<ExecutionRecord>>()
-    
+
     // 最大执行记录数
     private val MAX_EXECUTION_RECORDS = 100
 
@@ -40,42 +40,42 @@ class DefaultScriptMetadataManager(private val scriptRepository: ScriptRepositor
     override fun addTag(scriptId: String, tag: String): Script? {
         // 获取脚本
         val script = scriptRepository.getScript(scriptId) ?: return null
-        
+
         // 添加标签
         val tags = script.tags.toMutableList()
         if (!tags.contains(tag)) {
             tags.add(tag)
-            
+
             // 更新脚本
             val updatedScript = script.copy(
                 tags = tags,
                 updateTime = Date()
             )
-            
+
             return scriptRepository.saveScript(updatedScript)
         }
-        
+
         return script
     }
 
     override fun removeTag(scriptId: String, tag: String): Script? {
         // 获取脚本
         val script = scriptRepository.getScript(scriptId) ?: return null
-        
+
         // 删除标签
         val tags = script.tags.toMutableList()
         if (tags.contains(tag)) {
             tags.remove(tag)
-            
+
             // 更新脚本
             val updatedScript = script.copy(
                 tags = tags,
                 updateTime = Date()
             )
-            
+
             return scriptRepository.saveScript(updatedScript)
         }
-        
+
         return script
     }
 
@@ -88,84 +88,84 @@ class DefaultScriptMetadataManager(private val scriptRepository: ScriptRepositor
         // 检查脚本是否存在
         val script = scriptRepository.getScript(scriptId) ?: return false
         val dependency = scriptRepository.getScript(dependencyId) ?: return false
-        
+
         // 获取元数据
         val metadata = metadataMap.computeIfAbsent(scriptId) {
             ScriptMetadata(scriptId = it)
         }
-        
+
         // 添加依赖
         val dependencies = metadata.dependencies.toMutableList()
         if (!dependencies.contains(dependencyId)) {
             dependencies.add(dependencyId)
-            
+
             // 更新元数据
             val updatedMetadata = metadata.copy(
                 dependencies = dependencies,
                 updateTime = Date()
             )
-            
+
             metadataMap[scriptId] = updatedMetadata
-            
+
             // 更新被依赖脚本的元数据
             val dependencyMetadata = metadataMap.computeIfAbsent(dependencyId) {
                 ScriptMetadata(scriptId = it)
             }
-            
+
             val dependents = dependencyMetadata.dependents.toMutableList()
             if (!dependents.contains(scriptId)) {
                 dependents.add(scriptId)
-                
+
                 val updatedDependencyMetadata = dependencyMetadata.copy(
                     dependents = dependents,
                     updateTime = Date()
                 )
-                
+
                 metadataMap[dependencyId] = updatedDependencyMetadata
             }
-            
+
             return true
         }
-        
+
         return false
     }
 
     override fun removeDependency(scriptId: String, dependencyId: String): Boolean {
         // 获取元数据
         val metadata = metadataMap[scriptId] ?: return false
-        
+
         // 删除依赖
         val dependencies = metadata.dependencies.toMutableList()
         if (dependencies.contains(dependencyId)) {
             dependencies.remove(dependencyId)
-            
+
             // 更新元数据
             val updatedMetadata = metadata.copy(
                 dependencies = dependencies,
                 updateTime = Date()
             )
-            
+
             metadataMap[scriptId] = updatedMetadata
-            
+
             // 更新被依赖脚本的元数据
             val dependencyMetadata = metadataMap[dependencyId]
             if (dependencyMetadata != null) {
                 val dependents = dependencyMetadata.dependents.toMutableList()
                 if (dependents.contains(scriptId)) {
                     dependents.remove(scriptId)
-                    
+
                     val updatedDependencyMetadata = dependencyMetadata.copy(
                         dependents = dependents,
                         updateTime = Date()
                     )
-                    
+
                     metadataMap[dependencyId] = updatedDependencyMetadata
                 }
             }
-            
+
             return true
         }
-        
+
         return false
     }
 
@@ -182,10 +182,10 @@ class DefaultScriptMetadataManager(private val scriptRepository: ScriptRepositor
             lastExecuteTime = null,
             recentExecutions = emptyList()
         )
-        
+
         // 获取执行记录
         val records = executionRecords[scriptId]?.toList() ?: emptyList()
-        
+
         return ScriptUsage(
             scriptId = scriptId,
             executeCount = metadata.executeCount,
@@ -204,20 +204,20 @@ class DefaultScriptMetadataManager(private val scriptRepository: ScriptRepositor
         val metadata = metadataMap.computeIfAbsent(scriptId) {
             ScriptMetadata(scriptId = it)
         }
-        
+
         // 更新执行统计
         val executeCount = metadata.executeCount + 1
         val successCount = if (success) metadata.successCount + 1 else metadata.successCount
         val failCount = if (!success) metadata.failCount + 1 else metadata.failCount
-        
+
         // 计算平均执行时间
         val totalTime = metadata.avgExecuteTime * metadata.executeCount + duration
         val avgExecuteTime = totalTime / executeCount
-        
+
         // 更新最大最小执行时间
-        val maxExecuteTime = if (metadata.executeCount == 0 || duration > metadata.maxExecuteTime) duration else metadata.maxExecuteTime
-        val minExecuteTime = if (metadata.executeCount == 0 || duration < metadata.minExecuteTime) duration else metadata.minExecuteTime
-        
+        val maxExecuteTime = if (metadata.executeCount == 0L || duration > metadata.maxExecuteTime) duration else metadata.maxExecuteTime
+        val minExecuteTime = if (metadata.executeCount == 0L || duration < metadata.minExecuteTime) duration else metadata.minExecuteTime
+
         // 更新元数据
         val updatedMetadata = metadata.copy(
             executeCount = executeCount,
@@ -229,9 +229,9 @@ class DefaultScriptMetadataManager(private val scriptRepository: ScriptRepositor
             lastExecuteTime = Date(),
             updateTime = Date()
         )
-        
+
         metadataMap[scriptId] = updatedMetadata
-        
+
         // 添加执行记录
         val record = ExecutionRecord(
             executeTime = Date(),
@@ -239,13 +239,13 @@ class DefaultScriptMetadataManager(private val scriptRepository: ScriptRepositor
             duration = duration,
             errorMessage = if (!success) "执行失败" else null
         )
-        
+
         val records = executionRecords.computeIfAbsent(scriptId) {
             ConcurrentLinkedQueue()
         }
-        
+
         records.add(record)
-        
+
         // 限制记录数量
         while (records.size > MAX_EXECUTION_RECORDS) {
             records.poll()

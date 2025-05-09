@@ -15,10 +15,10 @@ import java.util.concurrent.ConcurrentHashMap
 @RequestMapping("/api/user")
 class UserController {
     private val logger = LoggerFactory.getLogger(UserController::class.java)
-    
+
     // 模拟用户存储
     private val users = ConcurrentHashMap<String, User>()
-    
+
     init {
         // 添加默认管理员用户
         val adminUser = User(
@@ -41,7 +41,7 @@ class UserController {
     @GetMapping
     fun getUserList(): ResponseEntity<List<UserResponse>> {
         logger.info("获取用户列表")
-        
+
         val userList = users.values.map { it.toResponse() }
         return ResponseEntity.ok(userList)
     }
@@ -52,7 +52,7 @@ class UserController {
     @GetMapping("/{id}")
     fun getUser(@PathVariable id: String): ResponseEntity<UserResponse> {
         logger.info("获取用户详情: {}", id)
-        
+
         val user = users[id] ?: return ResponseEntity.notFound().build()
         return ResponseEntity.ok(user.toResponse())
     }
@@ -63,17 +63,17 @@ class UserController {
     @PostMapping
     fun createUser(@RequestBody request: UserRequest): ResponseEntity<UserResponse> {
         logger.info("创建用户: {}", request)
-        
+
         // 检查用户名是否已存在
         if (users.values.any { it.username == request.username }) {
             return ResponseEntity.badRequest().build()
         }
-        
+
         val now = Date()
         val user = User(
             id = UUID.randomUUID().toString(),
             username = request.username,
-            password = request.password, // 实际应用中应该加密存储
+            password = request.password ?: "", // 实际应用中应该加密存储
             name = request.name,
             email = request.email,
             role = request.role,
@@ -81,7 +81,7 @@ class UserController {
             createTime = now,
             updateTime = now
         )
-        
+
         users[user.id] = user
         return ResponseEntity.ok(user.toResponse())
     }
@@ -92,15 +92,15 @@ class UserController {
     @PutMapping("/{id}")
     fun updateUser(@PathVariable id: String, @RequestBody request: UserRequest): ResponseEntity<UserResponse> {
         logger.info("更新用户: {}, {}", id, request)
-        
+
         val existingUser = users[id] ?: return ResponseEntity.notFound().build()
-        
+
         // 检查用户名是否已被其他用户使用
-        if (request.username != existingUser.username && 
+        if (request.username != existingUser.username &&
             users.values.any { it.id != id && it.username == request.username }) {
             return ResponseEntity.badRequest().build()
         }
-        
+
         val updatedUser = existingUser.copy(
             username = request.username,
             password = request.password ?: existingUser.password,
@@ -110,7 +110,7 @@ class UserController {
             enabled = request.enabled ?: existingUser.enabled,
             updateTime = Date()
         )
-        
+
         users[id] = updatedUser
         return ResponseEntity.ok(updatedUser.toResponse())
     }
@@ -121,11 +121,11 @@ class UserController {
     @DeleteMapping("/{id}")
     fun deleteUser(@PathVariable id: String): ResponseEntity<Boolean> {
         logger.info("删除用户: {}", id)
-        
+
         if (!users.containsKey(id)) {
             return ResponseEntity.notFound().build()
         }
-        
+
         users.remove(id)
         return ResponseEntity.ok(true)
     }
@@ -136,17 +136,17 @@ class UserController {
     @PostMapping("/login")
     fun login(@RequestBody request: LoginRequest): ResponseEntity<LoginResponse> {
         logger.info("用户登录: {}", request.username)
-        
+
         val user = users.values.find { it.username == request.username } ?: return ResponseEntity.badRequest().build()
-        
+
         if (user.password != request.password) {
             return ResponseEntity.badRequest().build()
         }
-        
+
         if (!user.enabled) {
             return ResponseEntity.badRequest().build()
         }
-        
+
         return ResponseEntity.ok(
             LoginResponse(
                 token = UUID.randomUUID().toString(),

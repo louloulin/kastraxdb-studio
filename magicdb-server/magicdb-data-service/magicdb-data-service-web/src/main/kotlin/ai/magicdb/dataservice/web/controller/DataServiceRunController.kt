@@ -5,7 +5,7 @@ import ai.magicdb.dataservice.api.model.ServiceResult
 import org.slf4j.LoggerFactory
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
-import javax.servlet.http.HttpServletRequest
+import jakarta.servlet.http.HttpServletRequest
 
 /**
  * 数据服务运行控制器
@@ -31,7 +31,7 @@ class DataServiceRunController(private val dataServiceManager: DataServiceManage
             // 获取服务
             val service = dataServiceManager.getService(id)
                 ?: return ResponseEntity.notFound().build()
-            
+
             // 检查服务是否启用
             if (!service.enabled) {
                 return ResponseEntity.badRequest().body(mapOf(
@@ -39,18 +39,18 @@ class DataServiceRunController(private val dataServiceManager: DataServiceManage
                     "message" to "服务已禁用: $id"
                 ))
             }
-            
+
             // 准备参数
             val parameters = mutableMapOf<String, Any?>()
-            
+
             // 添加查询参数
             parameters.putAll(allParams)
-            
+
             // 添加请求体
             if (body != null && body.isNotBlank()) {
                 parameters["body"] = body
             }
-            
+
             // 添加请求头
             val headers = mutableMapOf<String, String>()
             val headerNames = request.headerNames
@@ -59,14 +59,14 @@ class DataServiceRunController(private val dataServiceManager: DataServiceManage
                 headers[headerName] = request.getHeader(headerName)
             }
             parameters["headers"] = headers
-            
+
             // 添加请求信息
             parameters["method"] = request.method
             parameters["path"] = request.requestURI
-            
+
             // 执行服务
             val result = dataServiceManager.executeService(id, parameters)
-            
+
             // 处理结果
             return if (result.success) {
                 ResponseEntity.ok(result.data)

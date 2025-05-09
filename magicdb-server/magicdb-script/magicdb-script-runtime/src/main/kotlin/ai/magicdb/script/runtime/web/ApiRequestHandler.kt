@@ -7,8 +7,8 @@ import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.servlet.HandlerMapping
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping
-import javax.servlet.http.HttpServletRequest
-import javax.servlet.http.HttpServletResponse
+import jakarta.servlet.http.HttpServletRequest
+import jakarta.servlet.http.HttpServletResponse
 
 /**
  * API请求处理器
@@ -31,31 +31,33 @@ class ApiRequestHandler(
             // 获取请求路径
             val path = request.getAttribute(HandlerMapping.PATH_WITHIN_HANDLER_MAPPING_ATTRIBUTE) as String
             val apiPath = path.substring(apiPrefix.length)
-            
+
             // 获取请求方法
             val method = request.method
-            
+
             // 获取请求参数
             val parameters = mutableMapOf<String, Any?>()
-            
+
             // 添加查询参数
             request.parameterMap.forEach { (key, values) ->
-                parameters[key] = if (values.size == 1) values[0] else values
+                parameters[key] = if (values.size == 1) values[0] else values.toList()
             }
-            
+
             // 添加路径变量
             val pathVariables = request.getAttribute(HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE) as? Map<String, String>
             pathVariables?.forEach { (key, value) ->
                 parameters[key] = value
             }
-            
+
             // 添加请求头
             val headers = mutableMapOf<String, String>()
-            request.headerNames.asSequence().forEach { headerName ->
+            val headerNames = request.headerNames
+            while (headerNames.hasMoreElements()) {
+                val headerName = headerNames.nextElement()
                 headers[headerName] = request.getHeader(headerName)
             }
             parameters["headers"] = headers
-            
+
             // 添加请求体
             if (request.contentType?.startsWith(MediaType.APPLICATION_JSON_VALUE) == true) {
                 val requestBody = request.reader.readText()
@@ -69,10 +71,10 @@ class ApiRequestHandler(
                     }
                 }
             }
-            
+
             // 执行API
             val result = apiService.executeApi(apiPath, method, parameters)
-            
+
             // 返回结果
             return ResponseEntity.ok(result)
         } catch (e: Exception) {
