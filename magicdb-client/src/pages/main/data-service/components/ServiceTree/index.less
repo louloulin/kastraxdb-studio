@@ -1,0 +1,28 @@
+.serviceTree {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+
+  .serviceTreeHeader {
+    padding: 12px;
+    display: flex;
+    align-items: center;
+    border-bottom: 1px solid #e8e8e8;
+
+    .serviceTreeSearch {
+      flex: 1;
+      margin-right: 8px;
+    }
+
+    .serviceTreeActions {
+      display: flex;
+      gap: 8px;
+    }
+  }
+
+  .serviceTreeContent {
+    flex: 1;
+    overflow: auto;
+    padding: 12px;
+  }
+}

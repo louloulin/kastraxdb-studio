@@ -1,0 +1,28 @@
+.scriptTree {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+
+  .scriptTreeHeader {
+    padding: 12px;
+    display: flex;
+    align-items: center;
+    border-bottom: 1px solid #e8e8e8;
+
+    .scriptTreeSearch {
+      flex: 1;
+      margin-right: 8px;
+    }
+
+    .scriptTreeActions {
+      display: flex;
+      gap: 8px;
+    }
+  }
+
+  .scriptTreeContent {
+    flex: 1;
+    overflow: auto;
+    padding: 12px;
+  }
+}

@@ -1,0 +1,48 @@
+.scriptParams {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+
+  .scriptParamsHeader {
+    padding: 12px;
+    border-bottom: 1px solid #e8e8e8;
+  }
+
+  .scriptParamsContent {
+    flex: 1;
+    overflow: auto;
+    padding: 12px;
+  }
+
+  .scriptParamsEmpty {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    color: #999;
+  }
+
+  .scriptTags {
+    margin-bottom: 16px;
+  }
+
+  .scriptTagPlus {
+    background: #fff;
+    border-style: dashed;
+    cursor: pointer;
+  }
+
+  .scriptParamItem {
+    display: flex;
+    align-items: flex-start;
+    margin-bottom: 8px;
+
+    :global {
+      .ant-form-item {
+        margin-right: 8px;
+        margin-bottom: 8px;
+        flex: 1;
+      }
+    }
+  }
+}

@@ -1,0 +1,48 @@
+.serviceParams {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+
+  .serviceParamsHeader {
+    padding: 12px;
+    border-bottom: 1px solid #e8e8e8;
+  }
+
+  .serviceParamsContent {
+    flex: 1;
+    overflow: auto;
+    padding: 12px;
+  }
+
+  .serviceParamsEmpty {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    color: #999;
+  }
+
+  .serviceTags {
+    margin-bottom: 16px;
+  }
+
+  .serviceTagPlus {
+    background: #fff;
+    border-style: dashed;
+    cursor: pointer;
+  }
+
+  .serviceParamItem {
+    display: flex;
+    align-items: flex-start;
+    margin-bottom: 8px;
+
+    :global {
+      .ant-form-item {
+        margin-right: 8px;
+        margin-bottom: 8px;
+        flex: 1;
+      }
+    }
+  }
+}

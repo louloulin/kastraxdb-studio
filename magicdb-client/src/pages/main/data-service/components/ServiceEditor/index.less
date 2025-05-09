@@ -1,0 +1,53 @@
+.serviceEditor {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+
+  .serviceEditorHeader {
+    padding: 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #e8e8e8;
+
+    .serviceEditorTitle {
+      font-size: 16px;
+      font-weight: bold;
+    }
+
+    .serviceEditorActions {
+      display: flex;
+      gap: 8px;
+    }
+  }
+
+  .serviceEditorContent {
+    flex: 1;
+    overflow: auto;
+  }
+
+  .serviceEditorResult {
+    padding: 12px;
+    height: calc(100vh - 200px);
+    overflow: auto;
+
+    .serviceEditorError {
+      color: #f5222d;
+      white-space: pre-wrap;
+      font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, Courier, monospace;
+    }
+
+    .serviceEditorSuccess {
+      white-space: pre-wrap;
+      font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, Courier, monospace;
+    }
+  }
+
+  .serviceEditorEmpty {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: calc(100vh - 200px);
+    color: #999;
+  }
+}
