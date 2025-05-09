@@ -1,18 +1,14 @@
 // Prevents additional console window on Windows in release, DO NOT REMOVE!!
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
+use log::info;
+use serde::{Deserialize, Serialize};
 use std::env;
 use std::fs;
 use std::path::Path;
-use std::process::Command;
 use std::sync::Mutex;
-use tauri::{Manager, Runtime, Window};
 use tauri::menu::{Menu, MenuItem, Submenu};
-use tauri::AppHandle;
-use serde::{Deserialize, Serialize};
-use uuid::Uuid;
-use chrono::Local;
-use log::{info, error};
+use tauri::{AppHandle, Manager, Runtime, Window};
 
 // 状态管理
 struct AppState {
@@ -135,14 +131,14 @@ fn read_version() -> String {
 #[tauri::command]
 fn register_app_menu<R: Runtime>(app: AppHandle<R>, menu_props: MenuProps) -> Result<(), String> {
     info!("创建应用程序菜单");
-    
+
     // 只在 macOS 上创建菜单
     if !cfg!(target_os = "macos") {
         return Ok(());
     }
-    
+
     let mut menu = Menu::new();
-    
+
     // 添加应用程序菜单
     let app_menu = Submenu::new(
         "MagicDB",
@@ -150,26 +146,26 @@ fn register_app_menu<R: Runtime>(app: AppHandle<R>, menu_props: MenuProps) -> Re
             .add_item(MenuItem::new("关于MagicDB", "about", |_| {}))
             .add_native_item(MenuItem::Separator)
             .add_item(MenuItem::new("重新启动", "restart", |_| {}))
-            .add_item(MenuItem::new("退出", "quit", |_| {}))
+            .add_item(MenuItem::new("退出", "quit", |_| {})),
     );
     menu = menu.add_submenu(app_menu);
-    
+
     // 添加自定义菜单
     if let Some(menus) = menu_props.menus {
         for menu_info in menus {
             let mut submenu = Menu::new();
-            
+
             if let Some(children) = menu_info.children {
                 for child in children {
                     let item = MenuItem::new(&child.label, &child.key, |_| {});
                     submenu = submenu.add_item(item);
                 }
             }
-            
+
             menu = menu.add_submenu(Submenu::new(menu_info.label, submenu));
         }
     }
-    
+
     // 添加编辑菜单
     let edit_menu = Submenu::new(
         "编辑",
@@ -180,10 +176,10 @@ fn register_app_menu<R: Runtime>(app: AppHandle<R>, menu_props: MenuProps) -> Re
             .add_native_item(MenuItem::Cut)
             .add_native_item(MenuItem::Copy)
             .add_native_item(MenuItem::Paste)
-            .add_native_item(MenuItem::SelectAll)
+            .add_native_item(MenuItem::SelectAll),
     );
     menu = menu.add_submenu(edit_menu);
-    
+
     // 添加视图菜单
     let view_menu = Submenu::new(
         "视图",
@@ -193,19 +189,19 @@ fn register_app_menu<R: Runtime>(app: AppHandle<R>, menu_props: MenuProps) -> Re
             .add_item(MenuItem::new("缩小", "zoom-out", |_| {}))
             .add_item(MenuItem::new("重置", "zoom-reset", |_| {}))
             .add_native_item(MenuItem::Separator)
-            .add_native_item(MenuItem::ToggleFullScreen)
+            .add_native_item(MenuItem::ToggleFullScreen),
     );
     menu = menu.add_submenu(view_menu);
-    
+
     // 添加窗口菜单
     let window_menu = Submenu::new(
         "窗口",
         Menu::new()
             .add_native_item(MenuItem::Minimize)
-            .add_item(MenuItem::new("关闭", "close", |_| {}))
+            .add_item(MenuItem::new("关闭", "close", |_| {})),
     );
     menu = menu.add_submenu(window_menu);
-    
+
     // 添加帮助菜单
     let help_menu = Submenu::new(
         "帮助",
@@ -214,13 +210,13 @@ fn register_app_menu<R: Runtime>(app: AppHandle<R>, menu_props: MenuProps) -> Re
             .add_item(MenuItem::new("打开控制台", "open-devtools", |_| {}))
             .add_item(MenuItem::new("访问官网", "visit-website", |_| {}))
             .add_item(MenuItem::new("查看文档", "view-docs", |_| {}))
-            .add_item(MenuItem::new("查看更新日志", "view-changelog", |_| {}))
+            .add_item(MenuItem::new("查看更新日志", "view-changelog", |_| {})),
     );
     menu = menu.add_submenu(help_menu);
-    
+
     // 设置应用程序菜单
     app.set_menu(menu).map_err(|e| e.to_string())?;
-    
+
     Ok(())
 }
 
@@ -228,7 +224,7 @@ fn register_app_menu<R: Runtime>(app: AppHandle<R>, menu_props: MenuProps) -> Re
 fn main() {
     // 初始化日志
     env_logger::init();
-    
+
     // 创建应用程序
     tauri::Builder::default()
         .plugin(tauri_plugin_shell::init())
@@ -256,10 +252,11 @@ fn main() {
             // 在开发模式下打开开发者工具
             #[cfg(debug_assertions)]
             {
-                let window = app.get_window("main").unwrap();
-                window.open_devtools();
+                if let Some(window) = app.get_webview_window("main") {
+                    window.open_devtools();
+                }
             }
-            
+
             Ok(())
         })
         .run(tauri::generate_context!())
