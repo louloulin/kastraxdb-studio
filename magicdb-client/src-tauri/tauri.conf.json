@@ -1,72 +1,17 @@
 {
   "$schema": "../node_modules/@tauri-apps/cli/schema.json",
+  "identifier": "com.magicdb",
+  "productName": "MagicDB",
+  "version": "1.0.0",
   "build": {
     "beforeBuildCommand": "npm run build:web",
     "beforeDevCommand": "npm run start:web",
-    "devPath": "http://localhost:8000",
-    "distDir": "../dist"
+    "frontendDist": "../dist",
+    "devUrl": "http://localhost:8000"
   },
-  "package": {
-    "productName": "MagicDB",
-    "version": "1.0.0"
-  },
-  "tauri": {
-    "plugin": {
-      "shell": {
-        "open": true,
-        "scope": [
-          {
-            "name": "npm",
-            "cmd": "npm",
-            "args": true
-          }
-        ]
-      },
-      "fs": {
-        "scope": ["$HOME/.magicdb/**", "$APPDATA/.magicdb/**"]
-      },
-      "http": {
-        "scope": ["http://localhost:*/*", "https://**"]
-      }
-    },
-    "bundle": {
-      "active": true,
-      "category": "DeveloperTool",
-      "copyright": "",
-      "deb": {
-        "depends": []
-      },
-      "externalBin": [],
-      "icon": [
-        "icons/32x32.png",
-        "icons/128x128.png",
-        "icons/128x128@2x.png",
-        "icons/icon.icns",
-        "icons/icon.ico"
-      ],
-      "identifier": "com.magicdb",
-      "longDescription": "A powerful database management tool with AI capabilities",
-      "macOS": {
-        "entitlements": null,
-        "exceptionDomain": "",
-        "frameworks": [],
-        "providerShortName": null,
-        "signingIdentity": null
-      },
-      "resources": [],
-      "shortDescription": "MagicDB",
-      "targets": "all",
-      "windows": {
-        "certificateThumbprint": null,
-        "digestAlgorithm": "sha256",
-        "timestampUrl": ""
-      }
-    },
+  "app": {
     "security": {
       "csp": null
-    },
-    "updater": {
-      "active": false
     },
     "windows": [
       {
@@ -79,5 +24,27 @@
         "transparent": false
       }
     ]
+  },
+  "bundle": {
+    "active": true,
+    "icon": [
+      "icons/32x32.png",
+      "icons/128x128.png",
+      "icons/128x128@2x.png",
+      "icons/icon.icns",
+      "icons/icon.ico"
+    ],
+    "shortDescription": "MagicDB"
+  },
+  "plugins": {
+    "shell": {
+      "open": true
+    },
+    "fs": {
+      "requireLiteralLeadingDot": false
+    },
+    "http": {
+      "all": true
+    }
   }
 }
