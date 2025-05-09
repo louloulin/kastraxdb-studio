@@ -1,8 +1,7 @@
 /**
  * Tauri API 包装器
- * 
- * 这个文件提供了一个与 Electron API 兼容的接口，使用 Tauri API 实现。
- * 这样可以最小化迁移到 Tauri 所需的代码更改。
+ *
+ * 这个文件提供了 Tauri API 的封装，使其更易于在应用程序中使用。
  */
 
 import { invoke } from '@tauri-apps/api/tauri';
@@ -17,11 +16,6 @@ import { homeDir, join } from '@tauri-apps/api/path';
 // 检测是否在 Tauri 环境中运行
 const isTauri = typeof window !== 'undefined' && window.__TAURI__ !== undefined;
 
-// 检测是否在 Electron 环境中运行
-const isElectron = typeof window !== 'undefined' && 
-  (window.electronApi !== undefined || 
-   window.process?.versions?.electron !== undefined);
-
 // 获取平台信息
 let platformInfo = {
   isLinux: false,
@@ -33,14 +27,12 @@ let platformInfo = {
 async function initPlatformInfo() {
   if (isTauri) {
     platformInfo = await invoke('get_platform');
-  } else if (isElectron && window.electronApi) {
-    platformInfo = window.electronApi.getPlatform();
   } else {
-    const plat = navigator.platform.toLowerCase();
+    const userAgent = navigator.userAgent.toLowerCase();
     platformInfo = {
-      isLinux: plat.includes('linux'),
-      isWin: plat.includes('win'),
-      isMac: plat.includes('mac')
+      isLinux: userAgent.includes('linux'),
+      isWin: userAgent.includes('win'),
+      isMac: userAgent.includes('mac')
     };
   }
 }
@@ -54,8 +46,8 @@ const tauriApi = {
   openDevTools: async () => {
     if (isTauri) {
       await appWindow.webviewWindow.openDevTools();
-    } else if (isElectron && window.electronApi) {
-      window.electronApi.openDevTools();
+    } else {
+      console.warn('openDevTools 仅在 Tauri 环境中可用');
     }
   },
 
@@ -63,8 +55,9 @@ const tauriApi = {
   serverReady: async (serverUrl: string) => {
     if (isTauri) {
       // Tauri 不需要这个功能，因为它会自动处理
-    } else if (isElectron && window.electronApi) {
-      window.electronApi.serverReady(serverUrl);
+      console.log('Tauri 环境中不需要 serverReady');
+    } else {
+      console.warn('serverReady 仅在 Tauri 环境中可用');
     }
   },
 
@@ -72,8 +65,8 @@ const tauriApi = {
   minimizeWindow: async () => {
     if (isTauri) {
       await appWindow.minimize();
-    } else if (isElectron && window.electronApi) {
-      window.electronApi.minimizeWindow();
+    } else {
+      console.warn('minimizeWindow 仅在 Tauri 环境中可用');
     }
   },
 
@@ -84,16 +77,16 @@ const tauriApi = {
       } else {
         await appWindow.maximize();
       }
-    } else if (isElectron && window.electronApi) {
-      window.electronApi.maximizeWindow();
+    } else {
+      console.warn('maximizeWindow 仅在 Tauri 环境中可用');
     }
   },
 
   closeWindow: async () => {
     if (isTauri) {
       await appWindow.close();
-    } else if (isElectron && window.electronApi) {
-      window.electronApi.closeWindow();
+    } else {
+      console.warn('closeWindow 仅在 Tauri 环境中可用');
     }
   },
 
@@ -101,8 +94,6 @@ const tauriApi = {
   getAppInfo: async () => {
     if (isTauri) {
       return await invoke('get_app_info');
-    } else if (isElectron && window.electronApi) {
-      return window.electronApi.getAppInfo();
     }
     return {
       version: '1.0.0',
@@ -115,8 +106,6 @@ const tauriApi = {
   startServerForSpawn: async () => {
     if (isTauri) {
       return await invoke('start_server_for_spawn');
-    } else if (isElectron && window.electronApi) {
-      return await window.electronApi.startServerForSpawn();
     }
     return { success: true, message: '服务器已启动' };
   },
@@ -125,8 +114,8 @@ const tauriApi = {
   quitApp: async () => {
     if (isTauri) {
       await exit(0);
-    } else if (isElectron && window.electronApi) {
-      window.electronApi.quitApp();
+    } else {
+      console.warn('quitApp 仅在 Tauri 环境中可用');
     }
   },
 
@@ -134,8 +123,8 @@ const tauriApi = {
   setBaseURL: async (baseUrl: string) => {
     if (isTauri) {
       await invoke('set_base_url', { url: baseUrl });
-    } else if (isElectron && window.electronApi) {
-      window.electronApi.setBaseURL(baseUrl);
+    } else {
+      console.warn('setBaseURL 仅在 Tauri 环境中可用');
     }
   },
 
@@ -143,8 +132,8 @@ const tauriApi = {
   setForceQuitCode: async (code: boolean) => {
     if (isTauri) {
       await invoke('set_force_quit_code', { code });
-    } else if (isElectron && window.electronApi) {
-      window.electronApi.setForceQuitCode(code);
+    } else {
+      console.warn('setForceQuitCode 仅在 Tauri 环境中可用');
     }
   },
 
@@ -152,8 +141,8 @@ const tauriApi = {
   registerAppMenu: async (menuProps: any) => {
     if (isTauri) {
       await invoke('register_app_menu', { menuProps });
-    } else if (isElectron && window.electronApi) {
-      window.electronApi.registerAppMenu(menuProps);
+    } else {
+      console.warn('registerAppMenu 仅在 Tauri 环境中可用');
     }
   },
 
@@ -165,8 +154,8 @@ const tauriApi = {
       } else {
         await appWindow.maximize();
       }
-    } else if (isElectron && window.electronApi) {
-      window.electronApi.setMaximize();
+    } else {
+      console.warn('setMaximize 仅在 Tauri 环境中可用');
     }
   },
 
@@ -174,8 +163,6 @@ const tauriApi = {
   isMaximized: async () => {
     if (isTauri) {
       return await appWindow.isMaximized();
-    } else if (isElectron && window.electronApi) {
-      return window.electronApi.isMaximized();
     }
     return false;
   },
@@ -189,10 +176,6 @@ const tauriApi = {
   openExternal: async (url: string) => {
     if (isTauri) {
       await open(url);
-    } else if (isElectron && window.electronApi) {
-      // 假设 Electron 有一个 openExternal 方法
-      // window.electronApi.openExternal(url);
-      window.open(url, '_blank');
     } else {
       window.open(url, '_blank');
     }
@@ -202,10 +185,6 @@ const tauriApi = {
   openFileDialog: async (options: any) => {
     if (isTauri) {
       return await openDialog(options);
-    } else if (isElectron && window.electronApi) {
-      // 假设 Electron 有一个 openFileDialog 方法
-      // return await window.electronApi.openFileDialog(options);
-      return null;
     }
     return null;
   },
@@ -214,10 +193,6 @@ const tauriApi = {
   saveFileDialog: async (options: any) => {
     if (isTauri) {
       return await save(options);
-    } else if (isElectron && window.electronApi) {
-      // 假设 Electron 有一个 saveFileDialog 方法
-      // return await window.electronApi.saveFileDialog(options);
-      return null;
     }
     return null;
   },
@@ -226,10 +201,6 @@ const tauriApi = {
   confirmDialog: async (options: any) => {
     if (isTauri) {
       return await confirm(options.message, options.title || '确认');
-    } else if (isElectron && window.electronApi) {
-      // 假设 Electron 有一个 confirmDialog 方法
-      // return await window.electronApi.confirmDialog(options);
-      return window.confirm(options.message);
     }
     return window.confirm(options.message);
   },
@@ -238,10 +209,6 @@ const tauriApi = {
   messageDialog: async (options: any) => {
     if (isTauri) {
       await message(options.message, options.title || '消息');
-    } else if (isElectron && window.electronApi) {
-      // 假设 Electron 有一个 messageDialog 方法
-      // await window.electronApi.messageDialog(options);
-      alert(options.message);
     } else {
       alert(options.message);
     }
@@ -251,10 +218,6 @@ const tauriApi = {
   readFile: async (filePath: string) => {
     if (isTauri) {
       return await readTextFile(filePath);
-    } else if (isElectron && window.electronApi) {
-      // 假设 Electron 有一个 readFile 方法
-      // return await window.electronApi.readFile(filePath);
-      return '';
     }
     return '';
   },
@@ -263,9 +226,8 @@ const tauriApi = {
   writeFile: async (filePath: string, content: string) => {
     if (isTauri) {
       await writeTextFile(filePath, content);
-    } else if (isElectron && window.electronApi) {
-      // 假设 Electron 有一个 writeFile 方法
-      // await window.electronApi.writeFile(filePath, content);
+    } else {
+      console.warn('writeFile 仅在 Tauri 环境中可用');
     }
   },
 
@@ -273,10 +235,6 @@ const tauriApi = {
   fileExists: async (filePath: string) => {
     if (isTauri) {
       return await exists(filePath);
-    } else if (isElectron && window.electronApi) {
-      // 假设 Electron 有一个 fileExists 方法
-      // return await window.electronApi.fileExists(filePath);
-      return false;
     }
     return false;
   },
@@ -285,10 +243,6 @@ const tauriApi = {
   getHomeDir: async () => {
     if (isTauri) {
       return await homeDir();
-    } else if (isElectron && window.electronApi) {
-      // 假设 Electron 有一个 getHomeDir 方法
-      // return await window.electronApi.getHomeDir();
-      return '';
     }
     return '';
   },
@@ -297,9 +251,8 @@ const tauriApi = {
   relaunchApp: async () => {
     if (isTauri) {
       await relaunch();
-    } else if (isElectron && window.electronApi) {
-      // 假设 Electron 有一个 relaunchApp 方法
-      // await window.electronApi.relaunchApp();
+    } else {
+      console.warn('relaunchApp 仅在 Tauri 环境中可用');
     }
   }
 };

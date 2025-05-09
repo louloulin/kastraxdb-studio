@@ -9,7 +9,7 @@ MagicDB 是一个集成 AI 能力的智能数据库客户端和智能 BI 报表�
 3. 状态管理库：dva
 4. 图表库：echarts
 5. 国际化：内置
-6. 桌面应用框架：Tauri (替代 Electron)
+6. 桌面应用框架：Tauri
 
 ## 开发环境要求
 
