@@ -49,6 +49,10 @@ export default defineConfig({
           component: 'main',
         },
         {
+          path: '/tauri-demo',
+          component: '@/pages/tauri-demo',
+        },
+        {
           path: '/',
           component: 'main',
         },
