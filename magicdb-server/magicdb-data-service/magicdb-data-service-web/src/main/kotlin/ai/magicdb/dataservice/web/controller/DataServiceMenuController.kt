@@ -1,8 +1,8 @@
 package ai.magicdb.dataservice.web.controller
 
+import ai.magicdb.server.tools.base.wrapper.result.DataResult
+import com.fasterxml.jackson.databind.ObjectMapper
 import org.springframework.core.io.ClassPathResource
-import org.springframework.http.MediaType
-import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
@@ -15,17 +15,20 @@ import java.nio.charset.StandardCharsets
  */
 @RestController
 @RequestMapping("/api/menu")
-class DataServiceMenuController {
+class DataServiceMenuController(private val objectMapper: ObjectMapper) {
 
     /**
-     * 获取数据服务菜单配置
+     * 获取数据服务菜单
      */
     @GetMapping("/data-service")
-    fun getDataServiceMenu(): ResponseEntity<String> {
-        val resource = ClassPathResource("static/menu-config.json")
-        val content = resource.inputStream.readAllBytes().toString(StandardCharsets.UTF_8)
-        return ResponseEntity.ok()
-            .contentType(MediaType.APPLICATION_JSON)
-            .body(content)
+    fun getDataServiceMenu(): DataResult<Any> {
+        try {
+            val resource = ClassPathResource("static/data-service/menu-config.json")
+            val menuConfig = resource.inputStream.readAllBytes().toString(StandardCharsets.UTF_8)
+            val menuData = objectMapper.readValue(menuConfig, Map::class.java)
+            return DataResult.of(menuData)
+        } catch (e: Exception) {
+            return DataResult.error("500", "获取数据服务菜单失败: ${e.message}")
+        }
     }
 }

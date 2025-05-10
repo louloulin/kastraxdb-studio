@@ -34,6 +34,16 @@ data class ServiceResult(
     var fromCache: Boolean = false,
 
     /**
+     * 缓存过期时间（毫秒时间戳）
+     */
+    var cacheExpireTime: Long? = null,
+
+    /**
+     * 缓存键
+     */
+    var cacheKey: String? = null,
+
+    /**
      * 元数据
      */
     var metadata: Map<String, Any?> = emptyMap()

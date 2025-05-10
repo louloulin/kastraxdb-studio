@@ -1,15 +1,16 @@
 import React, { useState } from 'react';
 import { Tree, Input, Button, Dropdown, Menu, Modal, Form, message } from 'antd';
-import { 
-  FolderOutlined, 
-  ApiOutlined, 
-  PlusOutlined, 
+import {
+  FolderOutlined,
+  ApiOutlined,
+  PlusOutlined,
   ReloadOutlined,
   EditOutlined,
   DeleteOutlined,
-  MoreOutlined
+  MoreOutlined,
 } from '@ant-design/icons';
 import { createService, createServiceGroup, deleteService, deleteServiceGroup } from '@/service/data-service';
+import i18n from '@/i18n';
 import styles from './index.less';
 
 const { Search } = Input;
@@ -32,28 +33,28 @@ const ServiceTree: React.FC<ServiceTreeProps> = ({ serviceList, onSelectService,
   // 将服务列表转换为树形结构
   const convertToTreeData = (services: any[], groups: any[]) => {
     // 创建分组节点
-    const groupNodes = groups.map(group => ({
+    const groupNodes = groups.map((group) => ({
       title: group.name,
       key: `group-${group.id}`,
       icon: <FolderOutlined />,
       isLeaf: false,
-      children: []
+      children: [],
     }));
 
     // 创建分组映射，方便查找
     const groupMap = {};
-    groupNodes.forEach(node => {
+    groupNodes.forEach((node) => {
       groupMap[node.key] = node;
     });
 
     // 将服务添加到对应的分组中
-    services.forEach(service => {
+    services.forEach((service) => {
       const node = {
         title: service.name,
         key: `service-${service.id}`,
         icon: <ApiOutlined />,
         isLeaf: true,
-        service
+        service,
       };
 
       if (service.groupId) {
@@ -116,7 +117,7 @@ const ServiceTree: React.FC<ServiceTreeProps> = ({ serviceList, onSelectService,
         script: '',
         language: values.language || 'js',
         description: values.description || '',
-        groupId: values.groupId || null
+        groupId: values.groupId || null,
       });
 
       if (response && response.success) {
@@ -141,7 +142,7 @@ const ServiceTree: React.FC<ServiceTreeProps> = ({ serviceList, onSelectService,
       const response = await createServiceGroup({
         name: values.name,
         description: values.description || '',
-        parentId: values.parentId || null
+        parentId: values.parentId || null,
       });
 
       if (response && response.success) {
@@ -159,8 +160,8 @@ const ServiceTree: React.FC<ServiceTreeProps> = ({ serviceList, onSelectService,
   };
 
   // 提取服务和分组数据
-  const services = serviceList.filter(item => item.type !== 'group');
-  const groups = serviceList.filter(item => item.type === 'group');
+  const services = serviceList.filter((item) => item.type !== 'group');
+  const groups = serviceList.filter((item) => item.type === 'group');
   const treeData = convertToTreeData(services, groups);
 
   return (
@@ -168,7 +169,7 @@ const ServiceTree: React.FC<ServiceTreeProps> = ({ serviceList, onSelectService,
       {contextHolder}
       <div className={styles.serviceTreeHeader}>
         <Search
-          placeholder="搜索数据服务"
+          placeholder={i18n('data-service.search')}
           allowClear
           onSearch={handleSearch}
           className={styles.serviceTreeSearch}
@@ -178,10 +179,10 @@ const ServiceTree: React.FC<ServiceTreeProps> = ({ serviceList, onSelectService,
             overlay={
               <Menu>
                 <Menu.Item key="service" onClick={() => setCreateModalVisible(true)}>
-                  <ApiOutlined /> 创建数据服务
+                  <ApiOutlined /> {i18n('data-service.create')}
                 </Menu.Item>
                 <Menu.Item key="group" onClick={() => setCreateGroupModalVisible(true)}>
-                  <FolderOutlined /> 创建分组
+                  <FolderOutlined /> {i18n('data-service.group.create')}
                 </Menu.Item>
               </Menu>
             }
@@ -202,7 +203,7 @@ const ServiceTree: React.FC<ServiceTreeProps> = ({ serviceList, onSelectService,
 
       {/* 创建数据服务弹窗 */}
       <Modal
-        title="创建数据服务"
+        title={i18n('data-service.create')}
         open={createModalVisible}
         onCancel={() => setCreateModalVisible(false)}
         onOk={() => form.submit()}
@@ -210,29 +211,29 @@ const ServiceTree: React.FC<ServiceTreeProps> = ({ serviceList, onSelectService,
         <Form form={form} layout="vertical" onFinish={handleCreateService}>
           <Form.Item
             name="name"
-            label="服务名称"
-            rules={[{ required: true, message: '请输入服务名称' }]}
+            label={i18n('data-service.name')}
+            rules={[{ required: true, message: i18n('data-service.name.required') }]}
           >
-            <Input placeholder="请输入服务名称" />
+            <Input placeholder={i18n('data-service.name.placeholder')} />
           </Form.Item>
-          <Form.Item name="description" label="服务描述">
-            <Input.TextArea placeholder="请输入服务描述" />
+          <Form.Item name="description" label={i18n('data-service.description')}>
+            <Input.TextArea placeholder={i18n('data-service.description.placeholder')} />
           </Form.Item>
-          <Form.Item name="type" label="服务类型" initialValue="query">
-            <Input placeholder="请输入服务类型" />
+          <Form.Item name="type" label={i18n('data-service.type')} initialValue="query">
+            <Input placeholder={i18n('data-service.type.placeholder')} />
           </Form.Item>
-          <Form.Item name="language" label="脚本语言" initialValue="js">
-            <Input placeholder="请输入脚本语言" />
+          <Form.Item name="language" label={i18n('data-service.language')} initialValue="js">
+            <Input placeholder={i18n('data-service.language.placeholder')} />
           </Form.Item>
-          <Form.Item name="groupId" label="所属分组">
-            <Input placeholder="请输入分组ID" />
+          <Form.Item name="groupId" label={i18n('data-service.group')}>
+            <Input placeholder={i18n('data-service.group.placeholder')} />
           </Form.Item>
         </Form>
       </Modal>
 
       {/* 创建分组弹窗 */}
       <Modal
-        title="创建分组"
+        title={i18n('data-service.group.create')}
         open={createGroupModalVisible}
         onCancel={() => setCreateGroupModalVisible(false)}
         onOk={() => groupForm.submit()}
@@ -240,16 +241,16 @@ const ServiceTree: React.FC<ServiceTreeProps> = ({ serviceList, onSelectService,
         <Form form={groupForm} layout="vertical" onFinish={handleCreateGroup}>
           <Form.Item
             name="name"
-            label="分组名称"
-            rules={[{ required: true, message: '请输入分组名称' }]}
+            label={i18n('data-service.group.name')}
+            rules={[{ required: true, message: i18n('data-service.group.name.required') }]}
           >
-            <Input placeholder="请输入分组名称" />
+            <Input placeholder={i18n('data-service.group.name.placeholder')} />
           </Form.Item>
-          <Form.Item name="description" label="分组描述">
-            <Input.TextArea placeholder="请输入分组描述" />
+          <Form.Item name="description" label={i18n('data-service.group.description')}>
+            <Input.TextArea placeholder={i18n('data-service.group.description.placeholder')} />
           </Form.Item>
-          <Form.Item name="parentId" label="父分组">
-            <Input placeholder="请输入父分组ID" />
+          <Form.Item name="parentId" label={i18n('data-service.group.parent')}>
+            <Input placeholder={i18n('data-service.group.parent.placeholder')} />
           </Form.Item>
         </Form>
       </Modal>

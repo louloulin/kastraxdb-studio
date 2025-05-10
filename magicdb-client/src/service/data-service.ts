@@ -75,10 +75,25 @@ export async function deleteServiceGroup(id: string) {
   });
 }
 
-// 导出数据服务
-export async function exportService(id: string) {
-  return request(`/api/data-service/${id}/export`, {
+// 获取数据服务历史记录
+export async function getServiceHistory(id: string) {
+  return request(`/api/data-service/${id}/history`, {
     method: 'GET',
+  });
+}
+
+// 恢复数据服务版本
+export async function restoreServiceVersion(serviceId: string, versionId: string) {
+  return request(`/api/data-service/${serviceId}/history/${versionId}/restore`, {
+    method: 'POST',
+  });
+}
+
+// 导出数据服务
+export async function exportService(id: string, options: any = {}) {
+  return request(`/api/data-service/${id}/export`, {
+    method: 'POST',
+    data: options,
   });
 }
 

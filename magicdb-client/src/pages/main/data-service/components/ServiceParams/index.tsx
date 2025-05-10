@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Form, Input, Button, Switch, Select, Divider, Tag, Tooltip, message, InputNumber } from 'antd';
 import { PlusOutlined, DeleteOutlined } from '@ant-design/icons';
 import { updateService } from '@/service/data-service';
+import i18n from '@/i18n';
 import styles from './index.less';
 
 const { Option } = Select;
@@ -20,11 +21,7 @@ const ServiceParams: React.FC<ServiceParamsProps> = ({ service, onSave }) => {
 
   // 如果服务不存在，显示空内容
   if (!service) {
-    return (
-      <div className={styles.serviceParamsEmpty}>
-        请选择一个数据服务
-      </div>
-    );
+    return <div className={styles.serviceParamsEmpty}>{i18n('data-service.empty')}</div>;
   }
 
   // 处理保存参数
@@ -35,18 +32,18 @@ const ServiceParams: React.FC<ServiceParamsProps> = ({ service, onSave }) => {
         ...service,
         ...values,
       };
-      
+
       const response = await updateService(updatedService);
 
       if (response && response.success) {
-        messageApi.success('保存成功');
+        messageApi.success(i18n('data-service.save.success'));
         onSave(response.data);
       } else {
-        messageApi.error('保存失败');
+        messageApi.error(i18n('data-service.save.failed'));
       }
     } catch (error) {
-      console.error('保存参数出错:', error);
-      messageApi.error('保存参数出错');
+      console.error('Error saving parameters:', error);
+      messageApi.error(i18n('data-service.save.error'));
     } finally {
       setLoading(false);
     }
@@ -57,17 +54,17 @@ const ServiceParams: React.FC<ServiceParamsProps> = ({ service, onSave }) => {
     if (inputValue && !service.tags.includes(inputValue)) {
       const tags = [...(service.tags || []), inputValue];
       updateService({ ...service, tags })
-        .then(response => {
+        .then((response) => {
           if (response && response.success) {
-            messageApi.success('添加标签成功');
+            messageApi.success(i18n('data-service.tag.add.success'));
             onSave(response.data);
           } else {
-            messageApi.error('添加标签失败');
+            messageApi.error(i18n('data-service.tag.add.failed'));
           }
         })
-        .catch(error => {
-          console.error('添加标签出错:', error);
-          messageApi.error('添加标签出错');
+        .catch((error) => {
+          console.error('Error adding tag:', error);
+          messageApi.error(i18n('data-service.tag.add.error'));
         });
     }
     setInputVisible(false);
@@ -78,7 +75,7 @@ const ServiceParams: React.FC<ServiceParamsProps> = ({ service, onSave }) => {
   const handleRemoveTag = (tag: string) => {
     const tags = (service.tags || []).filter((t: string) => t !== tag);
     updateService({ ...service, tags })
-      .then(response => {
+      .then((response) => {
         if (response && response.success) {
           messageApi.success('删除标签成功');
           onSave(response.data);
@@ -86,7 +83,7 @@ const ServiceParams: React.FC<ServiceParamsProps> = ({ service, onSave }) => {
           messageApi.error('删除标签失败');
         }
       })
-      .catch(error => {
+      .catch((error) => {
         console.error('删除标签出错:', error);
         messageApi.error('删除标签出错');
       });
@@ -99,20 +96,15 @@ const ServiceParams: React.FC<ServiceParamsProps> = ({ service, onSave }) => {
         <h3>服务参数</h3>
       </div>
       <div className={styles.serviceParamsContent}>
-        <Form
-          form={form}
-          layout="vertical"
-          initialValues={service}
-          onFinish={handleSaveParams}
-        >
+        <Form form={form} layout="vertical" initialValues={service} onFinish={handleSaveParams}>
           <Form.Item name="name" label="服务名称" rules={[{ required: true }]}>
             <Input placeholder="请输入服务名称" />
           </Form.Item>
-          
+
           <Form.Item name="description" label="服务描述">
             <Input.TextArea placeholder="请输入服务描述" rows={4} />
           </Form.Item>
-          
+
           <Form.Item name="type" label="服务类型" rules={[{ required: true }]}>
             <Select placeholder="请选择服务类型">
               <Option value="query">查询</Option>
@@ -122,28 +114,24 @@ const ServiceParams: React.FC<ServiceParamsProps> = ({ service, onSave }) => {
               <Option value="custom">自定义</Option>
             </Select>
           </Form.Item>
-          
+
           <Form.Item name="groupId" label="所属分组">
             <Input placeholder="请输入分组ID" />
           </Form.Item>
-          
+
           <Form.Item name="enabled" label="是否启用" valuePropName="checked">
             <Switch />
           </Form.Item>
-          
+
           <Form.Item name="cacheTime" label="缓存时间(毫秒)">
             <InputNumber min={0} step={1000} style={{ width: '100%' }} />
           </Form.Item>
-          
+
           <Divider>标签</Divider>
-          
+
           <div className={styles.serviceTags}>
             {(service.tags || []).map((tag: string) => (
-              <Tag
-                key={tag}
-                closable
-                onClose={() => handleRemoveTag(tag)}
-              >
+              <Tag key={tag} closable onClose={() => handleRemoveTag(tag)}>
                 {tag}
               </Tag>
             ))}
@@ -164,13 +152,13 @@ const ServiceParams: React.FC<ServiceParamsProps> = ({ service, onSave }) => {
               </Tag>
             )}
           </div>
-          
+
           <Divider>参数列表</Divider>
-          
+
           <Form.List name="parameters">
             {(fields, { add, remove }) => (
               <>
-                {fields.map(field => (
+                {fields.map((field) => (
                   <div key={field.key} className={styles.serviceParamItem}>
                     <Form.Item
                       {...field}
@@ -203,12 +191,7 @@ const ServiceParams: React.FC<ServiceParamsProps> = ({ service, onSave }) => {
                       <Switch checkedChildren="必填" unCheckedChildren="选填" />
                     </Form.Item>
                     <Tooltip title="删除参数">
-                      <Button
-                        type="text"
-                        danger
-                        icon={<DeleteOutlined />}
-                        onClick={() => remove(field.name)}
-                      />
+                      <Button type="text" danger icon={<DeleteOutlined />} onClick={() => remove(field.name)} />
                     </Tooltip>
                   </div>
                 ))}
@@ -225,7 +208,7 @@ const ServiceParams: React.FC<ServiceParamsProps> = ({ service, onSave }) => {
               </>
             )}
           </Form.List>
-          
+
           <Form.Item>
             <Button type="primary" htmlType="submit" loading={loading} block>
               保存参数

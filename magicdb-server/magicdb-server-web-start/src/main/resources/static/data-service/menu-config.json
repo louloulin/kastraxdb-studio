@@ -1,0 +1,29 @@
+{
+  "id": "data-service",
+  "name": "数据服务",
+  "icon": "server",
+  "order": 4,
+  "children": [
+    {
+      "id": "data-service-management",
+      "name": "服务管理",
+      "icon": "api",
+      "url": "/data-service",
+      "order": 1
+    },
+    {
+      "id": "data-service-test",
+      "name": "服务测试",
+      "icon": "code",
+      "url": "/data-service/test",
+      "order": 2
+    },
+    {
+      "id": "data-service-doc",
+      "name": "服务文档",
+      "icon": "file-text",
+      "url": "/data-service/doc",
+      "order": 3
+    }
+  ]
+}
