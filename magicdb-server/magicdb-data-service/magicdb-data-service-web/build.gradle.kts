@@ -20,6 +20,10 @@ dependencies {
     implementation("org.springframework:spring-context")
     implementation("jakarta.servlet:jakarta.servlet-api:6.0.0")
 
+    // Sa-Token
+    implementation("cn.dev33:sa-token-spring-boot3-starter:1.34.0")
+    implementation("cn.dev33:sa-token-jwt:1.34.0")
+
     // Lombok for Java
     compileOnly("org.projectlombok:lombok:1.18.30")
     annotationProcessor("org.projectlombok:lombok:1.18.30")
