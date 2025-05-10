@@ -3,8 +3,8 @@ import { Layout, Spin, message } from 'antd';
 import ServiceTree from './components/ServiceTree';
 import ServiceEditor from './components/ServiceEditor';
 import ServiceParams from './components/ServiceParams';
-import { useModel } from 'umi';
 import { getServiceList, getServiceById } from '@/service/data-service';
+import i18n from '@/i18n';
 import styles from './index.less';
 
 const { Sider, Content } = Layout;
@@ -26,7 +26,6 @@ const DataServicePage: React.FC = () => {
   const [serviceList, setServiceList] = useState<any[]>([]);
   const [selectedService, setSelectedService] = useState<ServiceProps | null>(null);
   const [messageApi, contextHolder] = message.useMessage();
-  const { initialState } = useModel('@@initialState');
 
   useEffect(() => {
     fetchServiceList();
@@ -39,11 +38,11 @@ const DataServicePage: React.FC = () => {
       if (response && response.success) {
         setServiceList(response.data || []);
       } else {
-        messageApi.error('获取数据服务列表失败');
+        messageApi.error(i18n('data-service.list.failed'));
       }
     } catch (error) {
-      console.error('获取数据服务列表出错:', error);
-      messageApi.error('获取数据服务列表出错');
+      console.error('Failed to fetch service list:', error);
+      messageApi.error(i18n('data-service.list.error'));
     } finally {
       setLoading(false);
     }
@@ -56,17 +55,17 @@ const DataServicePage: React.FC = () => {
       if (response && response.success) {
         setSelectedService(response.data);
       } else {
-        messageApi.error('获取数据服务详情失败');
+        messageApi.error(i18n('data-service.detail.failed'));
       }
     } catch (error) {
-      console.error('获取数据服务详情出错:', error);
-      messageApi.error('获取数据服务详情出错');
+      console.error('Failed to fetch service detail:', error);
+      messageApi.error(i18n('data-service.detail.error'));
     } finally {
       setLoading(false);
     }
   };
 
-  const handleSaveService = async (service: ServiceProps) => {
+  const handleSaveService = async (_service: ServiceProps) => {
     // 保存数据服务的逻辑将在ServiceEditor组件中实现
     await fetchServiceList();
   };
@@ -75,31 +74,19 @@ const DataServicePage: React.FC = () => {
     <Layout className={styles.serviceContainer}>
       {contextHolder}
       <Sider width={280} theme="light" className={styles.serviceSider}>
-        <ServiceTree 
-          serviceList={serviceList} 
-          onSelectService={handleSelectService} 
-          onRefresh={fetchServiceList}
-        />
+        <ServiceTree serviceList={serviceList} onSelectService={handleSelectService} onRefresh={fetchServiceList} />
       </Sider>
       <Content className={styles.serviceContent}>
         <Spin spinning={loading}>
           {selectedService ? (
-            <ServiceEditor 
-              service={selectedService} 
-              onSave={handleSaveService} 
-            />
+            <ServiceEditor service={selectedService} onSave={handleSaveService} />
           ) : (
-            <div className={styles.serviceEmpty}>
-              请选择或创建一个数据服务
-            </div>
+            <div className={styles.serviceEmpty}>{i18n('data-service.empty')}</div>
           )}
         </Spin>
       </Content>
       <Sider width={320} theme="light" className={styles.serviceParams}>
-        <ServiceParams 
-          service={selectedService} 
-          onSave={handleSaveService}
-        />
+        <ServiceParams service={selectedService} onSave={handleSaveService} />
       </Sider>
     </Layout>
   );

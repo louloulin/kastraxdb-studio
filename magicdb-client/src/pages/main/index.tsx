@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button, Dropdown, Tooltip } from 'antd';
 import classnames from 'classnames';
-import { Code2, LayoutDashboard, Database, Users, Github, LogOut, Rocket, User } from 'lucide-react';
+import { Code2, LayoutDashboard, Database, Users, Github, LogOut, Rocket, User, Server } from 'lucide-react';
 
 import Iconfont from '@/components/Iconfont';
 import BrandLogo from '@/components/BrandLogo';
@@ -30,6 +30,7 @@ import Workspace from './workspace';
 import Dashboard from './dashboard';
 import Connection from './connection';
 import Team from './team';
+import DataService from './data-service';
 import Setting from '@/blocks/Setting';
 
 import styles from './index.less';
@@ -57,6 +58,13 @@ const initNavConfig: INavItem[] = [
     isLoad: false,
     component: <Connection />,
     name: i18n('connection.title'),
+  },
+  {
+    key: 'data-service',
+    icon: <Server size={20} />,
+    isLoad: false,
+    component: <DataService />,
+    name: i18n('data-service.title'),
   },
   {
     key: 'github',
@@ -125,7 +133,7 @@ function MainPage() {
     if (userInfo) {
       const hasTeamIcon = cloneNavConfig.find((i) => i.key === 'team');
       if (userInfo.admin && !hasTeamIcon) {
-        cloneNavConfig.splice(3, 0, {
+        cloneNavConfig.splice(4, 0, {
           key: 'team',
           icon: <Users size={20} />,
           isLoad: activeNavKey === 'team', // 如果当前是team，直接加载
@@ -134,7 +142,7 @@ function MainPage() {
         });
       }
       if (!userInfo.admin && hasTeamIcon) {
-        cloneNavConfig.splice(3, 1);
+        cloneNavConfig.splice(4, 1);
       }
     }
     setNavConfig([...cloneNavConfig]);

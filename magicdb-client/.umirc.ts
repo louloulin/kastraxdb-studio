@@ -48,7 +48,10 @@ export default defineConfig({
           path: '/workspace',
           component: 'main',
         },
-
+        {
+          path: '/data-service',
+          component: 'main',
+        },
         {
           path: '/',
           component: 'main',
