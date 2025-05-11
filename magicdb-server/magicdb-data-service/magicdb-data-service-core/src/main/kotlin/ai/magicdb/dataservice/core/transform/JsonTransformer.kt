@@ -287,9 +287,10 @@ class JsonTransformer(
      */
     private fun applyRules(jsonNode: JsonNode, rules: Map<String, Any?>): JsonNode {
         // 创建副本
-        val result = jsonNode.deepCopy()
+        val result: JsonNode = jsonNode.deepCopy()
 
         // 应用字段映射
+        @Suppress("UNCHECKED_CAST")
         val fieldMappings = rules["fieldMappings"] as? Map<String, String>
         if (fieldMappings != null && result.isObject()) {
             val objectNode = result as ObjectNode
@@ -305,7 +306,7 @@ class JsonTransformer(
 
             // 添加新字段
             for ((field, value) in fieldsToAdd) {
-                objectNode.set(field, value)
+                objectNode.replace(field, value)
             }
 
             // 移除旧字段

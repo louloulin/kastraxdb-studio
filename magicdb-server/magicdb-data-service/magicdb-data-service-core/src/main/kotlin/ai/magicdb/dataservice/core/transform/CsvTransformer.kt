@@ -2,20 +2,18 @@ package ai.magicdb.dataservice.core.transform
 
 import ai.magicdb.dataservice.api.model.TransformationRequest
 import ai.magicdb.dataservice.api.model.TransformationResult
-import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.node.ArrayNode
 import com.fasterxml.jackson.databind.node.ObjectNode
 import org.apache.commons.csv.CSVFormat
 import org.apache.commons.csv.CSVParser
 import org.apache.commons.csv.CSVPrinter
-import org.apache.commons.csv.CSVRecord
 import org.slf4j.LoggerFactory
+import org.springframework.stereotype.Component
 import org.w3c.dom.Document
 import org.yaml.snakeyaml.Yaml
 import java.io.StringReader
 import java.io.StringWriter
-import java.util.stream.Stream
 import javax.xml.parsers.DocumentBuilderFactory
 import javax.xml.transform.OutputKeys
 import javax.xml.transform.TransformerFactory
@@ -27,6 +25,7 @@ import javax.xml.transform.stream.StreamResult
  *
  * @author magicdb
  */
+@Component
 class CsvTransformer(
     private val objectMapper: ObjectMapper
 ) : FormatTransformer {
@@ -121,7 +120,7 @@ class CsvTransformer(
     /**
      * 解析源数据
      */
-    private fun parseSourceData(sourceData: Any): List<CSVRecord> {
+    private fun parseSourceData(sourceData: Any): List<Map<String, String>> {
         val csvString = when (sourceData) {
             is String -> sourceData
             else -> throw IllegalArgumentException("不支持的CSV源数据类型: ${sourceData.javaClass.name}")
@@ -133,13 +132,14 @@ class CsvTransformer(
             CSVFormat.DEFAULT.withFirstRecordAsHeader().withTrim()
         )
 
-        return parser.records
+        // 转换为Map列表
+        return parser.records.map { it.toMap() }
     }
 
     /**
      * 转换为CSV
      */
-    private fun transformToCsv(records: List<CSVRecord>, request: TransformationRequest): TransformationResult {
+    private fun transformToCsv(records: List<Map<String, String>>, request: TransformationRequest): TransformationResult {
         try {
             // 应用转换规则
             val transformedRecords = applyRules(records, request.rules)
@@ -151,7 +151,7 @@ class CsvTransformer(
 
             // 获取表头
             val headers = if (transformedRecords.isNotEmpty()) {
-                transformedRecords[0].toMap().keys.toList()
+                transformedRecords[0].keys.toList()
             } else {
                 emptyList()
             }
@@ -169,7 +169,7 @@ class CsvTransformer(
 
             // 写入数据
             for (record in transformedRecords) {
-                csvPrinter.printRecord(record.toList())
+                csvPrinter.printRecord(record.values)
             }
 
             // 关闭打印器
@@ -188,7 +188,7 @@ class CsvTransformer(
     /**
      * 转换为JSON
      */
-    private fun transformToJson(records: List<CSVRecord>, request: TransformationRequest): TransformationResult {
+    private fun transformToJson(records: List<Map<String, String>>, request: TransformationRequest): TransformationResult {
         try {
             // 应用转换规则
             val transformedRecords = applyRules(records, request.rules)
@@ -199,7 +199,7 @@ class CsvTransformer(
             // 转换记录为JSON对象
             for (record in transformedRecords) {
                 val objectNode = objectMapper.createObjectNode()
-                for ((key, value) in record.toMap()) {
+                for ((key, value) in record) {
                     objectNode.put(key, value)
                 }
                 arrayNode.add(objectNode)
@@ -226,7 +226,7 @@ class CsvTransformer(
     /**
      * 转换为XML
      */
-    private fun transformToXml(records: List<CSVRecord>, request: TransformationRequest): TransformationResult {
+    private fun transformToXml(records: List<Map<String, String>>, request: TransformationRequest): TransformationResult {
         try {
             // 应用转换规则
             val transformedRecords = applyRules(records, request.rules)
@@ -249,7 +249,7 @@ class CsvTransformer(
                 val recordElement = doc.createElement(recordElementName)
                 rootElement.appendChild(recordElement)
 
-                for ((key, value) in record.toMap()) {
+                for ((key, value) in record) {
                     val fieldElement = doc.createElement(key)
                     fieldElement.textContent = value
                     recordElement.appendChild(fieldElement)
@@ -286,19 +286,14 @@ class CsvTransformer(
     /**
      * 转换为YAML
      */
-    private fun transformToYaml(records: List<CSVRecord>, request: TransformationRequest): TransformationResult {
+    private fun transformToYaml(records: List<Map<String, String>>, request: TransformationRequest): TransformationResult {
         try {
             // 应用转换规则
             val transformedRecords = applyRules(records, request.rules)
 
-            // 创建Java对象列表
-            val list = transformedRecords.map { record ->
-                record.toMap()
-            }
-
             // 转换为YAML
             val yaml = Yaml()
-            val yamlString = yaml.dump(list)
+            val yamlString = yaml.dump(transformedRecords)
 
             return TransformationResult.success(
                 targetData = yamlString,
@@ -313,40 +308,29 @@ class CsvTransformer(
     /**
      * 应用转换规则
      */
-    private fun applyRules(records: List<CSVRecord>, rules: Map<String, Any?>): List<CSVRecord> {
+    private fun applyRules(records: List<Map<String, String>>, rules: Map<String, Any?>): List<Map<String, String>> {
         // 创建结果列表
-        val result = mutableListOf<CSVRecord>()
+        val result = mutableListOf<Map<String, String>>()
 
         // 获取字段映射
-        val fieldMappings = rules["fieldMappings"] as? Map<*, *> ?: emptyMap<String, String>()
+        val fieldMappings = rules["fieldMappings"] as? Map<String, String> ?: emptyMap()
 
         // 获取值转换器
-        val valueConverters = rules["valueConverters"] as? Map<*, *> ?: emptyMap<String, Map<String, Any?>>()
+        val valueConverters = rules["valueConverters"] as? Map<String, Map<String, Any?>> ?: emptyMap()
 
         // 获取包含列
-        val includeColumns = rules["includeColumns"] as? List<*>
+        val includeColumns = rules["includeColumns"] as? List<String>
 
         // 获取排除列
-        val excludeColumns = rules["excludeColumns"] as? List<*>
+        val excludeColumns = rules["excludeColumns"] as? List<String>
 
         // 处理每条记录
         for (record in records) {
-            // 创建新记录
-            val newRecord = mutableMapOf<String, String>()
+            // 创建新的记录映射
+            val recordMap = mutableMapOf<String, String>()
 
-            // 应用字段映射和值转换
-            for ((key, value) in record.toMap()) {
-                // 获取目标字段名
-                val targetKey = fieldMappings[key]?.toString() ?: key
-
-                // 应用值转换
-                val converter = valueConverters[key] as? Map<*, *>
-                val targetValue = if (converter != null) {
-                    applyValueConverter(value, converter)
-                } else {
-                    value
-                }
-
+            // 处理字段映射和过滤
+            for ((key, value) in record) {
                 // 检查是否包含该列
                 if (includeColumns != null && !includeColumns.contains(key)) {
                     continue
@@ -357,12 +341,18 @@ class CsvTransformer(
                     continue
                 }
 
-                // 添加到新记录
-                newRecord[targetKey] = targetValue
+                // 应用字段映射
+                val targetKey = fieldMappings[key] ?: key
+
+                // 应用值转换器
+                val targetValue = applyValueConverter(key, value, valueConverters)
+
+                // 添加到新记录中
+                recordMap[targetKey] = targetValue
             }
 
-            // 添加到结果列表
-            result.add(createCSVRecord(newRecord))
+            // 添加到结果中
+            result.add(recordMap)
         }
 
         return result
@@ -371,33 +361,37 @@ class CsvTransformer(
     /**
      * 应用值转换器
      */
-    private fun applyValueConverter(value: String, converter: Map<*, *>): String {
-        val type = converter["type"] as? String ?: return value
+    private fun applyValueConverter(key: String, value: String, valueConverters: Map<String, Map<String, Any?>>): String {
+        // 获取该字段的值转换器
+        val converter = valueConverters[key] ?: return value
 
-        return when (type) {
-            "replace" -> {
-                val search = converter["search"] as? String ?: return value
-                val replace = converter["replace"] as? String ?: ""
-                value.replace(search, replace)
+        // 应用转换规则
+        return when {
+            // 替换值
+            converter.containsKey("replaceValue") -> {
+                val replaceMap = converter["replaceValue"] as? Map<String, String> ?: return value
+                replaceMap[value] ?: value
             }
-            "uppercase" -> {
-                value.uppercase()
+
+            // 默认值
+            converter.containsKey("defaultValue") && (value.isBlank() || value == "null") -> {
+                converter["defaultValue"]?.toString() ?: value
             }
-            "lowercase" -> {
-                value.lowercase()
+
+            // 前缀
+            converter.containsKey("prefix") -> {
+                val prefix = converter["prefix"]?.toString() ?: ""
+                "$prefix$value"
             }
-            "trim" -> {
-                value.trim()
+
+            // 后缀
+            converter.containsKey("suffix") -> {
+                val suffix = converter["suffix"]?.toString() ?: ""
+                "$value$suffix"
             }
+
+            // 默认返回原值
             else -> value
         }
-    }
-
-    /**
-     * 创建CSV记录
-     */
-    private fun createCSVRecord(map: Map<String, String>): Map<String, String> {
-        // 直接返回映射
-        return map
     }
 }
