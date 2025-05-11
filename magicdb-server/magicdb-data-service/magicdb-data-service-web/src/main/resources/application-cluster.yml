@@ -1,0 +1,43 @@
+# 集群配置
+magicdb:
+  data-service:
+    cluster:
+      # 是否启用集群
+      enabled: true
+      # 集群名称
+      name: magicdb-data-service-cluster
+      # 负载均衡策略：ROUND_ROBIN, LEAST_CONNECTIONS, WEIGHTED, RANDOM, CONSISTENT_HASH
+      load-balancing-strategy: ROUND_ROBIN
+      # 节点心跳间隔（毫秒）
+      heartbeat-interval: 10000
+      # 节点过期时间（毫秒）
+      node-expire-time: 30000
+      # Redis配置
+      redis:
+        # 是否启用Redis
+        enabled: true
+        # Redis主机
+        host: localhost
+        # Redis端口
+        port: 6379
+        # Redis密码
+        password: 
+        # Redis数据库
+        database: 0
+        # 连接超时时间（毫秒）
+        timeout: 5000
+
+# Redis配置
+spring:
+  redis:
+    host: ${magicdb.data-service.cluster.redis.host}
+    port: ${magicdb.data-service.cluster.redis.port}
+    password: ${magicdb.data-service.cluster.redis.password}
+    database: ${magicdb.data-service.cluster.redis.database}
+    timeout: ${magicdb.data-service.cluster.redis.timeout}
+    lettuce:
+      pool:
+        max-active: 8
+        max-idle: 8
+        min-idle: 0
+        max-wait: -1

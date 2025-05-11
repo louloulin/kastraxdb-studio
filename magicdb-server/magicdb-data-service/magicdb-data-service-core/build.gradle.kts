@@ -60,6 +60,10 @@ dependencies {
     // Quartz Scheduler
     implementation("org.quartz-scheduler:quartz:2.3.2")
 
+    // Redis
+    implementation("org.springframework.boot:spring-boot-starter-data-redis")
+    implementation("org.apache.commons:commons-pool2:2.11.1")
+
     // Java EE API
     implementation("javax.annotation:javax.annotation-api:1.3.2")
 
