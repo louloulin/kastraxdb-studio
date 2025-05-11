@@ -2,20 +2,19 @@ package ai.magicdb.dataservice.api.model
 
 import java.io.Serializable
 
-
 /**
- * 流程执行状态
+ * 执行状态
  *
  * @author magicdb
  */
-enum class FlowExecutionStatus {
+enum class ExecutionStatus {
     /**
      * 等待执行
      */
     PENDING,
 
     /**
-     * 正在执行
+     * 执行中
      */
     RUNNING,
 
@@ -37,44 +36,44 @@ enum class FlowExecutionStatus {
     /**
      * 已超时
      */
-    TIMEOUT,
-
-    /**
-     * 已暂停
-     */
-    PAUSED
+    TIMEOUT
 }
 
 /**
- * 流程执行模型
+ * 任务执行记录
  *
  * @author magicdb
  */
-data class FlowExecution(
+data class TaskExecution(
     /**
      * 执行ID
      */
     var id: String = "",
 
     /**
-     * 流程ID
+     * 任务ID
      */
-    var flowId: String = "",
+    var taskId: String = "",
 
     /**
-     * 流程名称
+     * 任务名称
      */
-    var flowName: String = "",
+    var taskName: String = "",
+
+    /**
+     * 服务ID
+     */
+    var serviceId: String = "",
+
+    /**
+     * 服务名称
+     */
+    var serviceName: String = "",
 
     /**
      * 执行参数
      */
     var parameters: Map<String, Any?> = emptyMap(),
-
-    /**
-     * 执行变量
-     */
-    var variables: MutableMap<String, Any?> = mutableMapOf(),
 
     /**
      * 开始时间
@@ -94,7 +93,7 @@ data class FlowExecution(
     /**
      * 执行状态
      */
-    var status: FlowExecutionStatus = FlowExecutionStatus.PENDING,
+    var status: ExecutionStatus = ExecutionStatus.PENDING,
 
     /**
      * 执行结果
@@ -107,9 +106,14 @@ data class FlowExecution(
     var errorMessage: String = "",
 
     /**
-     * 节点执行记录
+     * 执行节点
      */
-    var nodeExecutions: List<NodeExecution> = emptyList(),
+    var executorNode: String = "",
+
+    /**
+     * 重试次数
+     */
+    var retryCount: Int = 0,
 
     /**
      * 触发类型

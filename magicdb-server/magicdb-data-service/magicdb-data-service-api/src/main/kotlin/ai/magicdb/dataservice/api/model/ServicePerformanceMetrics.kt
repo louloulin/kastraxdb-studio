@@ -12,72 +12,72 @@ data class ServicePerformanceMetrics(
     /**
      * 服务ID
      */
-    val serviceId: String,
-    
+    val serviceId: String = "",
+
     /**
      * 服务名称
      */
-    val serviceName: String,
-    
+    val serviceName: String = "",
+
     /**
      * 平均响应时间（毫秒）
      */
-    val avgResponseTime: Double,
-    
+    val avgResponseTime: Double = 0.0,
+
     /**
      * 最大响应时间（毫秒）
      */
-    val maxResponseTime: Long,
-    
+    val maxResponseTime: Long = 0,
+
     /**
      * 最小响应时间（毫秒）
      */
-    val minResponseTime: Long,
-    
+    val minResponseTime: Long = 0,
+
     /**
      * 响应时间百分位数（毫秒）
      */
-    val percentiles: Map<String, Long>,
-    
+    val percentiles: Map<String, Double> = emptyMap(),
+
     /**
      * 每秒请求数
      */
-    val requestsPerSecond: Double,
-    
+    val requestsPerSecond: Double = 0.0,
+
     /**
      * 并发用户数
      */
-    val concurrentUsers: Int,
-    
+    val concurrentUsers: Int = 0,
+
     /**
      * 内存使用（MB）
      */
-    val memoryUsage: Double,
-    
+    val memoryUsage: Double = 0.0,
+
     /**
      * CPU使用（%）
      */
-    val cpuUsage: Double,
-    
+    val cpuUsage: Double = 0.0,
+
     /**
      * 统计开始时间
      */
-    val startTime: LocalDateTime,
-    
+    val startTime: LocalDateTime? = null,
+
     /**
      * 统计结束时间
      */
-    val endTime: LocalDateTime,
-    
+    val endTime: LocalDateTime? = null,
+
     /**
      * 按时间段的平均响应时间
      */
     val responseTimeByTimeSlot: Map<String, Double> = emptyMap(),
-    
+
     /**
      * 按时间段的请求数
      */
-    val requestsByTimeSlot: Map<String, Long> = emptyMap()
+    val requestsByTimeSlot: Map<String, Int> = emptyMap()
 ) : Serializable {
     companion object {
         private const val serialVersionUID = 1L

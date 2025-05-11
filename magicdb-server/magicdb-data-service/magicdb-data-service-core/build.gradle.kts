@@ -20,6 +20,17 @@ dependencies {
     // Spring dependencies
     implementation("org.springframework:spring-context")
     implementation("org.springframework:spring-tx")
+    implementation("org.springframework:spring-web")
+    implementation("org.springframework:spring-webmvc")
+
+    // Spring AOP and AspectJ
+    implementation("org.springframework:spring-aop")
+    implementation("org.aspectj:aspectjrt:1.9.19")
+    implementation("org.aspectj:aspectjweaver:1.9.19")
+
+    // Servlet API
+    implementation("jakarta.servlet:jakarta.servlet-api:5.0.0")
+    implementation("javax.servlet:javax.servlet-api:4.0.1")
 
     // MyBatis-Plus
     implementation("com.baomidou:mybatis-plus:3.5.3")
@@ -30,6 +41,10 @@ dependencies {
 
     // Jackson
     implementation("com.fasterxml.jackson.core:jackson-databind")
+    implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-csv:2.15.2")
+
+    // Apache Commons CSV
+    implementation("org.apache.commons:commons-csv:1.10.0")
 
     // Quartz Scheduler
     implementation("org.quartz-scheduler:quartz:2.3.2")
