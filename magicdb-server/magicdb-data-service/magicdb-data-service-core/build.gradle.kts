@@ -31,6 +31,12 @@ dependencies {
     // Jackson
     implementation("com.fasterxml.jackson.core:jackson-databind")
 
+    // Quartz Scheduler
+    implementation("org.quartz-scheduler:quartz:2.3.2")
+
+    // Java EE API
+    implementation("javax.annotation:javax.annotation-api:1.3.2")
+
     // Lombok for Java
     compileOnly("org.projectlombok:lombok:1.18.30")
     annotationProcessor("org.projectlombok:lombok:1.18.30")

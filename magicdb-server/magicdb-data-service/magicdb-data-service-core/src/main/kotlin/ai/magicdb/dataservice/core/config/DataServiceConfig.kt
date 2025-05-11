@@ -79,7 +79,7 @@ class DataServiceConfig {
     }
 
     @Bean
-    @ConditionalOnMissingBean(name = "graalScriptExecutor")
+    @ConditionalOnMissingBean(name = ["graalScriptExecutor"])
     fun graalScriptExecutor(): GraalScriptExecutor {
         return GraalVMScriptExecutor()
     }
@@ -94,7 +94,7 @@ class DataServiceConfig {
     @ConditionalOnMissingBean
     fun dataServiceExecutor(
         repository: DataServiceRepository,
-        scriptExecutor: ScriptExecutor,
+        scriptExecutor: GraalScriptExecutor,
         cacheManager: DataServiceCacheManager,
         dataSourceService: DataSourceService
     ): DataServiceExecutor {
@@ -141,7 +141,7 @@ class DataServiceConfig {
     }
 
     @Bean
-    @ConditionalOnMissingBean(name = "dataServiceScriptExecutor")
+    @ConditionalOnMissingBean(name = ["dataServiceScriptExecutor"])
     fun dataServiceScriptExecutor(): ScriptExecutor {
         return DefaultScriptExecutor()
     }

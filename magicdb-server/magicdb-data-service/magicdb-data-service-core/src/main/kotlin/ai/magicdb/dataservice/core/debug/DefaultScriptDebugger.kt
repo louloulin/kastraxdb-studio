@@ -138,7 +138,7 @@ class DefaultScriptDebugger(
         /**
          * JavaScript模板
          */
-        private const val JS_TEMPLATE = """
+        private val JS_TEMPLATE = """
             /**
              * 数据服务脚本
              *
@@ -163,7 +163,7 @@ class DefaultScriptDebugger(
         /**
          * Kotlin模板
          */
-        private const val KOTLIN_TEMPLATE = """
+        private val KOTLIN_TEMPLATE = """
             /**
              * 数据服务脚本
              *
@@ -188,16 +188,14 @@ class DefaultScriptDebugger(
         /**
          * Python模板
          */
-        private const val PYTHON_TEMPLATE = """
-            """
-            数据服务脚本
-
-            Args:
-                params: 请求参数
-
-            Returns:
-                返回结果
-            """
+        private val PYTHON_TEMPLATE = """
+            # 数据服务脚本
+            #
+            # Args:
+            #     params: 请求参数
+            #
+            # Returns:
+            #     返回结果
             def execute(params):
                 # 在这里编写你的代码
                 print("Hello, World!")
