@@ -1,10 +1,10 @@
 package ai.magicdb.dataservice.core.async
 
 import ai.magicdb.dataservice.api.AsyncTaskExecutor
-import ai.magicdb.dataservice.api.ScriptExecutor
 import ai.magicdb.dataservice.api.model.AsyncTask
 import ai.magicdb.dataservice.api.model.TaskStatus
 import ai.magicdb.dataservice.api.model.TaskType
+import ai.magicdb.dataservice.core.script.ScriptExecutor
 import org.slf4j.LoggerFactory
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Service

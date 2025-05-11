@@ -4,31 +4,44 @@ import ai.magicdb.dataservice.api.DataServiceExecutor
 import ai.magicdb.dataservice.api.DataServiceManager
 import ai.magicdb.dataservice.api.DataServiceRepository
 import ai.magicdb.dataservice.api.DataSourceService
+import ai.magicdb.dataservice.api.DataTransformer
 import ai.magicdb.dataservice.api.DocumentGenerator
 import ai.magicdb.dataservice.api.AsyncTaskExecutor
+import ai.magicdb.dataservice.api.MonitoringRepository
+import ai.magicdb.dataservice.api.MonitoringService
 import ai.magicdb.dataservice.api.ScriptDebugger
-import ai.magicdb.dataservice.api.ScriptExecutor
+import ai.magicdb.dataservice.api.ServiceFlowExecutor
+import ai.magicdb.dataservice.api.ServiceFlowRepository
+import ai.magicdb.dataservice.api.ServiceOrchestrator
 import ai.magicdb.dataservice.api.ServiceTestManager
 import ai.magicdb.dataservice.api.ServiceTestRepository
+import ai.magicdb.dataservice.api.TransformationRepository
 import ai.magicdb.dataservice.core.cache.DataServiceCacheManager
 import ai.magicdb.dataservice.core.converter.DataServiceConverter
 import ai.magicdb.dataservice.core.converter.ServiceGroupConverter
 import ai.magicdb.dataservice.core.datasource.SimpleDataSourceService
 import ai.magicdb.dataservice.core.async.DefaultAsyncTaskExecutor
+import ai.magicdb.dataservice.core.debug.DefaultScriptDebugger
 import ai.magicdb.dataservice.core.debug.DefaultScriptDebuggerAdapter
-import ai.magicdb.dataservice.core.executor.DefaultScriptExecutor
 import ai.magicdb.dataservice.core.document.DefaultDocumentGenerator
 import ai.magicdb.dataservice.core.executor.DefaultDataServiceExecutor
 import ai.magicdb.dataservice.core.manager.DefaultDataServiceManager
 import ai.magicdb.dataservice.core.manager.DefaultServiceTestManager
 import ai.magicdb.dataservice.core.mapper.*
+import ai.magicdb.dataservice.core.orchestration.DefaultServiceFlowExecutor
+import ai.magicdb.dataservice.core.orchestration.DefaultServiceOrchestrator
+import ai.magicdb.dataservice.core.monitoring.DefaultMonitoringService
+import ai.magicdb.dataservice.core.converter.MonitoringConverter
 import ai.magicdb.dataservice.core.repository.MemoryDataServiceRepository
+import ai.magicdb.dataservice.core.repository.MemoryMonitoringRepository
+import ai.magicdb.dataservice.core.repository.MemoryServiceFlowRepository
+import ai.magicdb.dataservice.core.repository.MemoryTransformationRepository
 import ai.magicdb.dataservice.core.repository.MybatisDataServiceRepository
+import ai.magicdb.dataservice.core.repository.MybatisMonitoringRepository
 import ai.magicdb.dataservice.core.repository.MybatisServiceTestRepository
+import ai.magicdb.dataservice.core.transform.DefaultDataTransformer
 import ai.magicdb.script.api.ScriptExecutor as GraalScriptExecutor
 import ai.magicdb.script.engine.GraalVMScriptExecutor
-import ai.magicdb.dataservice.core.script.ScriptExecutor
-import ai.magicdb.dataservice.core.script.DefaultScriptExecutor
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.SerializationFeature
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
@@ -145,25 +158,31 @@ class DataServiceConfig {
     }
 
     @Bean
-    @ConditionalOnMissingBean(name = ["dataServiceScriptExecutor"])
-    fun dataServiceScriptExecutor(): ScriptExecutor {
-        return DefaultScriptExecutor()
+    @ConditionalOnMissingBean
+    fun scriptDebugger(
+        scriptExecutor: GraalScriptExecutor,
+        dataSourceService: DataSourceService
+    ): ScriptDebugger {
+        // 创建原始调试器
+        val originalDebugger = DefaultScriptDebugger(
+            ai.magicdb.dataservice.core.script.DefaultScriptExecutor(scriptExecutor),
+            dataSourceService
+        )
+
+        // 创建适配器
+        val adapter = DefaultScriptDebuggerAdapter()
+
+        return adapter
     }
 
     @Bean
     @ConditionalOnMissingBean
-    fun scriptDebugger(scriptExecutor: ScriptExecutor, dataSourceService: DataSourceService): ScriptDebugger {
-        // 使用原有的DefaultScriptDebugger实现基本功能
-        val originalDebugger = ai.magicdb.dataservice.core.debug.DefaultScriptDebugger(scriptExecutor, dataSourceService)
-
-        // 使用适配器扩展调试功能
-        return DefaultScriptDebuggerAdapter()
-    }
-
-    @Bean
-    @ConditionalOnMissingBean
-    fun asyncTaskExecutor(scriptExecutor: ScriptExecutor): AsyncTaskExecutor {
-        return DefaultAsyncTaskExecutor(scriptExecutor)
+    fun asyncTaskExecutor(
+        scriptExecutor: GraalScriptExecutor
+    ): AsyncTaskExecutor {
+        return DefaultAsyncTaskExecutor(
+            ai.magicdb.dataservice.core.script.DefaultScriptExecutor(scriptExecutor)
+        )
     }
 
     @Bean
@@ -182,5 +201,90 @@ class DataServiceConfig {
         objectMapper: ObjectMapper
     ): DataServiceManager {
         return DefaultDataServiceManager(repository, executor, objectMapper)
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    fun serviceFlowRepository(): ServiceFlowRepository {
+        return MemoryServiceFlowRepository()
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    fun serviceFlowExecutor(
+        serviceExecutor: DataServiceExecutor,
+        scriptExecutor: GraalScriptExecutor
+    ): ServiceFlowExecutor {
+        return DefaultServiceFlowExecutor(serviceExecutor, scriptExecutor)
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    fun serviceOrchestrator(
+        flowRepository: ServiceFlowRepository,
+        flowExecutor: ServiceFlowExecutor,
+        serviceRepository: DataServiceRepository,
+        serviceExecutor: DataServiceExecutor,
+        objectMapper: ObjectMapper
+    ): ServiceOrchestrator {
+        return DefaultServiceOrchestrator(flowRepository, flowExecutor, serviceRepository, serviceExecutor, objectMapper)
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    fun transformationRepository(): TransformationRepository {
+        return MemoryTransformationRepository()
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    fun dataTransformer(
+        scriptExecutor: GraalScriptExecutor,
+        objectMapper: ObjectMapper
+    ): DataTransformer {
+        return DefaultDataTransformer(
+            ai.magicdb.dataservice.core.script.DefaultScriptExecutor(scriptExecutor),
+            objectMapper
+        )
+    }
+
+    /**
+     * 内存监控存储库
+     * 仅在开发和测试环境使用
+     */
+    @Bean
+    @ConditionalOnProperty(name = ["magicdb.data-service.monitoring.repository"], havingValue = "memory", matchIfMissing = false)
+    fun memoryMonitoringRepository(): MonitoringRepository {
+        return MemoryMonitoringRepository()
+    }
+
+    /**
+     * MyBatis监控存储库
+     * 默认使用
+     */
+    @Bean
+    @Primary
+    @ConditionalOnMissingBean(MonitoringRepository::class)
+    fun mybatisMonitoringRepository(
+        callRecordMapper: ServiceCallRecordMapper,
+        callStatsMapper: ServiceCallStatsMapper,
+        performanceMapper: ServicePerformanceMapper,
+        monitoringConverter: MonitoringConverter
+    ): MonitoringRepository {
+        return MybatisMonitoringRepository(
+            callRecordMapper,
+            callStatsMapper,
+            performanceMapper,
+            monitoringConverter
+        )
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    fun monitoringService(
+        monitoringRepository: MonitoringRepository,
+        dataServiceRepository: DataServiceRepository
+    ): MonitoringService {
+        return DefaultMonitoringService(monitoringRepository, dataServiceRepository)
     }
 }
