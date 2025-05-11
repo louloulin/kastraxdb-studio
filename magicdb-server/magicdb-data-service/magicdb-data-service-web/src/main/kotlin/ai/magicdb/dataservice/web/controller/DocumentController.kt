@@ -3,10 +3,17 @@ package ai.magicdb.dataservice.web.controller
 import ai.magicdb.dataservice.api.DocumentGenerator
 import ai.magicdb.dataservice.api.model.DocumentTemplate
 import ai.magicdb.dataservice.api.model.ServiceDocument
+import ai.magicdb.dataservice.core.document.DocumentExporter
+import ai.magicdb.dataservice.core.document.ExampleGenerator
 import ai.magicdb.server.tools.base.wrapper.result.ActionResult
 import ai.magicdb.server.tools.base.wrapper.result.DataResult
 import ai.magicdb.server.tools.base.wrapper.result.ListResult
+import org.springframework.http.HttpHeaders
+import org.springframework.http.MediaType
+import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
+import java.net.URLEncoder
+import java.nio.charset.StandardCharsets
 
 /**
  * 文档控制器
@@ -15,7 +22,11 @@ import org.springframework.web.bind.annotation.*
  */
 @RestController
 @RequestMapping("/api/data-service/document")
-class DocumentController(private val documentGenerator: DocumentGenerator) {
+class DocumentController(
+    private val documentGenerator: DocumentGenerator,
+    private val documentExporter: DocumentExporter,
+    private val exampleGenerator: ExampleGenerator
+) {
 
     /**
      * 生成服务文档
@@ -231,5 +242,101 @@ class DocumentController(private val documentGenerator: DocumentGenerator) {
         } else {
             ActionResult.fail("common.error", "删除模板失败", "")
         }
+    }
+
+    /**
+     * 导出文档为PDF
+     *
+     * @param documentId 文档ID
+     * @return PDF文件
+     */
+    @GetMapping("/{documentId}/export/pdf", produces = [MediaType.APPLICATION_PDF_VALUE])
+    fun exportDocumentToPdf(@PathVariable documentId: String): ResponseEntity<ByteArray> {
+        val document = documentGenerator.getDocument(documentId)
+            ?: throw IllegalArgumentException("文档不存在: $documentId")
+
+        val outputStream = java.io.ByteArrayOutputStream()
+        documentExporter.export(document, DocumentExporter.ExportFormat.PDF, outputStream)
+
+        val fileName = URLEncoder.encode("${document.title}.pdf", StandardCharsets.UTF_8.toString())
+
+        return ResponseEntity.ok()
+            .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=$fileName")
+            .body(outputStream.toByteArray())
+    }
+
+    /**
+     * 导出文档为HTML
+     *
+     * @param documentId 文档ID
+     * @return HTML文件
+     */
+    @GetMapping("/{documentId}/export/html", produces = [MediaType.TEXT_HTML_VALUE])
+    fun exportDocumentToHtml(@PathVariable documentId: String): ResponseEntity<ByteArray> {
+        val document = documentGenerator.getDocument(documentId)
+            ?: throw IllegalArgumentException("文档不存在: $documentId")
+
+        val outputStream = java.io.ByteArrayOutputStream()
+        documentExporter.export(document, DocumentExporter.ExportFormat.HTML, outputStream)
+
+        val fileName = URLEncoder.encode("${document.title}.html", StandardCharsets.UTF_8.toString())
+
+        return ResponseEntity.ok()
+            .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=$fileName")
+            .body(outputStream.toByteArray())
+    }
+
+    /**
+     * 导出文档为Word
+     *
+     * @param documentId 文档ID
+     * @return Word文件
+     */
+    @GetMapping("/{documentId}/export/word", produces = ["application/vnd.openxmlformats-officedocument.wordprocessingml.document"])
+    fun exportDocumentToWord(@PathVariable documentId: String): ResponseEntity<ByteArray> {
+        val document = documentGenerator.getDocument(documentId)
+            ?: throw IllegalArgumentException("文档不存在: $documentId")
+
+        val outputStream = java.io.ByteArrayOutputStream()
+        documentExporter.export(document, DocumentExporter.ExportFormat.WORD, outputStream)
+
+        val fileName = URLEncoder.encode("${document.title}.docx", StandardCharsets.UTF_8.toString())
+
+        return ResponseEntity.ok()
+            .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=$fileName")
+            .body(outputStream.toByteArray())
+    }
+
+    /**
+     * 获取示例文档
+     *
+     * @return 示例文档
+     */
+    @GetMapping("/example")
+    fun getExampleDocument(): DataResult<ServiceDocument> {
+        val document = exampleGenerator.generateExampleDocument()
+        return DataResult.of(document)
+    }
+
+    /**
+     * 获取示例服务
+     *
+     * @return 示例服务
+     */
+    @GetMapping("/example/service")
+    fun getExampleService(): DataResult<ai.magicdb.dataservice.api.model.DataService> {
+        val service = exampleGenerator.generateExampleService()
+        return DataResult.of(service)
+    }
+
+    /**
+     * 获取示例分组
+     *
+     * @return 示例分组
+     */
+    @GetMapping("/example/group")
+    fun getExampleGroup(): DataResult<ai.magicdb.dataservice.api.model.ServiceGroup> {
+        val group = exampleGenerator.generateExampleGroup()
+        return DataResult.of(group)
     }
 }

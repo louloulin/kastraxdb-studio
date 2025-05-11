@@ -152,7 +152,7 @@ class MybatisTaskRepositoryTest {
         `when`(taskMapper.selectByStatus(status.name)).thenReturn(taskDOs)
         
         // 执行测试
-        val tasks = taskRepository.getTasksByStatus(status)
+        val tasks = taskRepository.getAllTasks(status)
         
         // 验证结果
         assertEquals(2, tasks.size)
@@ -183,7 +183,26 @@ class MybatisTaskRepositoryTest {
     }
     
     @Test
-    fun testSaveExecution() {
+    fun testUpdateTaskStatus() {
+        // 准备测试数据
+        val taskId = "task-123"
+        val status = ScheduledTaskStatus.RUNNING
+        
+        // 设置模拟对象的行为
+        `when`(taskMapper.updateStatus(eq(taskId), eq(status.name), anyLong())).thenReturn(1)
+        
+        // 执行测试
+        val result = taskRepository.updateTaskStatus(taskId, status)
+        
+        // 验证结果
+        assertTrue(result)
+        
+        // 验证方法调用
+        verify(taskMapper).updateStatus(eq(taskId), eq(status.name), anyLong())
+    }
+    
+    @Test
+    fun testSaveTaskExecution() {
         // 准备测试数据
         val execution = createTestExecution()
         
@@ -192,7 +211,7 @@ class MybatisTaskRepositoryTest {
         `when`(executionMapper.insert(any())).thenReturn(1)
         
         // 执行测试
-        val executionId = taskRepository.saveExecution(execution)
+        val executionId = taskRepository.saveTaskExecution(execution)
         
         // 验证结果
         assertEquals(execution.id, executionId)
@@ -203,7 +222,7 @@ class MybatisTaskRepositoryTest {
     }
     
     @Test
-    fun testGetExecution() {
+    fun testGetTaskExecution() {
         // 准备测试数据
         val executionId = "exec-123"
         val executionDO = createTestExecutionDO()
@@ -212,7 +231,7 @@ class MybatisTaskRepositoryTest {
         `when`(executionMapper.selectById(executionId)).thenReturn(executionDO)
         
         // 执行测试
-        val execution = taskRepository.getExecution(executionId)
+        val execution = taskRepository.getTaskExecution(executionId)
         
         // 验证结果
         assertNotNull(execution)
@@ -224,18 +243,20 @@ class MybatisTaskRepositoryTest {
     }
     
     @Test
-    fun testGetExecutionsByTask() {
+    fun testGetTaskExecutions() {
         // 准备测试数据
         val taskId = "task-123"
+        val limit = 10
+        val offset = 0
         val executionDO1 = createTestExecutionDO("exec-123", taskId)
         val executionDO2 = createTestExecutionDO("exec-456", taskId)
         val executionDOs = listOf(executionDO1, executionDO2)
         
         // 设置模拟对象的行为
-        `when`(executionMapper.selectList(any())).thenReturn(executionDOs)
+        `when`(executionMapper.selectByTaskId(taskId, limit, offset)).thenReturn(executionDOs)
         
         // 执行测试
-        val executions = taskRepository.getExecutionsByTask(taskId)
+        val executions = taskRepository.getTaskExecutions(taskId, limit, offset)
         
         // 验证结果
         assertEquals(2, executions.size)
@@ -243,7 +264,7 @@ class MybatisTaskRepositoryTest {
         assertEquals("exec-456", executions[1].id)
         
         // 验证方法调用
-        verify(executionMapper).selectList(any())
+        verify(executionMapper).selectByTaskId(taskId, limit, offset)
     }
     
     /**

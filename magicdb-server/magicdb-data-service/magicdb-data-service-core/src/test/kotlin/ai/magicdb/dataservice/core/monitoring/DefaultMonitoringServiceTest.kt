@@ -39,7 +39,7 @@ class DefaultMonitoringServiceTest {
         
         // 设置模拟对象的行为
         val service = DataService(id = serviceId, name = "Test Service")
-        `when`(dataServiceRepository.getDataService(serviceId)).thenReturn(service)
+        `when`(dataServiceRepository.getService(serviceId)).thenReturn(service)
         
         // 执行方法
         monitoringService.recordServiceCall(serviceId, executionTime, success, null, userId, clientIp)
@@ -58,7 +58,7 @@ class DefaultMonitoringServiceTest {
         
         // 设置模拟对象的行为
         val service = DataService(id = serviceId, name = "Test Service")
-        `when`(dataServiceRepository.getDataService(serviceId)).thenReturn(service)
+        `when`(dataServiceRepository.getService(serviceId)).thenReturn(service)
         
         // 执行方法
         monitoringService.recordServiceCall(serviceId, executionTime, success, errorMessage)

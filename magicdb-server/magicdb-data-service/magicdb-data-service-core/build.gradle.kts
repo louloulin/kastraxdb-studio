@@ -53,6 +53,10 @@ dependencies {
     // SnakeYAML for YAML
     implementation("org.yaml:snakeyaml:2.0")
 
+    // Document generation and export
+    implementation("com.itextpdf:html2pdf:4.0.5")
+    implementation("org.commonmark:commonmark:0.21.0")
+
     // Quartz Scheduler
     implementation("org.quartz-scheduler:quartz:2.3.2")
 
