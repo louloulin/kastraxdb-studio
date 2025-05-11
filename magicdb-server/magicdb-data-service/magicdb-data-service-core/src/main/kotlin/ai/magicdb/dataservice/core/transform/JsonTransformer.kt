@@ -28,12 +28,12 @@ class JsonTransformer(
     private val objectMapper: ObjectMapper
 ) : FormatTransformer {
     private val logger = LoggerFactory.getLogger(JsonTransformer::class.java)
-    
+
     override fun transform(request: TransformationRequest): TransformationResult {
         try {
             // 解析源数据为JSON
             val jsonNode = parseSourceData(request.sourceData)
-            
+
             // 根据目标格式转换
             return when (request.targetFormat.lowercase()) {
                 "json" -> transformToJson(jsonNode, request)
@@ -47,18 +47,18 @@ class JsonTransformer(
             return TransformationResult.failure("JSON转换失败: ${e.message}")
         }
     }
-    
+
     override fun getSupportedSourceFormats(): List<String> {
         return listOf("json")
     }
-    
+
     override fun getSupportedTargetFormats(): List<String> {
         return listOf("json", "xml", "csv", "yaml")
     }
-    
+
     override fun validateRules(rules: Map<String, Any?>): List<String> {
         val errors = mutableListOf<String>()
-        
+
         // 验证字段映射
         val fieldMappings = rules["fieldMappings"] as? Map<*, *>
         if (fieldMappings != null) {
@@ -71,7 +71,7 @@ class JsonTransformer(
                 }
             }
         }
-        
+
         // 验证值转换
         val valueConverters = rules["valueConverters"] as? Map<*, *>
         if (valueConverters != null) {
@@ -84,10 +84,10 @@ class JsonTransformer(
                 }
             }
         }
-        
+
         return errors
     }
-    
+
     override fun getRuleTemplate(): Map<String, Any?> {
         return mapOf(
             "fieldMappings" to mapOf(
@@ -115,7 +115,7 @@ class JsonTransformer(
             "pretty" to true // 格式化输出
         )
     }
-    
+
     /**
      * 解析源数据
      */
@@ -128,7 +128,7 @@ class JsonTransformer(
             else -> objectMapper.valueToTree(sourceData)
         }
     }
-    
+
     /**
      * 转换为JSON
      */
@@ -136,7 +136,7 @@ class JsonTransformer(
         try {
             // 应用转换规则
             val transformedNode = applyRules(jsonNode, request.rules)
-            
+
             // 转换为JSON字符串
             val pretty = request.options["pretty"] as? Boolean ?: false
             val jsonString = if (pretty) {
@@ -144,7 +144,7 @@ class JsonTransformer(
             } else {
                 objectMapper.writeValueAsString(transformedNode)
             }
-            
+
             return TransformationResult.success(
                 targetData = jsonString,
                 targetFormat = "json"
@@ -154,7 +154,7 @@ class JsonTransformer(
             return TransformationResult.failure("转换为JSON失败: ${e.message}")
         }
     }
-    
+
     /**
      * 转换为XML
      */
@@ -162,24 +162,24 @@ class JsonTransformer(
         try {
             // 应用转换规则
             val transformedNode = applyRules(jsonNode, request.rules)
-            
+
             // 创建XML文档
             val docFactory = DocumentBuilderFactory.newInstance()
             val docBuilder = docFactory.newDocumentBuilder()
             val doc = docBuilder.newDocument()
-            
+
             // 设置根元素
             val rootElementName = request.rules["rootElement"] as? String ?: "root"
             val rootElement = doc.createElement(rootElementName)
             doc.appendChild(rootElement)
-            
+
             // 转换JSON为XML
             jsonToXml(transformedNode, rootElement, doc)
-            
+
             // 转换为XML字符串
             val transformerFactory = TransformerFactory.newInstance()
             val transformer = transformerFactory.newTransformer()
-            
+
             // 设置输出属性
             val pretty = request.options["pretty"] as? Boolean ?: false
             if (pretty) {
@@ -187,12 +187,12 @@ class JsonTransformer(
                 transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "2")
             }
             transformer.setOutputProperty(OutputKeys.ENCODING, "UTF-8")
-            
+
             val source = DOMSource(doc)
             val writer = StringWriter()
             val result = StreamResult(writer)
             transformer.transform(source, result)
-            
+
             return TransformationResult.success(
                 targetData = writer.toString(),
                 targetFormat = "xml"
@@ -202,7 +202,7 @@ class JsonTransformer(
             return TransformationResult.failure("转换为XML失败: ${e.message}")
         }
     }
-    
+
     /**
      * 转换为CSV
      */
@@ -210,28 +210,28 @@ class JsonTransformer(
         try {
             // 应用转换规则
             val transformedNode = applyRules(jsonNode, request.rules)
-            
+
             // 检查是否为数组
             if (!transformedNode.isArray()) {
                 return TransformationResult.failure("CSV转换需要JSON数组")
             }
-            
+
             // 获取CSV选项
             val delimiter = request.options["delimiter"] as? String ?: ","
             val quoteChar = request.options["quoteChar"] as? String ?: "\""
             val header = request.options["header"] as? Boolean ?: true
-            
+
             // 创建CSV格式
             val csvFormat = CSVFormat.DEFAULT
                 .withDelimiter(delimiter[0])
                 .withQuote(quoteChar[0])
                 .withHeader(*getHeaders(transformedNode as ArrayNode).toTypedArray())
                 .withSkipHeaderRecord(!header)
-            
+
             // 创建CSV打印器
             val writer = StringWriter()
             val csvPrinter = CSVPrinter(writer, csvFormat)
-            
+
             // 写入数据
             for (i in 0 until transformedNode.size()) {
                 val row = transformedNode[i]
@@ -243,10 +243,10 @@ class JsonTransformer(
                     csvPrinter.printRecord(values)
                 }
             }
-            
+
             // 关闭打印器
             csvPrinter.close()
-            
+
             return TransformationResult.success(
                 targetData = writer.toString(),
                 targetFormat = "csv"
@@ -256,7 +256,7 @@ class JsonTransformer(
             return TransformationResult.failure("转换为CSV失败: ${e.message}")
         }
     }
-    
+
     /**
      * 转换为YAML
      */
@@ -264,14 +264,14 @@ class JsonTransformer(
         try {
             // 应用转换规则
             val transformedNode = applyRules(jsonNode, request.rules)
-            
+
             // 转换为Java对象
             val javaObject = objectMapper.treeToValue(transformedNode, Any::class.java)
-            
+
             // 转换为YAML
             val yaml = Yaml()
             val yamlString = yaml.dump(javaObject)
-            
+
             return TransformationResult.success(
                 targetData = yamlString,
                 targetFormat = "yaml"
@@ -281,78 +281,75 @@ class JsonTransformer(
             return TransformationResult.failure("转换为YAML失败: ${e.message}")
         }
     }
-    
+
     /**
      * 应用转换规则
      */
     private fun applyRules(jsonNode: JsonNode, rules: Map<String, Any?>): JsonNode {
         // 创建副本
         val result = jsonNode.deepCopy()
-        
+
         // 应用字段映射
-        val fieldMappings = rules["fieldMappings"] as? Map<*, *>
+        val fieldMappings = rules["fieldMappings"] as? Map<String, String>
         if (fieldMappings != null && result.isObject()) {
             val objectNode = result as ObjectNode
             val fieldsToAdd = mutableMapOf<String, JsonNode>()
             val fieldsToRemove = mutableListOf<String>()
-            
-            for ((source, target) in fieldMappings) {
-                val sourceField = source.toString()
-                val targetField = target.toString()
-                
+
+            for ((sourceField, targetField) in fieldMappings) {
                 if (objectNode.has(sourceField) && sourceField != targetField) {
                     fieldsToAdd[targetField] = objectNode.get(sourceField)
                     fieldsToRemove.add(sourceField)
                 }
             }
-            
+
             // 添加新字段
             for ((field, value) in fieldsToAdd) {
-                objectNode.set<JsonNode>(field, value)
+                objectNode.set(field, value)
             }
-            
+
             // 移除旧字段
             for (field in fieldsToRemove) {
                 objectNode.remove(field)
             }
         }
-        
+
         // 应用值转换
         val valueConverters = rules["valueConverters"] as? Map<*, *>
         if (valueConverters != null) {
             applyValueConverters(result, valueConverters)
         }
-        
+
         // 应用包含字段
         val includeFields = rules["includeFields"] as? List<*>
         if (includeFields != null && result.isObject()) {
             val objectNode = result as ObjectNode
             val fieldsToRemove = mutableListOf<String>()
-            
+
             objectNode.fieldNames().forEach { field ->
                 if (!includeFields.contains(field)) {
                     fieldsToRemove.add(field)
                 }
             }
-            
+
             for (field in fieldsToRemove) {
                 objectNode.remove(field)
             }
         }
-        
+
         // 应用排除字段
         val excludeFields = rules["excludeFields"] as? List<*>
         if (excludeFields != null && result.isObject()) {
             val objectNode = result as ObjectNode
-            
+
             for (field in excludeFields) {
                 objectNode.remove(field.toString())
             }
         }
-        
+
         return result
     }
-    
+
     /**
      * 应用值转换器
      */
@@ -360,7 +357,7 @@ class JsonTransformer(
         when {
             jsonNode.isObject() -> {
                 val objectNode = jsonNode as ObjectNode
-                
+
                 // 遍历字段
                 objectNode.fieldNames().forEach { field ->
                     val converter = valueConverters[field]
@@ -370,7 +367,7 @@ class JsonTransformer(
                         val convertedValue = applyValueConverter(value, converter as Map<*, *>)
                         objectNode.set<JsonNode>(field, convertedValue)
                     }
-                    
+
                     // 递归处理嵌套对象
                     val value = objectNode.get(field)
                     if (value.isObject() || value.isArray()) {
@@ -380,7 +377,7 @@ class JsonTransformer(
             }
             jsonNode.isArray() -> {
                 val arrayNode = jsonNode as ArrayNode
-                
+
                 // 遍历数组元素
                 for (i in 0 until arrayNode.size()) {
                     val element = arrayNode.get(i)
@@ -391,13 +388,13 @@ class JsonTransformer(
             }
         }
     }
-    
+
     /**
      * 应用值转换器
      */
     private fun applyValueConverter(value: JsonNode, converter: Map<*, *>): JsonNode {
         val type = converter["type"] as? String ?: return value
-        
+
         return when (type) {
             "replace" -> {
                 val search = converter["search"] as? String ?: return value
@@ -443,7 +440,7 @@ class JsonTransformer(
             else -> value
         }
     }
-    
+
     /**
      * JSON转XML
      */
@@ -493,13 +490,13 @@ class JsonTransformer(
             }
         }
     }
-    
+
     /**
      * 获取CSV表头
      */
     private fun getHeaders(arrayNode: ArrayNode): List<String> {
         val headers = mutableSetOf<String>()
-        
+
         // 遍历数组中的所有对象，收集所有字段名
         for (i in 0 until arrayNode.size()) {
             val node = arrayNode.get(i)
@@ -507,7 +504,7 @@ class JsonTransformer(
                 node.fieldNames().forEach { headers.add(it) }
             }
         }
-        
+
         return headers.toList()
     }
 }

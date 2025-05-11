@@ -41,7 +41,12 @@ enum class FlowExecutionStatus {
     /**
      * 已暂停
      */
-    PAUSED
+    PAUSED,
+
+    /**
+     * 未知状态
+     */
+    UNKNOWN
 }
 
 /**

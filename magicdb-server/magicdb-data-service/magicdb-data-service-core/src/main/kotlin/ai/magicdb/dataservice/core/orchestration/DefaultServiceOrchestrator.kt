@@ -6,12 +6,13 @@ import ai.magicdb.dataservice.api.ServiceFlowExecutor
 import ai.magicdb.dataservice.api.ServiceFlowRepository
 import ai.magicdb.dataservice.api.ServiceOrchestrator
 import ai.magicdb.dataservice.api.model.FlowExecution
+import ai.magicdb.dataservice.api.model.FlowExecutionStatus
 import ai.magicdb.dataservice.api.model.ServiceFlow
-import ai.magicdb.dataservice.api.model.ServiceFlowGroup
+import ai.magicdb.dataservice.api.model.ServiceFlowExecution
+import ai.magicdb.dataservice.api.model.ServiceFlowExecutionStatus
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
-import java.time.LocalDateTime
 
 /**
  * 默认服务编排器实现
@@ -27,7 +28,7 @@ class DefaultServiceOrchestrator(
     private val objectMapper: ObjectMapper
 ) : ServiceOrchestrator {
     private val logger = LoggerFactory.getLogger(DefaultServiceOrchestrator::class.java)
-    
+
     override fun createFlow(flow: ServiceFlow): String {
         try {
             // 创建流程
@@ -37,7 +38,7 @@ class DefaultServiceOrchestrator(
             throw e
         }
     }
-    
+
     override fun updateFlow(flow: ServiceFlow): Boolean {
         try {
             // 更新流程
@@ -48,31 +49,18 @@ class DefaultServiceOrchestrator(
             return false
         }
     }
-    
-    override fun getFlow(flowId: String): ServiceFlow? {
+
+    override fun getFlow(flowId: String): ServiceFlow {
         try {
-            return flowRepository.getFlow(flowId)
+            return flowRepository.getFlow(flowId) ?: throw IllegalArgumentException("流程不存在: $flowId")
         } catch (e: Exception) {
             logger.error("获取流程失败: {}", flowId, e)
-            return null
+            throw e
         }
     }
-    
-    override fun getFlows(
-        groupId: String?,
-        name: String?,
-        status: String?,
-        limit: Int,
-        offset: Int
-    ): List<ServiceFlow> {
-        try {
-            return flowRepository.getFlows(groupId, name, status, limit, offset)
-        } catch (e: Exception) {
-            logger.error("获取流程列表失败", e)
-            return emptyList()
-        }
-    }
-    
+
+
+
     override fun deleteFlow(flowId: String): Boolean {
         try {
             return flowRepository.deleteFlow(flowId)
@@ -81,195 +69,142 @@ class DefaultServiceOrchestrator(
             return false
         }
     }
-    
-    override fun createFlowGroup(group: ServiceFlowGroup): String {
-        try {
-            // 创建分组
-            return flowRepository.saveFlowGroup(group)
-        } catch (e: Exception) {
-            logger.error("创建流程分组失败: {}", e.message, e)
-            throw e
-        }
-    }
-    
-    override fun updateFlowGroup(group: ServiceFlowGroup): Boolean {
-        try {
-            // 更新分组
-            val groupId = flowRepository.saveFlowGroup(group)
-            return groupId.isNotEmpty()
-        } catch (e: Exception) {
-            logger.error("更新流程分组失败: {}", e.message, e)
-            return false
-        }
-    }
-    
-    override fun getFlowGroup(groupId: String): ServiceFlowGroup? {
-        try {
-            return flowRepository.getFlowGroup(groupId)
-        } catch (e: Exception) {
-            logger.error("获取流程分组失败: {}", groupId, e)
-            return null
-        }
-    }
-    
-    override fun getFlowGroups(
-        parentId: String?,
-        name: String?,
-        limit: Int,
-        offset: Int
-    ): List<ServiceFlowGroup> {
-        try {
-            return flowRepository.getFlowGroups(parentId, name, limit, offset)
-        } catch (e: Exception) {
-            logger.error("获取流程分组列表失败", e)
-            return emptyList()
-        }
-    }
-    
-    override fun deleteFlowGroup(groupId: String): Boolean {
-        try {
-            return flowRepository.deleteFlowGroup(groupId)
-        } catch (e: Exception) {
-            logger.error("删除流程分组失败: {}", groupId, e)
-            return false
-        }
-    }
-    
-    override fun executeFlow(
-        flowId: String,
-        parameters: Map<String, Any?>,
-        async: Boolean
-    ): FlowExecution {
+
+
+
+
+
+
+
+
+
+
+
+    override fun executeFlow(flowId: String, parameters: Map<String, Any?>): String {
         try {
             // 获取流程
-            val flow = flowRepository.getFlow(flowId)
-                ?: throw IllegalArgumentException("流程不存在: $flowId")
-            
-            // 执行流程
-            val execution = flowExecutor.executeFlow(flow, parameters, async)
-            
-            // 保存执行记录
-            flowRepository.saveFlowExecution(execution)
-            
-            return execution
+            val flow = getFlow(flowId)
+
+            // 异步执行流程
+            return flowExecutor.executeAsync(flow, parameters)
         } catch (e: Exception) {
             logger.error("执行流程失败: {}", e.message, e)
             throw e
         }
     }
-    
-    override fun getFlowExecution(executionId: String): FlowExecution? {
-        try {
-            return flowRepository.getFlowExecution(executionId)
-        } catch (e: Exception) {
-            logger.error("获取流程执行记录失败: {}", executionId, e)
-            return null
-        }
-    }
-    
-    override fun getFlowExecutions(
-        flowId: String?,
-        status: String?,
-        startTime: Long?,
-        endTime: Long?,
-        limit: Int,
-        offset: Int
-    ): List<FlowExecution> {
-        try {
-            return flowRepository.getFlowExecutions(flowId, status, startTime, endTime, limit, offset)
-        } catch (e: Exception) {
-            logger.error("获取流程执行记录列表失败", e)
-            return emptyList()
-        }
-    }
-    
-    override fun pauseFlowExecution(executionId: String): Boolean {
-        try {
-            // 暂停执行
-            val success = flowExecutor.pauseExecution(executionId)
-            
-            if (success) {
-                // 更新执行记录
-                val execution = flowExecutor.getExecutionStatus(executionId)
-                if (execution != null) {
-                    flowRepository.saveFlowExecution(execution)
-                }
-            }
-            
-            return success
-        } catch (e: Exception) {
-            logger.error("暂停流程执行失败: {}", e.message, e)
-            return false
-        }
-    }
-    
-    override fun resumeFlowExecution(executionId: String): Boolean {
-        try {
-            // 恢复执行
-            val success = flowExecutor.resumeExecution(executionId)
-            
-            if (success) {
-                // 更新执行记录
-                val execution = flowExecutor.getExecutionStatus(executionId)
-                if (execution != null) {
-                    flowRepository.saveFlowExecution(execution)
-                }
-            }
-            
-            return success
-        } catch (e: Exception) {
-            logger.error("恢复流程执行失败: {}", e.message, e)
-            return false
-        }
-    }
-    
-    override fun cancelFlowExecution(executionId: String): Boolean {
+
+
+
+
+
+    override fun cancelExecution(executionId: String): Boolean {
         try {
             // 取消执行
-            val success = flowExecutor.cancelExecution(executionId)
-            
-            if (success) {
-                // 更新执行记录
-                val execution = flowExecutor.getExecutionStatus(executionId)
-                if (execution != null) {
-                    flowRepository.saveFlowExecution(execution)
-                }
-            }
-            
-            return success
+            return flowExecutor.cancel(executionId)
         } catch (e: Exception) {
             logger.error("取消流程执行失败: {}", e.message, e)
             return false
         }
     }
-    
-    override fun getFlowExecutionResult(executionId: String): Any? {
+
+    override fun getExecutionStatus(executionId: String): ServiceFlowExecution {
         try {
-            return flowExecutor.getExecutionResult(executionId)
+            // 获取执行记录
+            val execution = flowRepository.getFlowExecution(executionId)
+                ?: throw IllegalArgumentException("执行记录不存在: $executionId")
+
+            // 转换为ServiceFlowExecution
+            return convertToServiceFlowExecution(execution)
         } catch (e: Exception) {
-            logger.error("获取流程执行结果失败: {}", executionId, e)
+            logger.error("获取流程执行状态失败: {}", e.message, e)
+            throw e
+        }
+    }
+
+    override fun getExecutionResult(executionId: String): Any? {
+        try {
+            // 获取执行记录
+            val execution = flowRepository.getFlowExecution(executionId)
+                ?: throw IllegalArgumentException("执行记录不存在: $executionId")
+
+            return execution.result
+        } catch (e: Exception) {
+            logger.error("获取流程执行结果失败: {}", e.message, e)
             return null
         }
     }
-    
-    override fun deleteFlowExecution(executionId: String): Boolean {
+
+    override fun getAllFlows(): List<ServiceFlow> {
         try {
-            return flowRepository.deleteFlowExecution(executionId)
+            return flowRepository.getFlows(null, null, null, 1000, 0)
         } catch (e: Exception) {
-            logger.error("删除流程执行记录失败: {}", executionId, e)
-            return false
+            logger.error("获取所有流程失败", e)
+            return emptyList()
         }
     }
-    
-    override fun clearFlowExecutions(
-        flowId: String?,
-        before: Long?
-    ): Int {
+
+    override fun getAllExecutions(): List<ServiceFlowExecution> {
         try {
-            return flowRepository.clearFlowExecutions(flowId, before)
+            val executions = flowRepository.getFlowExecutions(null, null, null, null, 1000, 0)
+            return executions.map { convertToServiceFlowExecution(it) }
         } catch (e: Exception) {
-            logger.error("清除流程执行记录失败", e)
-            return 0
+            logger.error("获取所有流程执行失败", e)
+            return emptyList()
+        }
+    }
+
+    override fun validateFlow(flow: ServiceFlow): List<String> {
+        try {
+            val errors = mutableListOf<String>()
+
+            // 验证流程名称
+            if (flow.name.isBlank()) {
+                errors.add("流程名称不能为空")
+            }
+
+            // 验证流程节点
+            if (flow.nodes.isEmpty()) {
+                errors.add("流程节点不能为空")
+            }
+
+            return errors
+        } catch (e: Exception) {
+            logger.error("验证流程失败: {}", e.message, e)
+            return listOf("验证流程失败: ${e.message}")
+        }
+    }
+
+    /**
+     * 转换为服务流程执行模型
+     */
+    private fun convertToServiceFlowExecution(execution: FlowExecution): ServiceFlowExecution {
+        return ServiceFlowExecution(
+            id = execution.id,
+            flowId = execution.flowId,
+            flowName = execution.flowName,
+            status = convertStatus(execution.status),
+            startTime = execution.startTime,
+            endTime = execution.endTime,
+            parameters = execution.parameters,
+            result = execution.result,
+            error = execution.errorMessage,
+            duration = execution.duration
+        )
+    }
+
+    /**
+     * 转换状态
+     */
+    private fun convertStatus(status: FlowExecutionStatus): ServiceFlowExecutionStatus {
+        return when (status) {
+            FlowExecutionStatus.PENDING -> ServiceFlowExecutionStatus.PENDING
+            FlowExecutionStatus.RUNNING -> ServiceFlowExecutionStatus.RUNNING
+            FlowExecutionStatus.SUCCESS -> ServiceFlowExecutionStatus.COMPLETED
+            FlowExecutionStatus.FAILED -> ServiceFlowExecutionStatus.FAILED
+            FlowExecutionStatus.CANCELED -> ServiceFlowExecutionStatus.CANCELLED
+            FlowExecutionStatus.TIMEOUT -> ServiceFlowExecutionStatus.TIMEOUT
+            FlowExecutionStatus.PAUSED -> ServiceFlowExecutionStatus.PAUSED
+            else -> ServiceFlowExecutionStatus.PENDING
         }
     }
 }

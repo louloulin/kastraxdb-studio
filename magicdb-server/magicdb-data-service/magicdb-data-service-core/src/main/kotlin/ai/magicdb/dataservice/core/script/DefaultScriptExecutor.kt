@@ -17,7 +17,7 @@ class DefaultScriptExecutor(
     override fun execute(script: String, language: String, context: Map<String, Any?>, timeout: Long, timeUnit: TimeUnit): Any? {
         try {
             // 执行脚本
-            return scriptExecutor.execute(script, language, context, timeout, timeUnit)
+            return scriptExecutor.execute(language, script, context)
         } catch (e: Exception) {
             logger.error("执行脚本失败: {}", e.message, e)
             throw e
@@ -25,6 +25,6 @@ class DefaultScriptExecutor(
     }
 
     override fun getSupportedLanguages(): List<String> {
-        return scriptExecutor.supportedLanguages
+        return scriptExecutor.getSupportedLanguages().toList()
     }
 }

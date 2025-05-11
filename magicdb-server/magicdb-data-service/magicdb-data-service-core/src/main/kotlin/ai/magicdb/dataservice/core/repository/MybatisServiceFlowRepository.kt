@@ -33,9 +33,9 @@ class MybatisServiceFlowRepository(
     private val nodeExecutionMapper: NodeExecutionMapper,
     private val objectMapper: ObjectMapper
 ) : ServiceFlowRepository {
-    
+
     private val logger = LoggerFactory.getLogger(MybatisServiceFlowRepository::class.java)
-    
+
     override fun saveFlow(flow: ServiceFlow): String {
         try {
             // 如果没有ID，生成一个新的ID
@@ -43,13 +43,13 @@ class MybatisServiceFlowRepository(
                 flow.id = UUID.randomUUID().toString()
                 flow.createTime = System.currentTimeMillis()
             }
-            
+
             // 更新时间
             flow.updateTime = System.currentTimeMillis()
-            
+
             // 转换为DO对象
             val flowDO = convertToFlowDO(flow)
-            
+
             // 保存或更新
             val existingFlow = flowMapper.selectById(flow.id)
             if (existingFlow == null) {
@@ -57,22 +57,22 @@ class MybatisServiceFlowRepository(
             } else {
                 flowMapper.updateById(flowDO)
             }
-            
+
             return flow.id
         } catch (e: Exception) {
             logger.error("保存流程失败: {}", flow.id, e)
             throw e
         }
     }
-    
+
     override fun updateFlow(flow: ServiceFlow): Boolean {
         try {
             // 更新时间
             flow.updateTime = System.currentTimeMillis()
-            
+
             // 转换为DO对象
             val flowDO = convertToFlowDO(flow)
-            
+
             // 更新
             val result = flowMapper.updateById(flowDO)
             return result > 0
@@ -81,7 +81,7 @@ class MybatisServiceFlowRepository(
             return false
         }
     }
-    
+
     override fun deleteFlow(flowId: String): Boolean {
         try {
             // 删除流程
@@ -92,12 +92,12 @@ class MybatisServiceFlowRepository(
             return false
         }
     }
-    
+
     override fun getFlow(flowId: String): ServiceFlow? {
         try {
             // 查询流程
             val flowDO = flowMapper.selectById(flowId) ?: return null
-            
+
             // 转换为模型对象
             return convertToFlow(flowDO)
         } catch (e: Exception) {
@@ -105,7 +105,7 @@ class MybatisServiceFlowRepository(
             return null
         }
     }
-    
+
     override fun getAllFlows(group: String?): List<ServiceFlow> {
         try {
             // 查询流程
@@ -114,7 +114,7 @@ class MybatisServiceFlowRepository(
             } else {
                 flowMapper.selectList(null)
             }
-            
+
             // 转换为模型对象
             return flowDOs.map { convertToFlow(it) }
         } catch (e: Exception) {
@@ -122,7 +122,7 @@ class MybatisServiceFlowRepository(
             return emptyList()
         }
     }
-    
+
     override fun updateFlowExecutionInfo(
         flowId: String,
         lastExecuteTime: Long,
@@ -146,7 +146,7 @@ class MybatisServiceFlowRepository(
             return false
         }
     }
-    
+
     override fun updateFlowEnabled(flowId: String, enabled: Boolean): Boolean {
         try {
             // 更新流程启用状态
@@ -157,17 +157,17 @@ class MybatisServiceFlowRepository(
             return false
         }
     }
-    
+
     override fun saveFlowExecution(execution: FlowExecution): String {
         try {
             // 如果没有ID，生成一个新的ID
             if (execution.id.isEmpty()) {
                 execution.id = UUID.randomUUID().toString()
             }
-            
+
             // 转换为DO对象
             val executionDO = convertToExecutionDO(execution)
-            
+
             // 保存或更新
             val existingExecution = executionMapper.selectById(execution.id)
             if (existingExecution == null) {
@@ -175,19 +175,19 @@ class MybatisServiceFlowRepository(
             } else {
                 executionMapper.updateById(executionDO)
             }
-            
+
             // 保存节点执行记录
             for (nodeExecution in execution.nodeExecutions) {
                 saveNodeExecution(nodeExecution, execution.id)
             }
-            
+
             return execution.id
         } catch (e: Exception) {
             logger.error("保存流程执行记录失败: {}", execution.id, e)
             throw e
         }
     }
-    
+
     override fun updateFlowExecutionStatus(executionId: String, status: FlowExecutionStatus): Boolean {
         try {
             // 更新执行记录状态
@@ -198,7 +198,7 @@ class MybatisServiceFlowRepository(
             return false
         }
     }
-    
+
     override fun updateFlowExecutionResult(
         executionId: String,
         status: FlowExecutionStatus,
@@ -214,7 +214,7 @@ class MybatisServiceFlowRepository(
             } else {
                 null
             }
-            
+
             // 更新执行记录结果
             val updateResult = executionMapper.updateResult(
                 executionId,
@@ -230,39 +230,39 @@ class MybatisServiceFlowRepository(
             return false
         }
     }
-    
+
     override fun getFlowExecution(executionId: String): FlowExecution? {
         try {
             // 查询执行记录
             val executionDO = executionMapper.selectById(executionId) ?: return null
-            
+
             // 查询节点执行记录
             val nodeExecutionDOs = nodeExecutionMapper.selectByFlowExecutionId(executionId)
-            
+
             // 转换为模型对象
             val execution = convertToExecution(executionDO)
             execution.nodeExecutions = nodeExecutionDOs.map { convertToNodeExecution(it) }
-            
+
             return execution
         } catch (e: Exception) {
             logger.error("获取流程执行记录失败: {}", executionId, e)
             return null
         }
     }
-    
+
     override fun getFlowExecutions(flowId: String, limit: Int, offset: Int): List<FlowExecution> {
         try {
             // 查询执行记录
             val executionDOs = executionMapper.selectByFlowId(flowId, limit, offset)
-            
+
             // 转换为模型对象
             return executionDOs.map { executionDO ->
                 val execution = convertToExecution(executionDO)
-                
+
                 // 查询节点执行记录
                 val nodeExecutionDOs = nodeExecutionMapper.selectByFlowExecutionId(execution.id)
                 execution.nodeExecutions = nodeExecutionDOs.map { convertToNodeExecution(it) }
-                
+
                 execution
             }
         } catch (e: Exception) {
@@ -270,36 +270,36 @@ class MybatisServiceFlowRepository(
             return emptyList()
         }
     }
-    
+
     override fun getLastFlowExecution(flowId: String): FlowExecution? {
         try {
             // 查询最后一次执行记录
             val executionDO = executionMapper.selectLastExecution(flowId) ?: return null
-            
+
             // 查询节点执行记录
             val nodeExecutionDOs = nodeExecutionMapper.selectByFlowExecutionId(executionDO.id)
-            
+
             // 转换为模型对象
             val execution = convertToExecution(executionDO)
             execution.nodeExecutions = nodeExecutionDOs.map { convertToNodeExecution(it) }
-            
+
             return execution
         } catch (e: Exception) {
             logger.error("获取流程最后一次执行记录失败: {}", flowId, e)
             return null
         }
     }
-    
+
     override fun saveNodeExecution(nodeExecution: NodeExecution, flowExecutionId: String): String {
         try {
             // 如果没有ID，生成一个新的ID
             if (nodeExecution.id.isEmpty()) {
                 nodeExecution.id = UUID.randomUUID().toString()
             }
-            
+
             // 转换为DO对象
             val nodeExecutionDO = convertToNodeExecutionDO(nodeExecution, flowExecutionId)
-            
+
             // 保存或更新
             val existingNodeExecution = nodeExecutionMapper.selectById(nodeExecution.id)
             if (existingNodeExecution == null) {
@@ -307,14 +307,14 @@ class MybatisServiceFlowRepository(
             } else {
                 nodeExecutionMapper.updateById(nodeExecutionDO)
             }
-            
+
             return nodeExecution.id
         } catch (e: Exception) {
             logger.error("保存节点执行记录失败: {}", nodeExecution.id, e)
             throw e
         }
     }
-    
+
     override fun updateNodeExecutionStatus(id: String, status: FlowExecutionStatus): Boolean {
         try {
             // 更新节点执行记录状态
@@ -325,7 +325,7 @@ class MybatisServiceFlowRepository(
             return false
         }
     }
-    
+
     override fun updateNodeExecutionResult(
         id: String,
         status: FlowExecutionStatus,
@@ -342,14 +342,14 @@ class MybatisServiceFlowRepository(
             } else {
                 null
             }
-            
+
             // 转换输出为JSON
             val outputJson = if (output.isNotEmpty()) {
                 objectMapper.writeValueAsString(output)
             } else {
                 null
             }
-            
+
             // 更新节点执行记录结果
             val updateResult = nodeExecutionMapper.updateResult(
                 id,
@@ -366,12 +366,12 @@ class MybatisServiceFlowRepository(
             return false
         }
     }
-    
+
     override fun getNodeExecutions(flowExecutionId: String): List<NodeExecution> {
         try {
             // 查询节点执行记录
             val nodeExecutionDOs = nodeExecutionMapper.selectByFlowExecutionId(flowExecutionId)
-            
+
             // 转换为模型对象
             return nodeExecutionDOs.map { convertToNodeExecution(it) }
         } catch (e: Exception) {
@@ -379,7 +379,7 @@ class MybatisServiceFlowRepository(
             return emptyList()
         }
     }
-    
+
     /**
      * 转换为流程DO对象
      */
@@ -408,7 +408,7 @@ class MybatisServiceFlowRepository(
         flowDO.lastExecuteDuration = flow.lastExecuteDuration
         return flowDO
     }
-    
+
     /**
      * 转换为流程模型对象
      */
@@ -457,7 +457,7 @@ class MybatisServiceFlowRepository(
         flow.lastExecuteDuration = flowDO.lastExecuteDuration ?: 0
         return flow
     }
-    
+
     /**
      * 转换为执行记录DO对象
      */
@@ -478,7 +478,7 @@ class MybatisServiceFlowRepository(
         executionDO.triggerId = execution.triggerId
         return executionDO
     }
-    
+
     /**
      * 转换为执行记录模型对象
      */
@@ -493,9 +493,9 @@ class MybatisServiceFlowRepository(
             objectMapper.readValue(executionDO.parameters, object : TypeReference<Map<String, Any?>>() {})
         }
         execution.variables = if (executionDO.variables.isNullOrEmpty()) {
-            emptyMap()
+            mutableMapOf<String, Any?>()
         } else {
-            objectMapper.readValue(executionDO.variables, object : TypeReference<Map<String, Any?>>() {})
+            objectMapper.readValue(executionDO.variables, object : TypeReference<MutableMap<String, Any?>>() {})
         }
         execution.startTime = executionDO.startTime ?: 0
         execution.endTime = executionDO.endTime ?: 0
@@ -519,7 +519,7 @@ class MybatisServiceFlowRepository(
         execution.triggerId = executionDO.triggerId ?: ""
         return execution
     }
-    
+
     /**
      * 转换为节点执行记录DO对象
      */
@@ -540,7 +540,7 @@ class MybatisServiceFlowRepository(
         nodeExecutionDO.output = if (nodeExecution.output.isEmpty()) null else objectMapper.writeValueAsString(nodeExecution.output)
         return nodeExecutionDO
     }
-    
+
     /**
      * 转换为节点执行记录模型对象
      */

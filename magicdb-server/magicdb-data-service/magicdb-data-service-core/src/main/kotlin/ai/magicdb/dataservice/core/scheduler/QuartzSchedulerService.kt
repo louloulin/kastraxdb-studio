@@ -29,7 +29,7 @@ class QuartzSchedulerService @Autowired constructor(
     private val serviceExecutor: DataServiceExecutor
 ) : SchedulerService {
     private val logger = LoggerFactory.getLogger(QuartzSchedulerService::class.java)
-    
+
     @PostConstruct
     fun init() {
         try {
@@ -38,14 +38,14 @@ class QuartzSchedulerService @Autowired constructor(
                 scheduler.start()
                 logger.info("调度器已启动")
             }
-            
+
             // 加载所有启用的任务
             loadEnabledTasks()
         } catch (e: Exception) {
             logger.error("初始化调度器失败", e)
         }
     }
-    
+
     @PreDestroy
     fun destroy() {
         try {
@@ -58,29 +58,29 @@ class QuartzSchedulerService @Autowired constructor(
             logger.error("关闭调度器失败", e)
         }
     }
-    
+
     override fun scheduleTask(task: ScheduledTask): Boolean {
         try {
             // 创建任务
             val jobDetail = createJobDetail(task)
-            
+
             // 创建触发器
             val trigger = createTrigger(task)
-            
+
             // 调度任务
             scheduler.scheduleJob(jobDetail, trigger)
-            
+
             // 更新任务状态
             task.status = ScheduledTaskStatus.PENDING
             taskRepository.updateTask(task)
-            
+
             // 计算下次执行时间
             val nextFireTime = trigger.nextFireTime?.time ?: 0
             if (nextFireTime > 0) {
                 task.nextExecuteTime = nextFireTime
                 taskRepository.updateTask(task)
             }
-            
+
             logger.info("任务已调度: {}", task.name)
             return true
         } catch (e: Exception) {
@@ -88,12 +88,12 @@ class QuartzSchedulerService @Autowired constructor(
             return false
         }
     }
-    
+
     override fun unscheduleTask(taskId: String): Boolean {
         try {
             // 删除任务
             scheduler.deleteJob(JobKey.jobKey(taskId))
-            
+
             logger.info("任务已取消调度: {}", taskId)
             return true
         } catch (e: Exception) {
@@ -101,17 +101,17 @@ class QuartzSchedulerService @Autowired constructor(
             return false
         }
     }
-    
+
     override fun pauseTask(taskId: String): Boolean {
         try {
             // 暂停任务
             scheduler.pauseJob(JobKey.jobKey(taskId))
-            
+
             // 更新任务状态
             val task = taskRepository.getTask(taskId) ?: return false
             task.status = ScheduledTaskStatus.PAUSED
             taskRepository.updateTask(task)
-            
+
             logger.info("任务已暂停: {}", taskId)
             return true
         } catch (e: Exception) {
@@ -119,29 +119,29 @@ class QuartzSchedulerService @Autowired constructor(
             return false
         }
     }
-    
+
     override fun resumeTask(taskId: String): Boolean {
         try {
             // 恢复任务
             scheduler.resumeJob(JobKey.jobKey(taskId))
-            
+
             // 更新任务状态
             val task = taskRepository.getTask(taskId) ?: return false
             task.status = ScheduledTaskStatus.PENDING
             taskRepository.updateTask(task)
-            
+
             return true
         } catch (e: Exception) {
             logger.error("恢复任务失败: {}", taskId, e)
             return false
         }
     }
-    
-    override fun executeTask(taskId: String): String {
+
+    override fun executeTask(taskId: String, parameters: Map<String, Any?>?): String {
         try {
             // 获取任务
             val task = taskRepository.getTask(taskId) ?: throw IllegalArgumentException("任务不存在: $taskId")
-            
+
             // 创建执行记录
             val executionId = UUID.randomUUID().toString()
             val execution = TaskExecution(
@@ -150,23 +150,23 @@ class QuartzSchedulerService @Autowired constructor(
                 taskName = task.name,
                 serviceId = task.serviceId,
                 serviceName = task.serviceName,
-                parameters = task.parameters,
+                parameters = parameters ?: task.parameters,
                 startTime = System.currentTimeMillis(),
                 status = ExecutionStatus.RUNNING,
                 triggerType = TriggerType.MANUAL,
                 triggerId = "manual"
             )
-            
+
             // 保存执行记录
             taskRepository.saveExecution(execution)
-            
+
             // 更新任务状态
             task.status = ScheduledTaskStatus.RUNNING
             taskRepository.updateTask(task)
-            
+
             // 执行任务
             executeTaskAsync(task, execution)
-            
+
             logger.info("任务已手动执行: {}", task.name)
             return executionId
         } catch (e: Exception) {
@@ -174,19 +174,19 @@ class QuartzSchedulerService @Autowired constructor(
             throw e
         }
     }
-    
+
     override fun enableTask(taskId: String): Boolean {
         try {
             // 获取任务
             val task = taskRepository.getTask(taskId) ?: return false
-            
+
             // 更新任务状态
             task.status = ScheduledTaskStatus.PENDING
-            
+
             // 更新任务启用状态
             task.enabled = true
             taskRepository.updateTask(task)
-            
+
             // 调度任务
             return scheduleTask(task)
         } catch (e: Exception) {
@@ -194,16 +194,16 @@ class QuartzSchedulerService @Autowired constructor(
             return false
         }
     }
-    
+
     override fun disableTask(taskId: String): Boolean {
         try {
             // 获取任务
             val task = taskRepository.getTask(taskId) ?: return false
-            
+
             // 更新任务启用状态
             task.enabled = false
             taskRepository.updateTask(task)
-            
+
             // 取消调度任务
             return unscheduleTask(taskId)
         } catch (e: Exception) {
@@ -211,24 +211,24 @@ class QuartzSchedulerService @Autowired constructor(
             return false
         }
     }
-    
+
     override fun getSchedulerInfo(): Map<String, Any> {
         try {
             // 获取调度器元数据
             val metaData = scheduler.metaData
-            
+
             // 获取任务统计信息
-            val tasks = taskRepository.getAllTasks()
+            val tasks = taskRepository.getAllTasks(null, null)
             val runningTasks = tasks.filter { it.status == ScheduledTaskStatus.RUNNING }
             val waitingTasks = tasks.filter { it.status == ScheduledTaskStatus.PENDING }
             val pausedTasks = tasks.filter { it.status == ScheduledTaskStatus.PAUSED }
             val failedTasks = tasks.filter { it.status == ScheduledTaskStatus.FAILED }
-            
+
             // 计算执行统计信息
             val totalExecutionCount = tasks.sumOf { it.executeCount }
             val successExecutionCount = tasks.sumOf { it.successCount }
             val failedExecutionCount = tasks.sumOf { it.failCount }
-            
+
             // 构建调度器信息
             return mapOf(
                 "name" to metaData.schedulerName,
@@ -240,9 +240,9 @@ class QuartzSchedulerService @Autowired constructor(
                 "jobStoreClass" to metaData.jobStoreClass,
                 "threadPoolClass" to metaData.threadPoolClass,
                 "threadPoolSize" to metaData.threadPoolSize,
-                "jobCount" to metaData.numberOfJobs,
-                "triggerCount" to metaData.numberOfTriggers,
-                "executedJobs" to metaData.numberOfJobsExecuted,
+                "jobCount" to scheduler.jobGroupNames.flatMap { scheduler.getJobKeys(GroupMatcher.jobGroupEquals(it)) }.size,
+                "triggerCount" to scheduler.triggerGroupNames.flatMap { scheduler.getTriggerKeys(GroupMatcher.triggerGroupEquals(it)) }.size,
+                "executedJobs" to 0,
                 "runningJobs" to scheduler.currentlyExecutingJobs.size,
                 "taskCount" to tasks.size,
                 "runningTaskCount" to runningTasks.size,
@@ -263,39 +263,39 @@ class QuartzSchedulerService @Autowired constructor(
             return emptyMap()
         }
     }
-    
+
     override fun getRunningTasks(): List<ScheduledTask> {
         try {
             // 获取正在执行的任务
             val jobKeys = scheduler.currentlyExecutingJobs.map { it.jobDetail.key.name }
-            
+
             // 获取任务信息
-            return taskRepository.getAllTasks().filter { it.id in jobKeys }
+            return taskRepository.getAllTasks(null, null).filter { it.id in jobKeys }
         } catch (e: Exception) {
             logger.error("获取正在执行的任务失败", e)
             return emptyList()
         }
     }
-    
+
     override fun getAllJobs(): List<Map<String, Any>> {
         try {
             // 获取所有任务组
             val jobGroups = scheduler.jobGroupNames
-            
+
             // 获取所有任务
             val jobs = mutableListOf<Map<String, Any>>()
-            
+
             for (group in jobGroups) {
                 // 获取组内所有任务
                 val jobKeys = scheduler.getJobKeys(GroupMatcher.jobGroupEquals(group))
-                
+
                 for (jobKey in jobKeys) {
                     // 获取任务详情
                     val jobDetail = scheduler.getJobDetail(jobKey)
-                    
+
                     // 获取任务触发器
                     val triggers = scheduler.getTriggersOfJob(jobKey)
-                    
+
                     // 构建任务信息
                     val job = mutableMapOf<String, Any>(
                         "name" to jobKey.name,
@@ -321,28 +321,28 @@ class QuartzSchedulerService @Autowired constructor(
                             )
                         }
                     )
-                    
+
                     jobs.add(job)
                 }
             }
-            
+
             return jobs
         } catch (e: Exception) {
             logger.error("获取所有任务失败", e)
             return emptyList()
         }
     }
-    
+
     /**
      * 加载所有启用的任务
      */
     private fun loadEnabledTasks() {
         try {
             // 获取所有启用的任务
-            val tasks = taskRepository.getAllTasks().filter { it.enabled }
-            
+            val tasks = taskRepository.getAllTasks(null, null).filter { it.enabled }
+
             logger.info("加载启用的任务: {}", tasks.size)
-            
+
             // 调度任务
             for (task in tasks) {
                 try {
@@ -355,7 +355,7 @@ class QuartzSchedulerService @Autowired constructor(
             logger.error("加载启用的任务失败", e)
         }
     }
-    
+
     /**
      * 创建任务详情
      */
@@ -363,7 +363,7 @@ class QuartzSchedulerService @Autowired constructor(
         // 创建任务数据
         val jobDataMap = JobDataMap()
         jobDataMap.put("taskId", task.id)
-        
+
         // 创建任务详情
         return JobBuilder.newJob(TaskJob::class.java)
             .withIdentity(task.id)
@@ -372,7 +372,7 @@ class QuartzSchedulerService @Autowired constructor(
             .storeDurably()
             .build()
     }
-    
+
     /**
      * 创建触发器
      */
@@ -385,7 +385,7 @@ class QuartzSchedulerService @Autowired constructor(
                 .withMisfireHandlingInstructionFireAndProceed())
             .build()
     }
-    
+
     /**
      * 异步执行任务
      */
@@ -398,14 +398,14 @@ class QuartzSchedulerService @Autowired constructor(
                 val result = serviceExecutor.execute(task.serviceId, task.parameters)
                 val endTime = System.currentTimeMillis()
                 val duration = endTime - startTime
-                
+
                 // 更新执行记录
                 execution.endTime = endTime
                 execution.duration = duration
                 execution.status = ExecutionStatus.SUCCESS
                 execution.result = result.data
                 taskRepository.updateExecution(execution)
-                
+
                 // 更新任务信息
                 task.lastExecuteTime = startTime
                 task.executeCount++
@@ -415,11 +415,11 @@ class QuartzSchedulerService @Autowired constructor(
                 task.lastExecuteDuration = duration
                 task.status = ScheduledTaskStatus.PENDING
                 taskRepository.updateTask(task)
-                
+
                 logger.info("任务执行成功: {}, 耗时: {}ms", task.name, duration)
             } catch (e: Exception) {
                 logger.error("任务执行失败: {}", execution.id, e)
-                
+
                 try {
                     // 更新执行记录
                     execution.endTime = System.currentTimeMillis()
@@ -427,7 +427,7 @@ class QuartzSchedulerService @Autowired constructor(
                     execution.status = ExecutionStatus.FAILED
                     execution.errorMessage = e.message ?: "执行失败"
                     taskRepository.updateExecution(execution)
-                    
+
                     // 更新任务信息
                     task.lastExecuteTime = execution.startTime
                     task.executeCount++
@@ -443,7 +443,7 @@ class QuartzSchedulerService @Autowired constructor(
             }
         }.start()
     }
-    
+
     /**
      * 任务执行器
      */
@@ -451,13 +451,13 @@ class QuartzSchedulerService @Autowired constructor(
         override fun execute(context: JobExecutionContext) {
             // 获取调度器服务
             val schedulerService = context.scheduler.context.get("schedulerService") as QuartzSchedulerService
-            
+
             // 获取任务ID
             val taskId = context.jobDetail.jobDataMap.getString("taskId")
-            
+
             try {
                 // 执行任务
-                schedulerService.executeTask(taskId)
+                schedulerService.executeTask(taskId, null)
             } catch (e: Exception) {
                 // 忽略异常，已在executeTask中处理
             }

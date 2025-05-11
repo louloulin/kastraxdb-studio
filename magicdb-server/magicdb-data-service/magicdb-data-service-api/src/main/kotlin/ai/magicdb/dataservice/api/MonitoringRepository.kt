@@ -1,6 +1,7 @@
 package ai.magicdb.dataservice.api
 
 import ai.magicdb.dataservice.api.model.ServiceCallRecord
+import ai.magicdb.dataservice.api.model.ServicePerformanceRecord
 import java.time.LocalDateTime
 
 /**
@@ -16,7 +17,7 @@ interface MonitoringRepository {
      * @return 记录ID
      */
     fun saveCallRecord(record: ServiceCallRecord): String
-    
+
     /**
      * 获取服务调用记录
      *
@@ -24,7 +25,7 @@ interface MonitoringRepository {
      * @return 调用记录
      */
     fun getCallRecord(recordId: String): ServiceCallRecord?
-    
+
     /**
      * 获取服务调用记录列表
      *
@@ -44,7 +45,7 @@ interface MonitoringRepository {
         limit: Int = 100,
         offset: Int = 0
     ): List<ServiceCallRecord>
-    
+
     /**
      * 获取服务调用记录数量
      *
@@ -60,7 +61,7 @@ interface MonitoringRepository {
         endTime: LocalDateTime? = null,
         success: Boolean? = null
     ): Long
-    
+
     /**
      * 获取服务调用成功次数
      *
@@ -74,7 +75,7 @@ interface MonitoringRepository {
         startTime: LocalDateTime? = null,
         endTime: LocalDateTime? = null
     ): Long
-    
+
     /**
      * 获取服务调用失败次数
      *
@@ -88,7 +89,7 @@ interface MonitoringRepository {
         startTime: LocalDateTime? = null,
         endTime: LocalDateTime? = null
     ): Long
-    
+
     /**
      * 获取服务平均执行时间
      *
@@ -104,7 +105,7 @@ interface MonitoringRepository {
         endTime: LocalDateTime? = null,
         success: Boolean? = null
     ): Double
-    
+
     /**
      * 获取服务最大执行时间
      *
@@ -120,7 +121,7 @@ interface MonitoringRepository {
         endTime: LocalDateTime? = null,
         success: Boolean? = null
     ): Long
-    
+
     /**
      * 获取服务最小执行时间
      *
@@ -136,7 +137,7 @@ interface MonitoringRepository {
         endTime: LocalDateTime? = null,
         success: Boolean? = null
     ): Long
-    
+
     /**
      * 获取服务最后调用时间
      *
@@ -144,7 +145,7 @@ interface MonitoringRepository {
      * @return 最后调用时间
      */
     fun getLastCallTime(serviceId: String? = null): LocalDateTime?
-    
+
     /**
      * 获取服务调用用户数
      *
@@ -158,7 +159,7 @@ interface MonitoringRepository {
         startTime: LocalDateTime? = null,
         endTime: LocalDateTime? = null
     ): Int
-    
+
     /**
      * 获取服务调用IP数
      *
@@ -172,7 +173,7 @@ interface MonitoringRepository {
         startTime: LocalDateTime? = null,
         endTime: LocalDateTime? = null
     ): Int
-    
+
     /**
      * 获取服务错误类型统计
      *
@@ -186,7 +187,7 @@ interface MonitoringRepository {
         startTime: LocalDateTime? = null,
         endTime: LocalDateTime? = null
     ): Map<String, Long>
-    
+
     /**
      * 获取服务最常见的错误消息
      *
@@ -202,7 +203,7 @@ interface MonitoringRepository {
         endTime: LocalDateTime? = null,
         limit: Int = 10
     ): List<Pair<String, Long>>
-    
+
     /**
      * 获取最近调用的服务
      *
@@ -210,7 +211,7 @@ interface MonitoringRepository {
      * @return 最近调用的服务ID列表
      */
     fun getRecentlyCalledServices(limit: Int = 10): List<String>
-    
+
     /**
      * 获取调用最多的服务
      *
@@ -224,7 +225,7 @@ interface MonitoringRepository {
         startTime: LocalDateTime? = null,
         endTime: LocalDateTime? = null
     ): List<Pair<String, Long>>
-    
+
     /**
      * 获取错误最多的服务
      *
@@ -238,7 +239,7 @@ interface MonitoringRepository {
         startTime: LocalDateTime? = null,
         endTime: LocalDateTime? = null
     ): List<Pair<String, Long>>
-    
+
     /**
      * 获取性能最差的服务
      *
@@ -252,7 +253,7 @@ interface MonitoringRepository {
         startTime: LocalDateTime? = null,
         endTime: LocalDateTime? = null
     ): List<Pair<String, Double>>
-    
+
     /**
      * 获取按小时统计的调用次数
      *
@@ -266,7 +267,7 @@ interface MonitoringRepository {
         startTime: LocalDateTime? = null,
         endTime: LocalDateTime? = null
     ): Map<Int, Long>
-    
+
     /**
      * 获取按天统计的调用次数
      *
@@ -280,7 +281,7 @@ interface MonitoringRepository {
         startTime: LocalDateTime? = null,
         endTime: LocalDateTime? = null
     ): Map<String, Long>
-    
+
     /**
      * 获取按小时统计的错误次数
      *
@@ -294,7 +295,7 @@ interface MonitoringRepository {
         startTime: LocalDateTime? = null,
         endTime: LocalDateTime? = null
     ): Map<Int, Long>
-    
+
     /**
      * 获取按天统计的错误次数
      *
@@ -308,7 +309,7 @@ interface MonitoringRepository {
         startTime: LocalDateTime? = null,
         endTime: LocalDateTime? = null
     ): Map<String, Long>
-    
+
     /**
      * 清除监控数据
      *
@@ -320,4 +321,46 @@ interface MonitoringRepository {
         serviceId: String? = null,
         before: LocalDateTime? = null
     ): Int
+
+    /**
+     * 获取服务最后错误时间
+     *
+     * @param serviceId 服务ID
+     * @return 最后错误时间
+     */
+    fun getLastErrorTime(serviceId: String): LocalDateTime?
+
+    /**
+     * 保存服务性能记录
+     *
+     * @param record 性能记录
+     * @return 记录ID
+     */
+    fun savePerformanceRecord(record: ServicePerformanceRecord): String
+
+    /**
+     * 获取服务性能记录
+     *
+     * @param recordId 记录ID
+     * @return 性能记录
+     */
+    fun getPerformanceRecord(recordId: String): ServicePerformanceRecord?
+
+    /**
+     * 获取服务性能记录列表
+     *
+     * @param serviceId 服务ID，如果为null则获取所有服务
+     * @param startTime 开始时间
+     * @param endTime 结束时间
+     * @param limit 限制数量
+     * @param offset 偏移量
+     * @return 性能记录列表
+     */
+    fun getPerformanceRecords(
+        serviceId: String? = null,
+        startTime: LocalDateTime? = null,
+        endTime: LocalDateTime? = null,
+        limit: Int = 100,
+        offset: Int = 0
+    ): List<ServicePerformanceRecord>
 }
