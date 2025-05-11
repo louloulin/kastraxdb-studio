@@ -46,6 +46,13 @@ dependencies {
     // Apache Commons CSV
     implementation("org.apache.commons:commons-csv:1.10.0")
 
+    // Apache POI for Excel
+    implementation("org.apache.poi:poi:5.2.3")
+    implementation("org.apache.poi:poi-ooxml:5.2.3")
+
+    // SnakeYAML for YAML
+    implementation("org.yaml:snakeyaml:2.0")
+
     // Quartz Scheduler
     implementation("org.quartz-scheduler:quartz:2.3.2")
 

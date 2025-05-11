@@ -21,25 +21,28 @@ class DefaultDataTransformer(
     private val objectMapper: ObjectMapper
 ) : DataTransformer {
     private val logger = LoggerFactory.getLogger(DefaultDataTransformer::class.java)
-    
+
     // 转换器注册表
     private val transformers = ConcurrentHashMap<String, FormatTransformer>()
-    
+
     // 初始化转换器
     init {
         // 注册JSON转换器
         registerTransformer(JsonTransformer(objectMapper))
-        
+
         // 注册XML转换器
         registerTransformer(XmlTransformer(objectMapper))
-        
+
         // 注册CSV转换器
         registerTransformer(CsvTransformer(objectMapper))
-        
+
         // 注册YAML转换器
         registerTransformer(YamlTransformer(objectMapper))
+
+        // TODO: 注册Excel转换器
+        // registerTransformer(ExcelTransformer(objectMapper))
     }
-    
+
     /**
      * 注册转换器
      */
@@ -52,14 +55,14 @@ class DefaultDataTransformer(
             }
         }
     }
-    
+
     /**
      * 获取转换器键
      */
     private fun getTransformerKey(sourceFormat: String, targetFormat: String): String {
         return "$sourceFormat->$targetFormat"
     }
-    
+
     /**
      * 转换数据
      */
@@ -68,16 +71,16 @@ class DefaultDataTransformer(
             // 获取转换器
             val transformer = getTransformer(request.sourceFormat, request.targetFormat)
                 ?: return TransformationResult.failure("不支持的转换格式: ${request.sourceFormat} -> ${request.targetFormat}")
-            
+
             // 记录开始时间
             val startTime = System.currentTimeMillis()
-            
+
             // 执行转换
             val result = transformer.transform(request)
-            
+
             // 计算耗时
             val duration = System.currentTimeMillis() - startTime
-            
+
             // 返回结果
             return if (result.success) {
                 TransformationResult.success(
@@ -98,7 +101,7 @@ class DefaultDataTransformer(
             return TransformationResult.failure("转换数据失败: ${e.message}")
         }
     }
-    
+
     /**
      * 获取支持的源格式
      */
@@ -107,7 +110,7 @@ class DefaultDataTransformer(
             .flatMap { it.getSupportedSourceFormats() }
             .distinct()
     }
-    
+
     /**
      * 获取支持的目标格式
      */
@@ -116,14 +119,14 @@ class DefaultDataTransformer(
             .flatMap { it.getSupportedTargetFormats() }
             .distinct()
     }
-    
+
     /**
      * 获取支持的转换类型
      */
     override fun getSupportedTransformationTypes(): List<String> {
         return listOf("default", "script", "template", "mapping")
     }
-    
+
     /**
      * 验证转换规则
      */
@@ -132,7 +135,7 @@ class DefaultDataTransformer(
             // 获取转换器
             val transformer = getTransformer(sourceFormat, targetFormat)
                 ?: return listOf("不支持的转换格式: $sourceFormat -> $targetFormat")
-            
+
             // 验证规则
             return transformer.validateRules(rules)
         } catch (e: Exception) {
@@ -140,7 +143,7 @@ class DefaultDataTransformer(
             return listOf("验证转换规则失败: ${e.message}")
         }
     }
-    
+
     /**
      * 获取转换规则模板
      */
@@ -149,7 +152,7 @@ class DefaultDataTransformer(
             // 获取转换器
             val transformer = getTransformer(sourceFormat, targetFormat)
                 ?: return mapOf("error" to "不支持的转换格式: $sourceFormat -> $targetFormat")
-            
+
             // 获取规则模板
             return transformer.getRuleTemplate()
         } catch (e: Exception) {
@@ -157,7 +160,7 @@ class DefaultDataTransformer(
             return mapOf("error" to "获取转换规则模板失败: ${e.message}")
         }
     }
-    
+
     /**
      * 获取转换器
      */

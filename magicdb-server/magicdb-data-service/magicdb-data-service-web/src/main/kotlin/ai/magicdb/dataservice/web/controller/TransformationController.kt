@@ -23,7 +23,7 @@ class TransformationController(
     private val transformationRepository: TransformationRepository
 ) {
     private val logger = LoggerFactory.getLogger(TransformationController::class.java)
-    
+
     /**
      * 转换数据
      *
@@ -34,14 +34,14 @@ class TransformationController(
     fun transform(@RequestBody request: TransformationRequest): DataResult<Any> {
         logger.info("转换数据: {} -> {}", request.sourceFormat, request.targetFormat)
         val result = dataTransformer.transform(request)
-        
+
         return if (result.success) {
-            DataResult.of(result.targetData)
+            DataResult.of(result.targetData ?: "")
         } else {
-            DataResult.fail("transform.error", result.errorMessage ?: "转换失败", "")
+            DataResult.error("transform.error", result.errorMessage ?: "转换失败")
         }
     }
-    
+
     /**
      * 获取支持的源格式
      *
@@ -53,7 +53,7 @@ class TransformationController(
         val formats = dataTransformer.getSupportedSourceFormats()
         return ListResult.of(formats)
     }
-    
+
     /**
      * 获取支持的目标格式
      *
@@ -65,7 +65,7 @@ class TransformationController(
         val formats = dataTransformer.getSupportedTargetFormats()
         return ListResult.of(formats)
     }
-    
+
     /**
      * 获取支持的转换类型
      *
@@ -77,7 +77,7 @@ class TransformationController(
         val types = dataTransformer.getSupportedTransformationTypes()
         return ListResult.of(types)
     }
-    
+
     /**
      * 验证转换规则
      *
@@ -96,7 +96,7 @@ class TransformationController(
         val errors = dataTransformer.validateRules(rules, sourceFormat, targetFormat)
         return ListResult.of(errors)
     }
-    
+
     /**
      * 获取转换规则模板
      *
@@ -113,7 +113,7 @@ class TransformationController(
         val template = dataTransformer.getRuleTemplate(sourceFormat, targetFormat)
         return DataResult.of(template)
     }
-    
+
     /**
      * 创建转换规则
      *
@@ -126,7 +126,7 @@ class TransformationController(
         val ruleId = transformationRepository.saveRule(rule)
         return DataResult.of(ruleId)
     }
-    
+
     /**
      * 更新转换规则
      *
@@ -143,7 +143,7 @@ class TransformationController(
             ActionResult.fail("rule.not.found", "转换规则不存在", "")
         }
     }
-    
+
     /**
      * 删除转换规则
      *
@@ -160,7 +160,7 @@ class TransformationController(
             ActionResult.fail("rule.not.found", "转换规则不存在", "")
         }
     }
-    
+
     /**
      * 获取转换规则
      *
@@ -174,10 +174,10 @@ class TransformationController(
         return if (rule != null) {
             DataResult.of(rule)
         } else {
-            DataResult.fail("rule.not.found", "转换规则不存在", "")
+            DataResult.error("rule.not.found", "转换规则不存在")
         }
     }
-    
+
     /**
      * 获取所有转换规则
      *
@@ -189,7 +189,7 @@ class TransformationController(
         val rules = transformationRepository.getAllRules()
         return ListResult.of(rules)
     }
-    
+
     /**
      * 获取转换规则（按格式）
      *
@@ -206,7 +206,7 @@ class TransformationController(
         val rules = transformationRepository.getRulesByFormat(sourceFormat, targetFormat)
         return ListResult.of(rules)
     }
-    
+
     /**
      * 获取转换规则（按标签）
      *
@@ -219,7 +219,7 @@ class TransformationController(
         val rules = transformationRepository.getRulesByTag(tag)
         return ListResult.of(rules)
     }
-    
+
     /**
      * 创建转换模板
      *
@@ -232,7 +232,7 @@ class TransformationController(
         val templateId = transformationRepository.saveTemplate(template)
         return DataResult.of(templateId)
     }
-    
+
     /**
      * 更新转换模板
      *
@@ -249,7 +249,7 @@ class TransformationController(
             ActionResult.fail("template.not.found", "转换模板不存在", "")
         }
     }
-    
+
     /**
      * 删除转换模板
      *
@@ -266,7 +266,7 @@ class TransformationController(
             ActionResult.fail("template.not.found", "转换模板不存在", "")
         }
     }
-    
+
     /**
      * 获取转换模板
      *
@@ -280,10 +280,10 @@ class TransformationController(
         return if (template != null) {
             DataResult.of(template)
         } else {
-            DataResult.fail("template.not.found", "转换模板不存在", "")
+            DataResult.error("template.not.found", "转换模板不存在")
         }
     }
-    
+
     /**
      * 获取所有转换模板
      *
@@ -295,7 +295,7 @@ class TransformationController(
         val templates = transformationRepository.getAllTemplates()
         return ListResult.of(templates)
     }
-    
+
     /**
      * 获取转换模板（按格式）
      *
@@ -312,7 +312,7 @@ class TransformationController(
         val templates = transformationRepository.getTemplatesByFormat(sourceFormat, targetFormat)
         return ListResult.of(templates)
     }
-    
+
     /**
      * 获取转换模板（按标签）
      *
@@ -325,7 +325,7 @@ class TransformationController(
         val templates = transformationRepository.getTemplatesByTag(tag)
         return ListResult.of(templates)
     }
-    
+
     /**
      * 增加模板使用次数
      *
