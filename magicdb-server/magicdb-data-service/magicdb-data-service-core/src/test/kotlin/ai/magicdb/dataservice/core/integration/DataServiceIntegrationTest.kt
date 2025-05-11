@@ -3,6 +3,7 @@ package ai.magicdb.dataservice.core.integration
 import ai.magicdb.dataservice.api.DataServiceExecutor
 import ai.magicdb.dataservice.api.DataServiceManager
 import ai.magicdb.dataservice.api.DataServiceRepository
+import ai.magicdb.dataservice.api.DataSourceService
 import ai.magicdb.dataservice.api.model.DataService
 import ai.magicdb.dataservice.api.model.ServiceGroup
 import ai.magicdb.dataservice.api.model.ServiceParameter
@@ -48,7 +49,8 @@ class DataServiceIntegrationTest {
         )
         `when`(cacheManager.get(anyString())).thenReturn(null).thenReturn(cachedResult)
 
-        executor = DefaultDataServiceExecutor(repository, scriptExecutor, cacheManager)
+        val dataSourceService = mock(DataSourceService::class.java)
+        executor = DefaultDataServiceExecutor(repository, scriptExecutor, cacheManager, dataSourceService)
         objectMapper = ObjectMapper()
 
         dataServiceManager = DefaultDataServiceManager(repository, executor, objectMapper)

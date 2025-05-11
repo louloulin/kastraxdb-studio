@@ -1,5 +1,9 @@
 package ai.magicdb.dataservice.core.manager
 
+import ai.magicdb.dataservice.api.DataServiceExecutor
+import ai.magicdb.dataservice.api.DataServiceManager
+import ai.magicdb.dataservice.api.DataServiceRepository
+import ai.magicdb.dataservice.api.DataSourceService
 import ai.magicdb.dataservice.api.model.DataService
 import ai.magicdb.dataservice.api.model.ServiceGroup
 import ai.magicdb.dataservice.api.model.ServiceResult
@@ -30,7 +34,8 @@ class DefaultDataServiceManagerTest {
         repository = MemoryDataServiceRepository()
         val scriptExecutor = GraalVMScriptExecutor()
         val cacheManager = mock(DataServiceCacheManager::class.java)
-        executor = DefaultDataServiceExecutor(repository, scriptExecutor, cacheManager)
+        val dataSourceService = mock(DataSourceService::class.java)
+        executor = DefaultDataServiceExecutor(repository, scriptExecutor, cacheManager, dataSourceService)
         objectMapper = ObjectMapper()
         manager = DefaultDataServiceManager(repository, executor, objectMapper)
 

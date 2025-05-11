@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.*
 @RestController
 @RequestMapping("/api/data-service/datasource")
 class DataSourceController(private val dataSourceService: DataSourceService) {
-    
+
     /**
      * 获取所有数据源
      */
@@ -27,7 +27,7 @@ class DataSourceController(private val dataSourceService: DataSourceService) {
         val dataSources = dataSourceService.getAllDataSources()
         return ListResult.of(dataSources)
     }
-    
+
     /**
      * 获取数据源
      *
@@ -42,7 +42,7 @@ class DataSourceController(private val dataSourceService: DataSourceService) {
             DataResult.empty()
         }
     }
-    
+
     /**
      * 获取数据库列表
      *
@@ -53,7 +53,7 @@ class DataSourceController(private val dataSourceService: DataSourceService) {
         val databases = dataSourceService.getDatabases(dataSourceId)
         return ListResult.of(databases)
     }
-    
+
     /**
      * 获取表列表
      *
@@ -68,7 +68,7 @@ class DataSourceController(private val dataSourceService: DataSourceService) {
         val tables = dataSourceService.getTables(dataSourceId, databaseName)
         return ListResult.of(tables)
     }
-    
+
     /**
      * 获取列信息
      *
@@ -85,7 +85,7 @@ class DataSourceController(private val dataSourceService: DataSourceService) {
         val columns = dataSourceService.getColumns(dataSourceId, databaseName, tableName)
         return ListResult.of(columns)
     }
-    
+
     /**
      * 执行SQL查询
      *
@@ -102,7 +102,7 @@ class DataSourceController(private val dataSourceService: DataSourceService) {
         val result = dataSourceService.executeQuery(dataSourceId, databaseName, sql)
         return DataResult.of(result)
     }
-    
+
     /**
      * 测试数据源连接
      *
@@ -114,7 +114,7 @@ class DataSourceController(private val dataSourceService: DataSourceService) {
         return if (success) {
             ActionResult.isSuccess()
         } else {
-            ActionResult.fail("连接数据源失败")
+            ActionResult.fail("common.error", "连接数据源失败", "")
         }
     }
 }

@@ -1,5 +1,6 @@
 package ai.magicdb.dataservice.core.executor
 
+import ai.magicdb.dataservice.api.DataSourceService
 import ai.magicdb.dataservice.api.model.DataService
 import ai.magicdb.dataservice.api.model.ServiceResult
 import ai.magicdb.dataservice.core.cache.DataServiceCacheManager
@@ -27,7 +28,8 @@ class DefaultDataServiceExecutorTest {
         repository = MemoryDataServiceRepository()
         scriptExecutor = GraalVMScriptExecutor()
         cacheManager = mock(DataServiceCacheManager::class.java)
-        executor = DefaultDataServiceExecutor(repository, scriptExecutor, cacheManager)
+        val dataSourceService = mock(DataSourceService::class.java)
+        executor = DefaultDataServiceExecutor(repository, scriptExecutor, cacheManager, dataSourceService)
 
         // 创建测试服务
         val service = DataService(

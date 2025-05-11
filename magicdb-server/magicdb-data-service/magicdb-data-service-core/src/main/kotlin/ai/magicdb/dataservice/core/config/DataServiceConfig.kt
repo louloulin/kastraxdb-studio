@@ -4,18 +4,29 @@ import ai.magicdb.dataservice.api.DataServiceExecutor
 import ai.magicdb.dataservice.api.DataServiceManager
 import ai.magicdb.dataservice.api.DataServiceRepository
 import ai.magicdb.dataservice.api.DataSourceService
+import ai.magicdb.dataservice.api.DocumentGenerator
+import ai.magicdb.dataservice.api.ScriptDebugger
+import ai.magicdb.dataservice.api.ServiceTestManager
+import ai.magicdb.dataservice.api.ServiceTestRepository
 import ai.magicdb.dataservice.core.cache.DataServiceCacheManager
 import ai.magicdb.dataservice.core.converter.DataServiceConverter
 import ai.magicdb.dataservice.core.converter.ServiceGroupConverter
 import ai.magicdb.dataservice.core.datasource.SimpleDataSourceService
+import ai.magicdb.dataservice.core.debug.DefaultScriptDebugger
+import ai.magicdb.dataservice.core.document.DefaultDocumentGenerator
 import ai.magicdb.dataservice.core.executor.DefaultDataServiceExecutor
 import ai.magicdb.dataservice.core.manager.DefaultDataServiceManager
+import ai.magicdb.dataservice.core.manager.DefaultServiceTestManager
 import ai.magicdb.dataservice.core.mapper.*
 import ai.magicdb.dataservice.core.repository.MemoryDataServiceRepository
 import ai.magicdb.dataservice.core.repository.MybatisDataServiceRepository
-import ai.magicdb.script.api.ScriptExecutor
+import ai.magicdb.dataservice.core.repository.MybatisServiceTestRepository
+import ai.magicdb.script.api.ScriptExecutor as GraalScriptExecutor
 import ai.magicdb.script.engine.GraalVMScriptExecutor
+import ai.magicdb.dataservice.core.script.ScriptExecutor
+import ai.magicdb.dataservice.core.script.DefaultScriptExecutor
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.databind.SerializationFeature
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.context.annotation.Bean
@@ -68,8 +79,8 @@ class DataServiceConfig {
     }
 
     @Bean
-    @ConditionalOnMissingBean
-    fun scriptExecutor(): ScriptExecutor {
+    @ConditionalOnMissingBean(name = "graalScriptExecutor")
+    fun graalScriptExecutor(): GraalScriptExecutor {
         return GraalVMScriptExecutor()
     }
 
@@ -100,8 +111,56 @@ class DataServiceConfig {
 
     @Bean
     @ConditionalOnMissingBean
+    fun serviceTestRepository(
+        serviceTestMapper: ServiceTestMapper,
+        serviceTestResultMapper: ServiceTestResultMapper,
+        objectMapper: ObjectMapper
+    ): ServiceTestRepository {
+        return MybatisServiceTestRepository(serviceTestMapper, serviceTestResultMapper, objectMapper)
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    fun serviceTestManager(
+        testRepository: ServiceTestRepository,
+        serviceRepository: DataServiceRepository,
+        serviceExecutor: DataServiceExecutor
+    ): ServiceTestManager {
+        return DefaultServiceTestManager(testRepository, serviceRepository, serviceExecutor)
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    fun documentGenerator(
+        serviceRepository: DataServiceRepository,
+        serviceDocumentMapper: ServiceDocumentMapper,
+        documentTemplateMapper: DocumentTemplateMapper,
+        objectMapper: ObjectMapper
+    ): DocumentGenerator {
+        return DefaultDocumentGenerator(serviceRepository, serviceDocumentMapper, documentTemplateMapper, objectMapper)
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(name = "dataServiceScriptExecutor")
+    fun dataServiceScriptExecutor(): ScriptExecutor {
+        return DefaultScriptExecutor()
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    fun scriptDebugger(
+        dataServiceScriptExecutor: ScriptExecutor,
+        dataSourceService: DataSourceService
+    ): ScriptDebugger {
+        return DefaultScriptDebugger(dataServiceScriptExecutor, dataSourceService)
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
     fun objectMapper(): ObjectMapper {
-        return ObjectMapper()
+        val objectMapper = ObjectMapper()
+        objectMapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false)
+        return objectMapper
     }
 
     @Bean
