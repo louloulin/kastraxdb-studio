@@ -8,6 +8,7 @@ import ai.magicdb.dataservice.core.script.LoggingScriptExecutor
 import ai.magicdb.dataservice.core.script.ScriptExecutor
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
+import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.CopyOnWriteArrayList
 import java.util.concurrent.TimeUnit
 
@@ -23,6 +24,9 @@ class DefaultScriptDebugger(
 ) : ScriptDebugger {
 
     private val logger = LoggerFactory.getLogger(DefaultScriptDebugger::class.java)
+    
+    // 调试会话缓存
+    private val sessions = ConcurrentHashMap<String, DebugSession>()
 
     override fun debug(request: ScriptDebugRequest): ScriptDebugResult {
         try {
@@ -71,6 +75,84 @@ class DefaultScriptDebugger(
             "kotlin" -> KOTLIN_TEMPLATE
             "python" -> PYTHON_TEMPLATE
             else -> JS_TEMPLATE
+        }
+    }
+    
+    override fun createSession(request: ScriptDebugRequest): String {
+        // 创建会话ID
+        val sessionId = java.util.UUID.randomUUID().toString()
+        
+        // 创建会话
+        val session = DebugSession(
+            id = sessionId,
+            request = request,
+            context = createExecutionContext(request),
+            logs = CopyOnWriteArrayList(),
+            console = CopyOnWriteArrayList(),
+            startTime = System.currentTimeMillis()
+        )
+        
+        // 保存会话
+        sessions[sessionId] = session
+        
+        return sessionId
+    }
+    
+    override fun closeSession(sessionId: String): Boolean {
+        // 移除会话
+        return sessions.remove(sessionId) != null
+    }
+    
+    override fun getSession(sessionId: String): Map<String, Any?> {
+        // 获取会话
+        val session = sessions[sessionId] ?: return emptyMap()
+        
+        // 返回会话信息
+        return mapOf(
+            "id" to session.id,
+            "request" to session.request,
+            "logs" to session.logs,
+            "console" to session.console,
+            "startTime" to session.startTime,
+            "duration" to (System.currentTimeMillis() - session.startTime)
+        )
+    }
+    
+    override fun executeCommand(sessionId: String, command: String): ScriptDebugResult {
+        // 获取会话
+        val session = sessions[sessionId] ?: return ScriptDebugResult(
+            success = false,
+            message = "会话不存在: $sessionId"
+        )
+        
+        try {
+            // 创建带日志的脚本执行器
+            val loggingExecutor = LoggingScriptExecutor(scriptExecutor, session.logs, session.console)
+            
+            // 执行命令
+            val startTime = System.currentTimeMillis()
+            val result = loggingExecutor.execute(command, session.request.language, session.context, session.request.timeout, TimeUnit.MILLISECONDS)
+            val duration = System.currentTimeMillis() - startTime
+            
+            // 创建调试结果
+            return ScriptDebugResult(
+                success = true,
+                data = result,
+                duration = duration,
+                logs = session.logs,
+                console = session.console
+            )
+        } catch (e: Exception) {
+            logger.error("执行命令失败", e)
+            
+            // 创建错误结果
+            return ScriptDebugResult(
+                success = false,
+                message = e.message,
+                stackTrace = e.stackTraceToString(),
+                logs = session.logs,
+                console = session.console
+            )
         }
     }
 
@@ -133,6 +215,18 @@ class DefaultScriptDebugger(
 
         return context
     }
+    
+    /**
+     * 调试会话
+     */
+    data class DebugSession(
+        val id: String,
+        val request: ScriptDebugRequest,
+        val context: Map<String, Any?>,
+        val logs: MutableList<String>,
+        val console: MutableList<String>,
+        val startTime: Long
+    )
 
     companion object {
         /**

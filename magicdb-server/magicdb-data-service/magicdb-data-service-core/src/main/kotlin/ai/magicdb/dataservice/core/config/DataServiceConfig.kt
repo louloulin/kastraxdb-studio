@@ -5,14 +5,18 @@ import ai.magicdb.dataservice.api.DataServiceManager
 import ai.magicdb.dataservice.api.DataServiceRepository
 import ai.magicdb.dataservice.api.DataSourceService
 import ai.magicdb.dataservice.api.DocumentGenerator
+import ai.magicdb.dataservice.api.AsyncTaskExecutor
 import ai.magicdb.dataservice.api.ScriptDebugger
+import ai.magicdb.dataservice.api.ScriptExecutor
 import ai.magicdb.dataservice.api.ServiceTestManager
 import ai.magicdb.dataservice.api.ServiceTestRepository
 import ai.magicdb.dataservice.core.cache.DataServiceCacheManager
 import ai.magicdb.dataservice.core.converter.DataServiceConverter
 import ai.magicdb.dataservice.core.converter.ServiceGroupConverter
 import ai.magicdb.dataservice.core.datasource.SimpleDataSourceService
-import ai.magicdb.dataservice.core.debug.DefaultScriptDebugger
+import ai.magicdb.dataservice.core.async.DefaultAsyncTaskExecutor
+import ai.magicdb.dataservice.core.debug.DefaultScriptDebuggerAdapter
+import ai.magicdb.dataservice.core.executor.DefaultScriptExecutor
 import ai.magicdb.dataservice.core.document.DefaultDocumentGenerator
 import ai.magicdb.dataservice.core.executor.DefaultDataServiceExecutor
 import ai.magicdb.dataservice.core.manager.DefaultDataServiceManager
@@ -148,11 +152,18 @@ class DataServiceConfig {
 
     @Bean
     @ConditionalOnMissingBean
-    fun scriptDebugger(
-        dataServiceScriptExecutor: ScriptExecutor,
-        dataSourceService: DataSourceService
-    ): ScriptDebugger {
-        return DefaultScriptDebugger(dataServiceScriptExecutor, dataSourceService)
+    fun scriptDebugger(scriptExecutor: ScriptExecutor, dataSourceService: DataSourceService): ScriptDebugger {
+        // 使用原有的DefaultScriptDebugger实现基本功能
+        val originalDebugger = ai.magicdb.dataservice.core.debug.DefaultScriptDebugger(scriptExecutor, dataSourceService)
+
+        // 使用适配器扩展调试功能
+        return DefaultScriptDebuggerAdapter()
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    fun asyncTaskExecutor(scriptExecutor: ScriptExecutor): AsyncTaskExecutor {
+        return DefaultAsyncTaskExecutor(scriptExecutor)
     }
 
     @Bean

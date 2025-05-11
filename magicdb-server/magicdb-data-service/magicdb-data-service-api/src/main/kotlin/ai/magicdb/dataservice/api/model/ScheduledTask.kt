@@ -106,7 +106,7 @@ data class ScheduledTask(
     /**
      * 任务状态
      */
-    var status: TaskStatus = TaskStatus.WAITING,
+    var status: ScheduledTaskStatus = ScheduledTaskStatus.PENDING,
     
     /**
      * 任务标签
@@ -164,13 +164,13 @@ data class ScheduledTask(
 }
 
 /**
- * 任务状态
+ * 定时任务状态
  */
-enum class TaskStatus {
+enum class ScheduledTaskStatus {
     /**
      * 等待执行
      */
-    WAITING,
+    PENDING,
     
     /**
      * 执行中

@@ -5,6 +5,7 @@ import ai.magicdb.script.api.ScriptExecutor
 import ai.magicdb.script.engine.provider.GraalVMLanguageProvider
 import ai.magicdb.script.engine.provider.JSR223LanguageProvider
 import ai.magicdb.script.engine.provider.KotlinLanguageProvider
+import ai.magicdb.script.engine.provider.PythonLanguageProvider
 import org.slf4j.LoggerFactory
 import java.util.*
 
@@ -22,6 +23,7 @@ class GraalVMScriptExecutor : ScriptExecutor {
         registerLanguageProvider(GraalVMLanguageProvider())
         registerLanguageProvider(JSR223LanguageProvider())
         registerLanguageProvider(KotlinLanguageProvider())
+        registerLanguageProvider(PythonLanguageProvider())
 
         // 通过SPI加载其他语言提供者
         val serviceLoader = ServiceLoader.load(LanguageProvider::class.java)
@@ -54,8 +56,9 @@ class GraalVMScriptExecutor : ScriptExecutor {
 
         // 添加GraalVM支持的语言
         languages.add("js")
-        // Python和WebAssembly需要GraalVM企业版
-        // languages.add("python")
+        // 添加Python支持
+        languages.add("python")
+        // WebAssembly需要GraalVM企业版
         // languages.add("wasm")
 
         // 添加其他支持的语言

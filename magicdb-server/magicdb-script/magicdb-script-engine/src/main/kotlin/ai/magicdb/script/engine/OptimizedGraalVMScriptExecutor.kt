@@ -9,6 +9,7 @@ import ai.magicdb.script.engine.compiler.ScriptCompiler
 import ai.magicdb.script.engine.provider.GraalVMLanguageProvider
 import ai.magicdb.script.engine.provider.JSR223LanguageProvider
 import ai.magicdb.script.engine.provider.KotlinLanguageProvider
+import ai.magicdb.script.engine.provider.PythonLanguageProvider
 import org.slf4j.LoggerFactory
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
@@ -24,26 +25,27 @@ class OptimizedGraalVMScriptExecutor : ScriptExecutor {
     private val logger = LoggerFactory.getLogger(OptimizedGraalVMScriptExecutor::class.java)
     private val languageProviders = ConcurrentHashMap<String, LanguageProvider>()
     private val compilers = ConcurrentHashMap<String, ScriptCompiler>()
-    
+
     init {
         // 注册内置的语言提供者
         registerLanguageProvider(GraalVMLanguageProvider())
         registerLanguageProvider(JSR223LanguageProvider())
         registerLanguageProvider(KotlinLanguageProvider())
-        
+        registerLanguageProvider(PythonLanguageProvider())
+
         // 注册脚本编译器
         registerCompiler("js", GraalVMScriptCompiler())
         registerCompiler("python", GraalVMScriptCompiler())
         registerCompiler("wasm", GraalVMScriptCompiler())
         registerCompiler("kotlin", KotlinScriptCompiler())
         registerCompiler("default", JSR223ScriptCompiler())
-        
+
         // 通过SPI加载其他语言提供者
         ServiceLoader.load(LanguageProvider::class.java).forEach { provider ->
             registerLanguageProvider(provider)
         }
     }
-    
+
     /**
      * 注册语言提供者
      *
@@ -52,7 +54,7 @@ class OptimizedGraalVMScriptExecutor : ScriptExecutor {
     fun registerLanguageProvider(provider: LanguageProvider) {
         languageProviders[provider.javaClass.name] = provider
     }
-    
+
     /**
      * 注册脚本编译器
      *
@@ -62,7 +64,7 @@ class OptimizedGraalVMScriptExecutor : ScriptExecutor {
     fun registerCompiler(language: String, compiler: ScriptCompiler) {
         compilers[language] = compiler
     }
-    
+
     @Throws(Exception::class)
     override fun execute(languageName: String, script: String, context: Map<String, Any?>): Any? {
         // 尝试使用编译器执行
@@ -75,17 +77,17 @@ class OptimizedGraalVMScriptExecutor : ScriptExecutor {
                 // 如果编译器执行失败，尝试使用语言提供者
             }
         }
-        
+
         // 使用语言提供者执行
         for (provider in languageProviders.values) {
             if (provider.support(languageName)) {
                 return provider.execute(languageName, script, context)
             }
         }
-        
+
         throw UnsupportedOperationException("不支持的语言: $languageName")
     }
-    
+
     /**
      * 带超时的脚本执行
      *
@@ -108,11 +110,11 @@ class OptimizedGraalVMScriptExecutor : ScriptExecutor {
         val task = java.util.concurrent.Callable {
             execute(languageName, script, context)
         }
-        
+
         // 创建执行器
         val executor = java.util.concurrent.Executors.newSingleThreadExecutor()
         val future = executor.submit(task)
-        
+
         try {
             // 等待执行完成或超时
             return future.get(timeout, unit)
@@ -123,34 +125,34 @@ class OptimizedGraalVMScriptExecutor : ScriptExecutor {
             executor.shutdownNow()
         }
     }
-    
+
     override fun getSupportedLanguages(): Array<String> {
         val languages = mutableSetOf<String>()
-        
+
         // 添加编译器支持的语言
         languages.addAll(compilers.keys)
-        
+
         // 添加GraalVM支持的语言
         languages.add("js")
         languages.add("python")
         languages.add("wasm")
-        
+
         // 添加其他支持的语言
         languages.add("kotlin")
-        
+
         // 移除default
         languages.remove("default")
-        
+
         return languages.toTypedArray()
     }
-    
+
     /**
      * 清除脚本缓存
      */
     fun clearCache() {
         compilers.values.forEach { it.clearCache() }
     }
-    
+
     /**
      * 获取缓存大小
      *
