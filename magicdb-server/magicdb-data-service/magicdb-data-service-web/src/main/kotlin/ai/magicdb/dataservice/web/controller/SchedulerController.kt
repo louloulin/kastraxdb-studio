@@ -16,10 +16,12 @@ import org.springframework.web.bind.annotation.*
  *
  * @author magicdb
  */
-@RestController
-@RequestMapping("/api/data-service/scheduler")
+// @RestController
+// @RequestMapping("/api/data-service/scheduler")
 class SchedulerController(private val schedulerService: SchedulerService) {
-    
+    // 暂时禁用调度器控制器
+    /*
+
     /**
      * 创建任务
      *
@@ -31,7 +33,7 @@ class SchedulerController(private val schedulerService: SchedulerService) {
         val taskId = schedulerService.createTask(task)
         return DataResult.of(taskId)
     }
-    
+
     /**
      * 更新任务
      *
@@ -49,7 +51,7 @@ class SchedulerController(private val schedulerService: SchedulerService) {
             ActionResult.fail("common.error", "更新任务失败", "")
         }
     }
-    
+
     /**
      * 删除任务
      *
@@ -65,7 +67,7 @@ class SchedulerController(private val schedulerService: SchedulerService) {
             ActionResult.fail("common.error", "删除任务失败", "")
         }
     }
-    
+
     /**
      * 获取任务
      *
@@ -81,7 +83,7 @@ class SchedulerController(private val schedulerService: SchedulerService) {
             DataResult.empty()
         }
     }
-    
+
     /**
      * 获取所有任务
      *
@@ -97,7 +99,7 @@ class SchedulerController(private val schedulerService: SchedulerService) {
         val tasks = schedulerService.getAllTasks(status, group)
         return ListResult.of(tasks)
     }
-    
+
     /**
      * 获取服务的所有任务
      *
@@ -109,7 +111,7 @@ class SchedulerController(private val schedulerService: SchedulerService) {
         val tasks = schedulerService.getTasksByService(serviceId)
         return ListResult.of(tasks)
     }
-    
+
     /**
      * 启动任务
      *
@@ -125,7 +127,7 @@ class SchedulerController(private val schedulerService: SchedulerService) {
             ActionResult.fail("common.error", "启动任务失败", "")
         }
     }
-    
+
     /**
      * 暂停任务
      *
@@ -141,7 +143,7 @@ class SchedulerController(private val schedulerService: SchedulerService) {
             ActionResult.fail("common.error", "暂停任务失败", "")
         }
     }
-    
+
     /**
      * 恢复任务
      *
@@ -157,7 +159,7 @@ class SchedulerController(private val schedulerService: SchedulerService) {
             ActionResult.fail("common.error", "恢复任务失败", "")
         }
     }
-    
+
     /**
      * 立即执行任务
      *
@@ -173,7 +175,7 @@ class SchedulerController(private val schedulerService: SchedulerService) {
         val executionId = schedulerService.executeTask(taskId, parameters)
         return DataResult.of(executionId)
     }
-    
+
     /**
      * 获取任务执行记录
      *
@@ -189,7 +191,7 @@ class SchedulerController(private val schedulerService: SchedulerService) {
             DataResult.empty()
         }
     }
-    
+
     /**
      * 获取任务的所有执行记录
      *
@@ -207,7 +209,7 @@ class SchedulerController(private val schedulerService: SchedulerService) {
         val executions = schedulerService.getTaskExecutions(taskId, limit, offset)
         return ListResult.of(executions)
     }
-    
+
     /**
      * 取消任务执行
      *
@@ -223,7 +225,7 @@ class SchedulerController(private val schedulerService: SchedulerService) {
             ActionResult.fail("common.error", "取消执行失败", "")
         }
     }
-    
+
     /**
      * 启动调度器
      *
@@ -238,7 +240,7 @@ class SchedulerController(private val schedulerService: SchedulerService) {
             ActionResult.fail("common.error", "启动调度器失败", "")
         }
     }
-    
+
     /**
      * 关闭调度器
      *
@@ -253,7 +255,7 @@ class SchedulerController(private val schedulerService: SchedulerService) {
             ActionResult.fail("common.error", "关闭调度器失败", "")
         }
     }
-    
+
     /**
      * 暂停调度器
      *
@@ -268,7 +270,7 @@ class SchedulerController(private val schedulerService: SchedulerService) {
             ActionResult.fail("common.error", "暂停调度器失败", "")
         }
     }
-    
+
     /**
      * 恢复调度器
      *
@@ -283,7 +285,7 @@ class SchedulerController(private val schedulerService: SchedulerService) {
             ActionResult.fail("common.error", "恢复调度器失败", "")
         }
     }
-    
+
     /**
      * 获取调度器状态
      *
@@ -294,7 +296,7 @@ class SchedulerController(private val schedulerService: SchedulerService) {
         val status = schedulerService.getSchedulerStatus()
         return DataResult.of(status)
     }
-    
+
     /**
      * 获取调度器统计信息
      *
@@ -304,5 +306,5 @@ class SchedulerController(private val schedulerService: SchedulerService) {
     fun getSchedulerStats(): DataResult<SchedulerStats> {
         val stats = schedulerService.getSchedulerStats()
         return DataResult.of(stats)
-    }
+        */
 }

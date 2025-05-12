@@ -105,6 +105,11 @@ data class DataService(
     var cacheTime: Long = 0,
 
     /**
+     * 并发限制，0表示不限制
+     */
+    var concurrentLimit: Int = 10,
+
+    /**
      * 元数据
      */
     var metadata: Map<String, Any?> = emptyMap()

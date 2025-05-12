@@ -9,49 +9,91 @@ import ai.magicdb.dataservice.api.model.ServiceDocument
  * @author magicdb
  */
 interface DocumentGenerator {
-    
+
     /**
      * 生成服务文档
      *
      * @param serviceId 服务ID
-     * @param templateId 模板ID，如果为null则使用默认模板
      * @return 服务文档
      */
-    fun generateServiceDocument(serviceId: String, templateId: String? = null): ServiceDocument
-    
+    fun generateDocument(serviceId: String): ServiceDocument
+
+    /**
+     * 生成服务文档
+     *
+     * @param serviceId 服务ID
+     * @param template 文档模板
+     * @return 服务文档
+     */
+    fun generateDocument(serviceId: String, template: DocumentTemplate): ServiceDocument
+
+    /**
+     * 生成服务文档
+     *
+     * @param serviceId 服务ID
+     * @param templateId 模板ID
+     * @return 服务文档
+     */
+    fun generateServiceDocument(serviceId: String, templateId: String?): ServiceDocument
+
     /**
      * 生成分组文档
      *
      * @param groupId 分组ID
-     * @param templateId 模板ID，如果为null则使用默认模板
-     * @return 分组文档
+     * @param templateId 模板ID
+     * @return 服务文档
      */
-    fun generateGroupDocument(groupId: String, templateId: String? = null): ServiceDocument
-    
-    /**
-     * 生成所有服务文档
-     *
-     * @param templateId 模板ID，如果为null则使用默认模板
-     * @return 服务文档列表
-     */
-    fun generateAllServiceDocuments(templateId: String? = null): List<ServiceDocument>
-    
-    /**
-     * 生成所有分组文档
-     *
-     * @param templateId 模板ID，如果为null则使用默认模板
-     * @return 分组文档列表
-     */
-    fun generateAllGroupDocuments(templateId: String? = null): List<ServiceDocument>
-    
+    fun generateGroupDocument(groupId: String, templateId: String?): ServiceDocument
+
     /**
      * 生成API文档
      *
-     * @param templateId 模板ID，如果为null则使用默认模板
-     * @return API文档
+     * @param apiId API ID
+     * @param templateId 模板ID
+     * @return 服务文档
      */
-    fun generateApiDocument(templateId: String? = null): ServiceDocument
-    
+    fun generateApiDocument(apiId: String, templateId: String?): ServiceDocument
+
+    /**
+     * 获取文档
+     *
+     * @param documentId 文档ID
+     * @return 服务文档
+     */
+    fun getDocument(documentId: String): ServiceDocument?
+
+    /**
+     * 获取服务文档
+     *
+     * @param serviceId 服务ID
+     * @return 服务文档
+     */
+    fun getServiceDocument(serviceId: String): ServiceDocument?
+
+    /**
+     * 获取分组文档
+     *
+     * @param groupId 分组ID
+     * @return 服务文档
+     */
+    fun getGroupDocument(groupId: String): ServiceDocument?
+
+    /**
+     * 获取API文档
+     *
+     * @param apiId API ID
+     * @return 服务文档
+     */
+    fun getApiDocument(apiId: String): ServiceDocument?
+
+    /**
+     * 获取所有文档
+     *
+     * @param type 文档类型
+     * @return 文档列表
+     */
+    fun getAllDocuments(type: String?): List<ServiceDocument>
+
     /**
      * 保存文档
      *
@@ -59,15 +101,7 @@ interface DocumentGenerator {
      * @return 文档ID
      */
     fun saveDocument(document: ServiceDocument): String
-    
-    /**
-     * 获取文档
-     *
-     * @param documentId 文档ID
-     * @return 文档
-     */
-    fun getDocument(documentId: String): ServiceDocument?
-    
+
     /**
      * 删除文档
      *
@@ -75,53 +109,37 @@ interface DocumentGenerator {
      * @return 是否成功
      */
     fun deleteDocument(documentId: String): Boolean
-    
+
     /**
-     * 获取服务文档
+     * 保存文档模板
      *
-     * @param serviceId 服务ID
-     * @return 文档
+     * @param template 文档模板
+     * @return 模板ID
      */
-    fun getServiceDocument(serviceId: String): ServiceDocument?
-    
-    /**
-     * 获取分组文档
-     *
-     * @param groupId 分组ID
-     * @return 文档
-     */
-    fun getGroupDocument(groupId: String): ServiceDocument?
-    
-    /**
-     * 获取API文档
-     *
-     * @return 文档
-     */
-    fun getApiDocument(): ServiceDocument?
-    
-    /**
-     * 获取所有文档
-     *
-     * @return 文档列表
-     */
-    fun getAllDocuments(): List<ServiceDocument>
-    
+    fun saveTemplate(template: DocumentTemplate): String
+
     /**
      * 获取文档模板
      *
      * @param templateId 模板ID
-     * @return 模板
+     * @return 文档模板
      */
     fun getTemplate(templateId: String): DocumentTemplate?
-    
+
     /**
-     * 保存文档模板
+     * 获取所有文档模板
      *
-     * @param template 模板
-     * @return 模板ID
+     * @return 文档模板列表
      */
-    fun saveTemplate(template: DocumentTemplate): String
-    
+    fun getAllTemplates(): List<DocumentTemplate>
+
+    /**
+     * 获取默认模板
+     *
+     * @return 默认模板
+     */
+    fun getDefaultTemplate(): DocumentTemplate
+
     /**
      * 删除文档模板
      *
@@ -129,20 +147,26 @@ interface DocumentGenerator {
      * @return 是否成功
      */
     fun deleteTemplate(templateId: String): Boolean
-    
+
     /**
-     * 获取所有文档模板
+     * 生成示例文档
      *
-     * @param type 模板类型，如果为null则获取所有类型
-     * @return 模板列表
+     * @param type 文档类型
+     * @return 示例文档
      */
-    fun getAllTemplates(type: String? = null): List<DocumentTemplate>
-    
+    fun generateExampleDocument(type: String): ServiceDocument
+
     /**
-     * 获取默认文档模板
+     * 生成示例服务
      *
-     * @param type 模板类型
-     * @return 默认模板
+     * @return 示例服务
      */
-    fun getDefaultTemplate(type: String): DocumentTemplate
+    fun generateExampleService(): ServiceDocument
+
+    /**
+     * 生成示例分组
+     *
+     * @return 示例分组
+     */
+    fun generateExampleGroup(): ServiceDocument
 }

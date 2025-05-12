@@ -27,7 +27,7 @@ class PerformanceController(
     private val stressTestTool: StressTestTool,
     private val reportGenerator: PerformanceReportGenerator
 ) {
-    
+
     /**
      * 获取系统性能指标
      */
@@ -36,7 +36,7 @@ class PerformanceController(
         val metrics = performanceCollector.collectSystemMetrics()
         return DataResult.of(metrics)
     }
-    
+
     /**
      * 获取性能警告
      *
@@ -51,7 +51,7 @@ class PerformanceController(
         val warnings = performanceAnalyzer.getWarnings(metricName, limit)
         return DataResult.of(warnings)
     }
-    
+
     /**
      * 清除性能警告
      *
@@ -62,7 +62,7 @@ class PerformanceController(
         performanceAnalyzer.clearWarnings(metricName)
         return ActionResult.isSuccess()
     }
-    
+
     /**
      * 获取性能阈值
      *
@@ -73,7 +73,7 @@ class PerformanceController(
         val threshold = performanceAnalyzer.getThreshold(name)
         return DataResult.of(threshold)
     }
-    
+
     /**
      * 获取所有性能阈值
      */
@@ -82,7 +82,7 @@ class PerformanceController(
         val thresholds = performanceAnalyzer.getAllThresholds()
         return DataResult.of(thresholds)
     }
-    
+
     /**
      * 设置性能阈值
      *
@@ -99,7 +99,7 @@ class PerformanceController(
         performanceAnalyzer.setThreshold(name, value, type)
         return ActionResult.isSuccess()
     }
-    
+
     /**
      * 获取优化策略
      *
@@ -110,7 +110,7 @@ class PerformanceController(
         val strategy = performanceOptimizer.getStrategy(name)
         return DataResult.of(strategy)
     }
-    
+
     /**
      * 获取所有优化策略
      */
@@ -119,7 +119,7 @@ class PerformanceController(
         val strategies = performanceOptimizer.getAllStrategies()
         return DataResult.of(strategies)
     }
-    
+
     /**
      * 获取优化历史
      *
@@ -130,7 +130,7 @@ class PerformanceController(
         val history = performanceOptimizer.getOptimizationHistory(limit)
         return DataResult.of(history)
     }
-    
+
     /**
      * 清除优化历史
      */
@@ -139,7 +139,7 @@ class PerformanceController(
         performanceOptimizer.clearOptimizationHistory()
         return ActionResult.isSuccess()
     }
-    
+
     /**
      * 启动压力测试
      *
@@ -160,7 +160,7 @@ class PerformanceController(
         val testId = stressTestTool.startTest(serviceId, parameters, concurrentUsers, duration, rampUp)
         return DataResult.of(testId)
     }
-    
+
     /**
      * 停止压力测试
      *
@@ -172,10 +172,10 @@ class PerformanceController(
         return if (success) {
             ActionResult.isSuccess()
         } else {
-            ActionResult.isFail("测试不存在或已停止")
+            ActionResult.fail("TEST_NOT_FOUND", "测试不存在或已停止", "")
         }
     }
-    
+
     /**
      * 获取测试状态
      *
@@ -186,7 +186,7 @@ class PerformanceController(
         val status = stressTestTool.getTestStatus(testId)
         return DataResult.of(status)
     }
-    
+
     /**
      * 获取所有测试状态
      */
@@ -195,7 +195,7 @@ class PerformanceController(
         val status = stressTestTool.getAllTestStatus()
         return DataResult.of(status)
     }
-    
+
     /**
      * 清除测试历史
      *
@@ -207,10 +207,10 @@ class PerformanceController(
         return if (success) {
             ActionResult.isSuccess()
         } else {
-            ActionResult.isFail("测试不存在或正在运行")
+            ActionResult.fail("TEST_NOT_FOUND", "测试不存在或正在运行", "")
         }
     }
-    
+
     /**
      * 清除所有测试历史
      */
@@ -219,7 +219,7 @@ class PerformanceController(
         stressTestTool.clearAllTestHistory()
         return ActionResult.isSuccess()
     }
-    
+
     /**
      * 生成系统性能报告
      *
@@ -234,7 +234,7 @@ class PerformanceController(
         val reportId = reportGenerator.generateSystemReport(startTime, endTime)
         return DataResult.of(reportId)
     }
-    
+
     /**
      * 生成服务性能报告
      *
@@ -251,7 +251,7 @@ class PerformanceController(
         val reportId = reportGenerator.generateServiceReport(serviceId, startTime, endTime)
         return DataResult.of(reportId)
     }
-    
+
     /**
      * 生成压力测试报告
      *
@@ -262,7 +262,7 @@ class PerformanceController(
         val reportId = reportGenerator.generateStressTestReport(testId)
         return DataResult.of(reportId)
     }
-    
+
     /**
      * 获取报告
      *
@@ -273,7 +273,7 @@ class PerformanceController(
         val report = reportGenerator.getReport(reportId)
         return DataResult.of(report)
     }
-    
+
     /**
      * 获取所有报告
      */
@@ -282,7 +282,7 @@ class PerformanceController(
         val reports = reportGenerator.getAllReports()
         return DataResult.of(reports)
     }
-    
+
     /**
      * 删除报告
      *
@@ -294,7 +294,7 @@ class PerformanceController(
         return if (success) {
             ActionResult.isSuccess()
         } else {
-            ActionResult.isFail("报告不存在")
+            ActionResult.fail("REPORT_NOT_FOUND", "报告不存在", "")
         }
     }
 }

@@ -19,7 +19,7 @@ import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer
  */
 @Configuration
 class RedisConfig {
-    
+
     /**
      * 配置 RedisTemplate
      */
@@ -27,33 +27,33 @@ class RedisConfig {
     fun redisTemplate(redisConnectionFactory: RedisConnectionFactory): RedisTemplate<String, Any> {
         val template = RedisTemplate<String, Any>()
         template.connectionFactory = redisConnectionFactory
-        
+
         // 使用 Jackson2JsonRedisSerializer 来序列化和反序列化 redis 的 value 值
         val objectMapper = ObjectMapper()
         objectMapper.registerModule(JavaTimeModule())
         objectMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
-        
+
         val jackson2JsonRedisSerializer = Jackson2JsonRedisSerializer(objectMapper, Any::class.java)
-        
+
         // 使用 StringRedisSerializer 来序列化和反序列化 redis 的 key 值
         template.keySerializer = StringRedisSerializer()
         template.valueSerializer = jackson2JsonRedisSerializer
-        
+
         // Hash 的 key 也采用 StringRedisSerializer 的序列化方式
         template.hashKeySerializer = StringRedisSerializer()
         template.hashValueSerializer = jackson2JsonRedisSerializer
-        
+
         template.afterPropertiesSet()
         return template
     }
-    
+
     /**
      * 配置 Redis 消息监听容器
      */
     @Bean
     fun redisMessageListenerContainer(redisConnectionFactory: RedisConnectionFactory): RedisMessageListenerContainer {
         val container = RedisMessageListenerContainer()
-        container.connectionFactory = redisConnectionFactory
+        container.setConnectionFactory(redisConnectionFactory)
         return container
     }
 }

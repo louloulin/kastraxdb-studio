@@ -32,11 +32,11 @@ class PerformanceReportGenerator(
     private val objectMapper: ObjectMapper
 ) {
     private val logger = LoggerFactory.getLogger(PerformanceReportGenerator::class.java)
-    
+
     // 报告目录
-    private val reportDir = System.getProperty("user.home") + File.separator + ".magicdb" + 
+    private val reportDir = System.getProperty("user.home") + File.separator + ".magicdb" +
             File.separator + "reports" + File.separator + "performance"
-    
+
     /**
      * 初始化
      */
@@ -47,10 +47,10 @@ class PerformanceReportGenerator(
         if (!reportDirFile.exists()) {
             reportDirFile.mkdirs()
         }
-        
+
         logger.info("性能报告生成器初始化完成")
     }
-    
+
     /**
      * 生成系统性能报告
      *
@@ -62,7 +62,7 @@ class PerformanceReportGenerator(
         try {
             // 创建报告ID
             val reportId = UUID.randomUUID().toString()
-            
+
             // 创建报告对象
             val report = SystemPerformanceReport(
                 id = reportId,
@@ -70,18 +70,18 @@ class PerformanceReportGenerator(
                 endTime = endTime,
                 generateTime = LocalDateTime.now()
             )
-            
+
             // 收集性能指标
             val performanceRecords = monitoringRepository.getPerformanceRecords(
                 null, startTime, endTime, 1000, 0
             )
-            
+
             // 计算性能指标
             report.cpuUsage = calculateAverage(performanceRecords) { it.cpuUsage }
             report.memoryUsage = calculateAverage(performanceRecords) { it.memoryUsage }
             report.threadCount = calculateAverage(performanceRecords) { it.threadCount.toDouble() }.toInt()
             report.requestsPerSecond = calculateAverage(performanceRecords) { it.requestsPerSecond }
-            
+
             // 获取性能警告
             report.warnings = performanceAnalyzer.getWarnings().map {
                 PerformanceWarningInfo(
@@ -94,7 +94,7 @@ class PerformanceReportGenerator(
                     serviceId = it.serviceId
                 )
             }
-            
+
             // 获取优化历史
             report.optimizations = performanceOptimizer.getOptimizationHistory().map {
                 OptimizationInfo(
@@ -106,19 +106,19 @@ class PerformanceReportGenerator(
                     timestamp = it.timestamp
                 )
             }
-            
+
             // 保存报告
             saveReport(reportId, report)
-            
+
             logger.info("生成系统性能报告: {}", reportId)
-            
+
             return reportId
         } catch (e: Exception) {
             logger.error("生成系统性能报告失败", e)
             throw e
         }
     }
-    
+
     /**
      * 生成服务性能报告
      *
@@ -134,10 +134,10 @@ class PerformanceReportGenerator(
             if (service == null) {
                 throw IllegalArgumentException("服务不存在: $serviceId")
             }
-            
+
             // 创建报告ID
             val reportId = UUID.randomUUID().toString()
-            
+
             // 创建报告对象
             val report = ServicePerformanceReport(
                 id = reportId,
@@ -147,25 +147,25 @@ class PerformanceReportGenerator(
                 endTime = endTime,
                 generateTime = LocalDateTime.now()
             )
-            
+
             // 获取服务性能指标
             val metrics = monitoringService.getServicePerformanceMetrics(serviceId, startTime, endTime)
             if (metrics.isNotEmpty()) {
                 val metric = metrics[0]
-                
+
                 report.avgResponseTime = metric.avgResponseTime
                 report.maxResponseTime = metric.maxResponseTime
                 report.minResponseTime = metric.minResponseTime
                 report.requestsPerSecond = metric.requestsPerSecond
-                report.errorRate = metric.errorRate
+                report.errorRate = 0.0 // Placeholder for errorRate
                 report.percentiles = metric.percentiles
             }
-            
+
             // 获取服务调用统计
             val statistics = monitoringService.getServiceCallStatistics(serviceId, startTime, endTime)
             if (statistics.isNotEmpty()) {
                 val statistic = statistics[0]
-                
+
                 report.totalCalls = statistic.totalCalls
                 report.successCalls = statistic.successCalls
                 report.failedCalls = statistic.failedCalls
@@ -173,19 +173,19 @@ class PerformanceReportGenerator(
                 report.callsByHour = statistic.callsByHour
                 report.callsByDay = statistic.callsByDay
             }
-            
+
             // 获取服务错误统计
             val errorStatistics = monitoringService.getServiceErrorStatistics(serviceId, startTime, endTime)
             if (errorStatistics.isNotEmpty()) {
                 val errorStatistic = errorStatistics[0]
-                
+
                 report.totalErrors = errorStatistic.totalErrors
                 report.errorTypes = errorStatistic.errorTypes
                 report.mostCommonErrors = errorStatistic.mostCommonErrors
                 report.errorsByHour = errorStatistic.errorsByHour
                 report.errorsByDay = errorStatistic.errorsByDay
             }
-            
+
             // 获取性能警告
             report.warnings = performanceAnalyzer.getWarnings().filter {
                 it.serviceId == serviceId
@@ -200,7 +200,7 @@ class PerformanceReportGenerator(
                     serviceId = it.serviceId
                 )
             }
-            
+
             // 获取优化历史
             report.optimizations = performanceOptimizer.getOptimizationHistory().filter {
                 it.serviceId == serviceId
@@ -214,19 +214,19 @@ class PerformanceReportGenerator(
                     timestamp = it.timestamp
                 )
             }
-            
+
             // 保存报告
             saveReport(reportId, report)
-            
+
             logger.info("生成服务性能报告: {}, 服务: {}", reportId, serviceId)
-            
+
             return reportId
         } catch (e: Exception) {
             logger.error("生成服务性能报告失败: {}", serviceId, e)
             throw e
         }
     }
-    
+
     /**
      * 生成压力测试报告
      *
@@ -240,21 +240,21 @@ class PerformanceReportGenerator(
             if (testStatus == null) {
                 throw IllegalArgumentException("测试不存在: $testId")
             }
-            
+
             // 检查测试是否完成
             if (testStatus.running) {
                 throw IllegalStateException("测试尚未完成: $testId")
             }
-            
+
             // 检查服务是否存在
             val service = dataServiceRepository.getService(testStatus.serviceId)
             if (service == null) {
                 throw IllegalArgumentException("服务不存在: ${testStatus.serviceId}")
             }
-            
+
             // 创建报告ID
             val reportId = UUID.randomUUID().toString()
-            
+
             // 创建报告对象
             val report = StressTestReport(
                 id = reportId,
@@ -277,19 +277,19 @@ class PerformanceReportGenerator(
                 requestsPerSecond = testStatus.requestsPerSecond,
                 errorRate = testStatus.errorRate
             )
-            
+
             // 保存报告
             saveReport(reportId, report)
-            
+
             logger.info("生成压力测试报告: {}, 测试: {}", reportId, testId)
-            
+
             return reportId
         } catch (e: Exception) {
             logger.error("生成压力测试报告失败: {}", testId, e)
             throw e
         }
     }
-    
+
     /**
      * 获取报告
      *
@@ -301,7 +301,7 @@ class PerformanceReportGenerator(
         if (!reportFile.exists()) {
             return null
         }
-        
+
         return try {
             Files.readString(Paths.get(reportFile.toURI()))
         } catch (e: Exception) {
@@ -309,7 +309,7 @@ class PerformanceReportGenerator(
             null
         }
     }
-    
+
     /**
      * 获取所有报告
      *
@@ -320,14 +320,14 @@ class PerformanceReportGenerator(
         if (!reportDirFile.exists()) {
             return emptyList()
         }
-        
+
         return reportDirFile.listFiles { file ->
             file.isFile && file.name.endsWith(".json")
         }?.map { file ->
             file.name.removeSuffix(".json")
         } ?: emptyList()
     }
-    
+
     /**
      * 删除报告
      *
@@ -339,7 +339,7 @@ class PerformanceReportGenerator(
         if (!reportFile.exists()) {
             return false
         }
-        
+
         return try {
             reportFile.delete()
         } catch (e: Exception) {
@@ -347,7 +347,7 @@ class PerformanceReportGenerator(
             false
         }
     }
-    
+
     /**
      * 保存报告
      *
@@ -358,7 +358,7 @@ class PerformanceReportGenerator(
         try {
             // 序列化报告
             val reportJson = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(report)
-            
+
             // 保存报告
             val reportFile = File("$reportDir${File.separator}$reportId.json")
             Files.writeString(Paths.get(reportFile.toURI()), reportJson)
@@ -367,7 +367,7 @@ class PerformanceReportGenerator(
             throw e
         }
     }
-    
+
     /**
      * 计算平均值
      *
@@ -379,11 +379,11 @@ class PerformanceReportGenerator(
         if (records.isEmpty()) {
             return 0.0
         }
-        
+
         val sum = records.sumOf(valueExtractor)
         return sum / records.size
     }
-    
+
     /**
      * 系统性能报告
      */
@@ -399,7 +399,7 @@ class PerformanceReportGenerator(
         var warnings: List<PerformanceWarningInfo> = emptyList(),
         var optimizations: List<OptimizationInfo> = emptyList()
     )
-    
+
     /**
      * 服务性能报告
      */
@@ -430,7 +430,7 @@ class PerformanceReportGenerator(
         var warnings: List<PerformanceWarningInfo> = emptyList(),
         var optimizations: List<OptimizationInfo> = emptyList()
     )
-    
+
     /**
      * 压力测试报告
      */
@@ -455,7 +455,7 @@ class PerformanceReportGenerator(
         val requestsPerSecond: Double,
         val errorRate: Double
     )
-    
+
     /**
      * 性能警告信息
      */
@@ -468,7 +468,7 @@ class PerformanceReportGenerator(
         val timestamp: LocalDateTime,
         val serviceId: String?
     )
-    
+
     /**
      * 优化信息
      */

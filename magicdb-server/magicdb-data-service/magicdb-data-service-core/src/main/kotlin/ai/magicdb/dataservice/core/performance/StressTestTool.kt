@@ -29,13 +29,13 @@ class StressTestTool(
     private val performanceCollector: PerformanceCollector
 ) {
     private val logger = LoggerFactory.getLogger(StressTestTool::class.java)
-    
+
     // 线程池
     private val executor = Executors.newCachedThreadPool()
-    
+
     // 测试任务
     private val testTasks = ConcurrentHashMap<String, TestTask>()
-    
+
     /**
      * 销毁
      */
@@ -43,7 +43,7 @@ class StressTestTool(
     fun destroy() {
         // 停止所有测试
         stopAllTests()
-        
+
         // 关闭线程池
         executor.shutdown()
         try {
@@ -53,10 +53,10 @@ class StressTestTool(
         } catch (e: InterruptedException) {
             executor.shutdownNow()
         }
-        
+
         logger.info("压力测试工具已销毁")
     }
-    
+
     /**
      * 启动压力测试
      *
@@ -79,10 +79,10 @@ class StressTestTool(
         if (service == null) {
             throw IllegalArgumentException("服务不存在: $serviceId")
         }
-        
+
         // 创建测试ID
         val testId = UUID.randomUUID().toString()
-        
+
         // 创建测试任务
         val testTask = TestTask(
             id = testId,
@@ -93,18 +93,18 @@ class StressTestTool(
             rampUp = rampUp,
             startTime = LocalDateTime.now()
         )
-        
+
         // 保存测试任务
         testTasks[testId] = testTask
-        
+
         // 启动测试
         startTestTask(testTask)
-        
+
         logger.info("启动压力测试: {}, 服务: {}, 并发用户: {}, 持续时间: {}秒", testId, serviceId, concurrentUsers, duration)
-        
+
         return testId
     }
-    
+
     /**
      * 停止压力测试
      *
@@ -116,18 +116,18 @@ class StressTestTool(
         if (testTask != null) {
             // 停止测试
             testTask.running.set(false)
-            
+
             // 更新结束时间
             testTask.endTime = LocalDateTime.now()
-            
+
             logger.info("停止压力测试: {}", testId)
-            
+
             return true
         }
-        
+
         return false
     }
-    
+
     /**
      * 停止所有测试
      */
@@ -136,7 +136,7 @@ class StressTestTool(
             stopTest(testId)
         }
     }
-    
+
     /**
      * 获取测试状态
      *
@@ -145,7 +145,7 @@ class StressTestTool(
      */
     fun getTestStatus(testId: String): TestStatus? {
         val testTask = testTasks[testId] ?: return null
-        
+
         return TestStatus(
             id = testTask.id,
             serviceId = testTask.serviceId,
@@ -169,7 +169,7 @@ class StressTestTool(
             requestsPerSecond = if (testTask.running.get()) {
                 val elapsedSeconds = (System.currentTimeMillis() - testTask.startTime.toEpochSecond(java.time.ZoneOffset.UTC) * 1000) / 1000
                 if (elapsedSeconds > 0) {
-                    testTask.totalRequests.get() / elapsedSeconds
+                    testTask.totalRequests.get().toDouble() / elapsedSeconds
                 } else {
                     0.0
                 }
@@ -177,7 +177,7 @@ class StressTestTool(
                 val elapsedSeconds = (testTask.endTime?.toEpochSecond(java.time.ZoneOffset.UTC) ?: System.currentTimeMillis() / 1000) -
                         testTask.startTime.toEpochSecond(java.time.ZoneOffset.UTC)
                 if (elapsedSeconds > 0) {
-                    testTask.totalRequests.get() / elapsedSeconds
+                    testTask.totalRequests.get().toDouble() / elapsedSeconds
                 } else {
                     0.0
                 }
@@ -189,7 +189,7 @@ class StressTestTool(
             }
         )
     }
-    
+
     /**
      * 获取所有测试状态
      *
@@ -200,7 +200,7 @@ class StressTestTool(
             getTestStatus(testId)
         }
     }
-    
+
     /**
      * 清除测试历史
      *
@@ -213,10 +213,10 @@ class StressTestTool(
             testTasks.remove(testId)
             return true
         }
-        
+
         return false
     }
-    
+
     /**
      * 清除所有测试历史
      */
@@ -224,12 +224,12 @@ class StressTestTool(
         val completedTestIds = testTasks.entries
             .filter { !it.value.running.get() }
             .map { it.key }
-        
+
         completedTestIds.forEach { testId ->
             testTasks.remove(testId)
         }
     }
-    
+
     /**
      * 启动测试任务
      *
@@ -238,7 +238,7 @@ class StressTestTool(
     private fun startTestTask(testTask: TestTask) {
         // 设置运行状态
         testTask.running.set(true)
-        
+
         // 提交测试任务
         CompletableFuture.runAsync({
             try {
@@ -248,7 +248,7 @@ class StressTestTool(
                 } else {
                     0
                 }
-                
+
                 // 启动用户线程
                 val userFutures = (0 until testTask.concurrentUsers).map { userId ->
                     CompletableFuture.runAsync({
@@ -256,12 +256,12 @@ class StressTestTool(
                         if (userId > 0 && userStartInterval > 0) {
                             Thread.sleep(userId * userStartInterval.toLong())
                         }
-                        
+
                         // 执行用户请求
                         executeUserRequests(testTask)
                     }, executor)
                 }
-                
+
                 // 等待所有用户线程完成
                 CompletableFuture.allOf(*userFutures.toTypedArray()).join()
             } catch (e: Exception) {
@@ -269,15 +269,15 @@ class StressTestTool(
             } finally {
                 // 设置结束时间
                 testTask.endTime = LocalDateTime.now()
-                
+
                 // 设置运行状态
                 testTask.running.set(false)
-                
+
                 logger.info("压力测试完成: {}", testTask.id)
             }
         }, executor)
     }
-    
+
     /**
      * 执行用户请求
      *
@@ -286,7 +286,7 @@ class StressTestTool(
     private fun executeUserRequests(testTask: TestTask) {
         // 计算结束时间
         val endTimeMillis = System.currentTimeMillis() + testTask.duration * 1000L
-        
+
         // 执行请求
         while (testTask.running.get() && System.currentTimeMillis() < endTimeMillis) {
             try {
@@ -294,14 +294,14 @@ class StressTestTool(
                 val startTime = System.currentTimeMillis()
                 val result = dataServiceExecutor.execute(testTask.serviceId, testTask.parameters)
                 val endTime = System.currentTimeMillis()
-                
+
                 // 计算执行时间
                 val executionTime = endTime - startTime
-                
+
                 // 更新统计信息
                 testTask.totalRequests.incrementAndGet()
                 testTask.totalTime.addAndGet(executionTime)
-                
+
                 // 更新最小执行时间
                 var minTime = testTask.minTime.get()
                 while (minTime == 0L || executionTime < minTime) {
@@ -310,7 +310,7 @@ class StressTestTool(
                     }
                     minTime = testTask.minTime.get()
                 }
-                
+
                 // 更新最大执行时间
                 var maxTime = testTask.maxTime.get()
                 while (executionTime > maxTime) {
@@ -319,24 +319,24 @@ class StressTestTool(
                     }
                     maxTime = testTask.maxTime.get()
                 }
-                
+
                 // 检查结果
                 if (result.success) {
                     testTask.successRequests.incrementAndGet()
                 } else {
                     testTask.failedRequests.incrementAndGet()
                 }
-                
+
                 // 记录请求
                 performanceCollector.recordRequest()
             } catch (e: Exception) {
                 // 更新统计信息
                 testTask.totalRequests.incrementAndGet()
                 testTask.failedRequests.incrementAndGet()
-                
+
                 logger.error("执行服务失败: {}", testTask.serviceId, e)
             }
-            
+
             // 随机等待一段时间（模拟用户思考时间）
             try {
                 Thread.sleep((Math.random() * 1000).toLong())
@@ -346,7 +346,7 @@ class StressTestTool(
             }
         }
     }
-    
+
     /**
      * 测试任务
      */
@@ -367,7 +367,7 @@ class StressTestTool(
         val minTime: AtomicLong = AtomicLong(0),
         val maxTime: AtomicLong = AtomicLong(0)
     )
-    
+
     /**
      * 测试状态
      */

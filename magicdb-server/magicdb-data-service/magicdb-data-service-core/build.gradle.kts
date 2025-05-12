@@ -64,6 +64,9 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-data-redis")
     implementation("org.apache.commons:commons-pool2:2.11.1")
 
+    // Jackson modules
+    implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.15.2")
+
     // Java EE API
     implementation("javax.annotation:javax.annotation-api:1.3.2")
 

@@ -1,7 +1,5 @@
 package ai.magicdb.dataservice.api.model
 
-import java.io.Serializable
-
 /**
  * 文档模板
  *
@@ -11,64 +9,100 @@ data class DocumentTemplate(
     /**
      * 模板ID
      */
-    var id: String = "",
+    val id: String,
     
     /**
      * 模板名称
      */
-    var name: String = "",
+    val name: String,
     
     /**
-     * 模板内容
+     * 模板描述
      */
-    var content: String = "",
+    val description: String? = null,
     
     /**
-     * 模板格式（如：markdown, html）
+     * 标题模板
      */
-    var format: String = "markdown",
+    val titleTemplate: String? = null,
     
     /**
-     * 模板类型（如：service, group, api）
+     * 描述模板
      */
-    var type: String = "service",
+    val descriptionTemplate: String? = null,
+    
+    /**
+     * 参数模板
+     */
+    val parameterTemplates: List<ParameterTemplate> = emptyList(),
+    
+    /**
+     * 返回字段模板
+     */
+    val returnFieldTemplates: List<FieldTemplate> = emptyList(),
+    
+    /**
+     * 注意事项模板
+     */
+    val notesTemplate: String? = null,
     
     /**
      * 创建时间
      */
-    var createTime: Long = 0,
+    val createTime: Long = System.currentTimeMillis(),
     
     /**
      * 更新时间
      */
-    var updateTime: Long = 0,
+    val updateTime: Long = System.currentTimeMillis()
+)
+
+/**
+ * 参数模板
+ */
+data class ParameterTemplate(
+    /**
+     * 参数名模式
+     */
+    val namePattern: String,
     
     /**
-     * 创建用户ID
+     * 参数类型
      */
-    var createUserId: Long = 0,
+    val type: String? = null,
     
     /**
-     * 是否系统默认
+     * 是否必填
      */
-    var isSystem: Boolean = false,
+    val required: Boolean? = null,
     
     /**
-     * 是否启用
+     * 默认值
      */
-    var enabled: Boolean = true,
+    val defaultValue: String? = null,
     
     /**
-     * 排序
+     * 参数描述
      */
-    var sort: Int = 0,
+    val description: String? = null
+)
+
+/**
+ * 字段模板
+ */
+data class FieldTemplate(
+    /**
+     * 字段名模式
+     */
+    val namePattern: String,
     
     /**
-     * 描述
+     * 字段类型
      */
-    var description: String = ""
-) : Serializable {
-    companion object {
-        private const val serialVersionUID = 1L
-    }
-}
+    val type: String? = null,
+    
+    /**
+     * 字段描述
+     */
+    val description: String? = null
+)

@@ -25,23 +25,23 @@ class EnvironmentConfigManager(
     private val objectMapper: ObjectMapper
 ) {
     private val logger = LoggerFactory.getLogger(EnvironmentConfigManager::class.java)
-    
+
     @Value("\${spring.profiles.active:dev}")
     private lateinit var activeProfile: String
-    
+
     // 配置文件目录
-    private val configDir = System.getProperty("user.home") + File.separator + ".magicdb" + 
+    private val configDir = System.getProperty("user.home") + File.separator + ".magicdb" +
             File.separator + "config" + File.separator + "data-service"
-    
+
     // 配置文件路径
     private lateinit var configFilePath: String
-    
+
     // 配置历史文件路径
     private lateinit var configHistoryFilePath: String
-    
+
     // 当前配置
     private lateinit var currentConfig: EnvironmentConfig
-    
+
     /**
      * 初始化
      */
@@ -53,20 +53,20 @@ class EnvironmentConfigManager(
             if (!configDirFile.exists()) {
                 configDirFile.mkdirs()
             }
-            
+
             // 设置配置文件路径
             configFilePath = "$configDir${File.separator}config_$activeProfile.json"
             configHistoryFilePath = "$configDir${File.separator}config_history_$activeProfile.txt"
-            
+
             // 加载配置
             loadConfig()
-            
+
             logger.info("环境配置管理器初始化完成，当前环境: {}", activeProfile)
         } catch (e: Exception) {
             logger.error("初始化环境配置管理器失败", e)
         }
     }
-    
+
     /**
      * 加载配置
      */
@@ -80,10 +80,10 @@ class EnvironmentConfigManager(
                 properties = mutableMapOf(
                     "data-service.cluster.enabled" to "false",
                     "data-service.cache.enabled" to "true",
-                    "data-service.debug.enabled" to activeProfile != "prod"
+                    "data-service.debug.enabled" to (if (activeProfile != "prod") "true" else "false")
                 )
             )
-            
+
             // 保存配置
             saveConfig()
         } else {
@@ -92,7 +92,7 @@ class EnvironmentConfigManager(
                 currentConfig = objectMapper.readValue(configFile, EnvironmentConfig::class.java)
             } catch (e: Exception) {
                 logger.error("读取配置文件失败", e)
-                
+
                 // 创建默认配置
                 currentConfig = EnvironmentConfig(
                     environment = activeProfile,
@@ -100,16 +100,16 @@ class EnvironmentConfigManager(
                     properties = mutableMapOf(
                         "data-service.cluster.enabled" to "false",
                         "data-service.cache.enabled" to "true",
-                        "data-service.debug.enabled" to activeProfile != "prod"
+                        "data-service.debug.enabled" to (if (activeProfile != "prod") "true" else "false")
                     )
                 )
-                
+
                 // 保存配置
                 saveConfig()
             }
         }
     }
-    
+
     /**
      * 保存配置
      */
@@ -117,29 +117,29 @@ class EnvironmentConfigManager(
         try {
             // 更新时间
             currentConfig.updateTime = LocalDateTime.now()
-            
+
             // 保存配置
             objectMapper.writerWithDefaultPrettyPrinter().writeValue(File(configFilePath), currentConfig)
-            
+
             // 添加配置历史
             addConfigHistory("配置更新")
         } catch (e: Exception) {
             logger.error("保存配置文件失败", e)
         }
     }
-    
+
     /**
      * 添加配置历史
      */
     private fun addConfigHistory(description: String) {
         try {
             val historyLine = "${LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME)},$description\n"
-            
+
             val historyFile = File(configHistoryFilePath)
             if (!historyFile.exists()) {
                 historyFile.createNewFile()
             }
-            
+
             Files.write(
                 Paths.get(configHistoryFilePath),
                 historyLine.toByteArray(),
@@ -149,7 +149,7 @@ class EnvironmentConfigManager(
             logger.error("添加配置历史失败", e)
         }
     }
-    
+
     /**
      * 获取配置属性
      *
@@ -160,7 +160,7 @@ class EnvironmentConfigManager(
     fun getProperty(key: String, defaultValue: String): String {
         return currentConfig.properties[key] ?: defaultValue
     }
-    
+
     /**
      * 获取配置属性
      *
@@ -172,7 +172,7 @@ class EnvironmentConfigManager(
         val value = currentConfig.properties[key] ?: return defaultValue
         return value.toBoolean()
     }
-    
+
     /**
      * 获取配置属性
      *
@@ -184,7 +184,7 @@ class EnvironmentConfigManager(
         val value = currentConfig.properties[key] ?: return defaultValue
         return value.toIntOrNull() ?: defaultValue
     }
-    
+
     /**
      * 获取配置属性
      *
@@ -196,7 +196,7 @@ class EnvironmentConfigManager(
         val value = currentConfig.properties[key] ?: return defaultValue
         return value.toLongOrNull() ?: defaultValue
     }
-    
+
     /**
      * 设置配置属性
      *
@@ -207,7 +207,7 @@ class EnvironmentConfigManager(
         currentConfig.properties[key] = value
         saveConfig()
     }
-    
+
     /**
      * 设置配置属性
      *
@@ -218,7 +218,7 @@ class EnvironmentConfigManager(
         currentConfig.properties[key] = value.toString()
         saveConfig()
     }
-    
+
     /**
      * 设置配置属性
      *
@@ -229,7 +229,7 @@ class EnvironmentConfigManager(
         currentConfig.properties[key] = value.toString()
         saveConfig()
     }
-    
+
     /**
      * 设置配置属性
      *
@@ -240,7 +240,7 @@ class EnvironmentConfigManager(
         currentConfig.properties[key] = value.toString()
         saveConfig()
     }
-    
+
     /**
      * 获取所有配置属性
      *
@@ -249,7 +249,7 @@ class EnvironmentConfigManager(
     fun getAllProperties(): Map<String, String> {
         return currentConfig.properties.toMap()
     }
-    
+
     /**
      * 获取当前环境
      *
@@ -258,7 +258,7 @@ class EnvironmentConfigManager(
     fun getCurrentEnvironment(): String {
         return activeProfile
     }
-    
+
     /**
      * 环境配置
      */

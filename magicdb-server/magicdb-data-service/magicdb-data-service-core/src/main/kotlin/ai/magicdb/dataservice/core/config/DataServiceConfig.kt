@@ -24,6 +24,8 @@ import ai.magicdb.dataservice.core.async.DefaultAsyncTaskExecutor
 import ai.magicdb.dataservice.core.debug.DefaultScriptDebugger
 import ai.magicdb.dataservice.core.debug.DefaultScriptDebuggerAdapter
 import ai.magicdb.dataservice.core.document.DefaultDocumentGenerator
+import ai.magicdb.dataservice.core.document.DocumentExporter
+import ai.magicdb.dataservice.core.document.ExampleGenerator
 import ai.magicdb.dataservice.core.executor.DefaultDataServiceExecutor
 import ai.magicdb.dataservice.core.manager.DefaultDataServiceManager
 import ai.magicdb.dataservice.core.manager.DefaultServiceTestManager
@@ -148,13 +150,29 @@ class DataServiceConfig {
 
     @Bean
     @ConditionalOnMissingBean
+    fun exampleGenerator(
+        dataServiceExecutor: DataServiceExecutor,
+        objectMapper: ObjectMapper
+    ): ExampleGenerator {
+        return ExampleGenerator(dataServiceExecutor, objectMapper)
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    fun documentExporter(
+        dataServiceRepository: DataServiceRepository,
+        documentGenerator: DocumentGenerator
+    ): DocumentExporter {
+        return DocumentExporter(dataServiceRepository, documentGenerator)
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
     fun documentGenerator(
         serviceRepository: DataServiceRepository,
-        serviceDocumentMapper: ServiceDocumentMapper,
-        documentTemplateMapper: DocumentTemplateMapper,
-        objectMapper: ObjectMapper
+        exampleGenerator: ExampleGenerator
     ): DocumentGenerator {
-        return DefaultDocumentGenerator(serviceRepository, serviceDocumentMapper, documentTemplateMapper, objectMapper)
+        return DefaultDocumentGenerator(serviceRepository, exampleGenerator)
     }
 
     @Bean

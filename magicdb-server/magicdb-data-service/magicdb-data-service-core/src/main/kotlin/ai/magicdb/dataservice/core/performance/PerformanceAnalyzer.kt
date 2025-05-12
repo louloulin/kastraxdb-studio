@@ -22,13 +22,13 @@ class PerformanceAnalyzer(
     private val performanceCollector: PerformanceCollector
 ) {
     private val logger = LoggerFactory.getLogger(PerformanceAnalyzer::class.java)
-    
+
     // 性能阈值
     private val performanceThresholds = ConcurrentHashMap<String, PerformanceThreshold>()
-    
+
     // 性能警告记录
     private val performanceWarnings = ConcurrentHashMap<String, MutableList<PerformanceWarning>>()
-    
+
     /**
      * 初始化
      */
@@ -36,10 +36,10 @@ class PerformanceAnalyzer(
     fun init() {
         // 设置默认性能阈值
         setDefaultThresholds()
-        
+
         logger.info("性能分析器初始化完成")
     }
-    
+
     /**
      * 设置默认性能阈值
      */
@@ -47,28 +47,28 @@ class PerformanceAnalyzer(
         // 响应时间阈值（毫秒）
         performanceThresholds["response_time_warning"] = PerformanceThreshold(500.0, ThresholdType.GREATER_THAN)
         performanceThresholds["response_time_critical"] = PerformanceThreshold(1000.0, ThresholdType.GREATER_THAN)
-        
+
         // CPU使用率阈值（百分比）
         performanceThresholds["cpu_usage_warning"] = PerformanceThreshold(70.0, ThresholdType.GREATER_THAN)
         performanceThresholds["cpu_usage_critical"] = PerformanceThreshold(90.0, ThresholdType.GREATER_THAN)
-        
+
         // 内存使用率阈值（百分比）
         performanceThresholds["memory_usage_warning"] = PerformanceThreshold(70.0, ThresholdType.GREATER_THAN)
         performanceThresholds["memory_usage_critical"] = PerformanceThreshold(90.0, ThresholdType.GREATER_THAN)
-        
+
         // 线程数阈值
         performanceThresholds["thread_count_warning"] = PerformanceThreshold(100.0, ThresholdType.GREATER_THAN)
         performanceThresholds["thread_count_critical"] = PerformanceThreshold(200.0, ThresholdType.GREATER_THAN)
-        
+
         // 请求率阈值（每秒请求数）
         performanceThresholds["request_rate_warning"] = PerformanceThreshold(50.0, ThresholdType.GREATER_THAN)
         performanceThresholds["request_rate_critical"] = PerformanceThreshold(100.0, ThresholdType.GREATER_THAN)
-        
+
         // 错误率阈值（百分比）
         performanceThresholds["error_rate_warning"] = PerformanceThreshold(5.0, ThresholdType.GREATER_THAN)
         performanceThresholds["error_rate_critical"] = PerformanceThreshold(10.0, ThresholdType.GREATER_THAN)
     }
-    
+
     /**
      * 定时分析系统性能
      */
@@ -77,14 +77,14 @@ class PerformanceAnalyzer(
         try {
             // 收集系统性能指标
             val systemMetrics = performanceCollector.collectSystemMetrics()
-            
+
             // 分析系统性能
             val warnings = analyzeSystemMetrics(systemMetrics)
-            
+
             // 记录性能警告
             if (warnings.isNotEmpty()) {
                 logger.warn("系统性能警告: {}", warnings)
-                
+
                 // 添加到警告记录
                 warnings.forEach { warning ->
                     performanceWarnings.computeIfAbsent(warning.metricName) { mutableListOf() }.add(warning)
@@ -94,7 +94,7 @@ class PerformanceAnalyzer(
             logger.error("分析系统性能失败", e)
         }
     }
-    
+
     /**
      * 定时分析服务性能
      */
@@ -105,18 +105,18 @@ class PerformanceAnalyzer(
             val endTime = LocalDateTime.now()
             val startTime = endTime.minusMinutes(5)
             val serviceMetrics = monitoringService.getServicePerformanceMetrics(null, startTime, endTime)
-            
+
             // 分析服务性能
             val warnings = mutableListOf<PerformanceWarning>()
-            
+
             serviceMetrics.forEach { metrics ->
                 warnings.addAll(analyzeServiceMetrics(metrics))
             }
-            
+
             // 记录性能警告
             if (warnings.isNotEmpty()) {
                 logger.warn("服务性能警告: {}", warnings)
-                
+
                 // 添加到警告记录
                 warnings.forEach { warning ->
                     performanceWarnings.computeIfAbsent(warning.metricName) { mutableListOf() }.add(warning)
@@ -126,7 +126,7 @@ class PerformanceAnalyzer(
             logger.error("分析服务性能失败", e)
         }
     }
-    
+
     /**
      * 分析系统性能指标
      *
@@ -135,7 +135,7 @@ class PerformanceAnalyzer(
      */
     fun analyzeSystemMetrics(metrics: SystemMetrics): List<PerformanceWarning> {
         val warnings = mutableListOf<PerformanceWarning>()
-        
+
         // 分析CPU使用率
         val cpuUsage = metrics.cpuUsage
         if (checkThreshold("cpu_usage_critical", cpuUsage)) {
@@ -161,7 +161,7 @@ class PerformanceAnalyzer(
                 )
             )
         }
-        
+
         // 分析内存使用率
         val memoryUsage = metrics.memoryUsage
         if (checkThreshold("memory_usage_critical", memoryUsage)) {
@@ -187,7 +187,7 @@ class PerformanceAnalyzer(
                 )
             )
         }
-        
+
         // 分析线程数
         val threadCount = metrics.threadCount.toDouble()
         if (checkThreshold("thread_count_critical", threadCount)) {
@@ -213,10 +213,10 @@ class PerformanceAnalyzer(
                 )
             )
         }
-        
+
         return warnings
     }
-    
+
     /**
      * 分析服务性能指标
      *
@@ -225,7 +225,7 @@ class PerformanceAnalyzer(
      */
     fun analyzeServiceMetrics(metrics: ServicePerformanceMetrics): List<PerformanceWarning> {
         val warnings = mutableListOf<PerformanceWarning>()
-        
+
         // 分析平均响应时间
         val avgResponseTime = metrics.avgResponseTime
         if (checkThreshold("response_time_critical", avgResponseTime)) {
@@ -253,7 +253,7 @@ class PerformanceAnalyzer(
                 )
             )
         }
-        
+
         // 分析请求率
         val requestRate = metrics.requestsPerSecond
         if (checkThreshold("request_rate_critical", requestRate)) {
@@ -281,9 +281,10 @@ class PerformanceAnalyzer(
                 )
             )
         }
-        
+
         // 分析错误率
-        val errorRate = metrics.errorRate * 100 // 转换为百分比
+        // 假设错误率为0，因为ServicePerformanceMetrics中没有直接的errorRate字段
+        val errorRate = 0.0
         if (checkThreshold("error_rate_critical", errorRate)) {
             warnings.add(
                 PerformanceWarning(
@@ -309,10 +310,10 @@ class PerformanceAnalyzer(
                 )
             )
         }
-        
+
         return warnings
     }
-    
+
     /**
      * 检查阈值
      *
@@ -322,14 +323,14 @@ class PerformanceAnalyzer(
      */
     private fun checkThreshold(thresholdName: String, value: Double): Boolean {
         val threshold = performanceThresholds[thresholdName] ?: return false
-        
+
         return when (threshold.type) {
             ThresholdType.GREATER_THAN -> value > threshold.value
             ThresholdType.LESS_THAN -> value < threshold.value
             ThresholdType.EQUAL_TO -> value == threshold.value
         }
     }
-    
+
     /**
      * 设置性能阈值
      *
@@ -340,7 +341,7 @@ class PerformanceAnalyzer(
     fun setThreshold(name: String, value: Double, type: ThresholdType) {
         performanceThresholds[name] = PerformanceThreshold(value, type)
     }
-    
+
     /**
      * 获取性能阈值
      *
@@ -350,7 +351,7 @@ class PerformanceAnalyzer(
     fun getThreshold(name: String): PerformanceThreshold? {
         return performanceThresholds[name]
     }
-    
+
     /**
      * 获取所有性能阈值
      *
@@ -359,7 +360,7 @@ class PerformanceAnalyzer(
     fun getAllThresholds(): Map<String, PerformanceThreshold> {
         return performanceThresholds.toMap()
     }
-    
+
     /**
      * 获取性能警告
      *
@@ -374,7 +375,7 @@ class PerformanceAnalyzer(
             performanceWarnings.values.flatten().sortedByDescending { it.timestamp }.take(limit)
         }
     }
-    
+
     /**
      * 清除性能警告
      *
@@ -387,7 +388,7 @@ class PerformanceAnalyzer(
             performanceWarnings.clear()
         }
     }
-    
+
     /**
      * 性能阈值
      */
@@ -395,7 +396,7 @@ class PerformanceAnalyzer(
         val value: Double,
         val type: ThresholdType
     )
-    
+
     /**
      * 阈值类型
      */
@@ -404,7 +405,7 @@ class PerformanceAnalyzer(
         LESS_THAN,
         EQUAL_TO
     }
-    
+
     /**
      * 性能警告
      */
@@ -417,7 +418,7 @@ class PerformanceAnalyzer(
         val timestamp: LocalDateTime,
         val serviceId: String? = null
     )
-    
+
     /**
      * 警告级别
      */

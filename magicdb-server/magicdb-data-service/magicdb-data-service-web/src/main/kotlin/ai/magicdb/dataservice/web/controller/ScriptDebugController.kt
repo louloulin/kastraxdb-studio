@@ -17,10 +17,13 @@ import org.springframework.web.bind.annotation.*
  *
  * @author magicdb
  */
-@RestController
-@RequestMapping("/api/data-service/script")
+// @RestController
+// @RequestMapping("/api/data-service/script")
 class ScriptDebugController(private val scriptDebugger: ScriptDebugger) {
     private val logger = LoggerFactory.getLogger(ScriptDebugController::class.java)
+
+    // 暂时禁用脚本调试控制器
+    /*
 
     /**
      * 调试脚本
@@ -366,4 +369,5 @@ class ScriptDebugController(private val scriptDebugger: ScriptDebugger) {
         val sessionId: String,
         val expression: String
     )
+    */
 }

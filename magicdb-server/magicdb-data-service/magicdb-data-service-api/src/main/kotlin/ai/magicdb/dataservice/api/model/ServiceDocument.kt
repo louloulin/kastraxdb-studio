@@ -1,7 +1,5 @@
 package ai.magicdb.dataservice.api.model
 
-import java.io.Serializable
-
 /**
  * 服务文档
  *
@@ -9,71 +7,82 @@ import java.io.Serializable
  */
 data class ServiceDocument(
     /**
-     * 文档ID
-     */
-    var id: String = "",
-    
-    /**
      * 文档标题
      */
-    var title: String = "",
+    val title: String,
     
     /**
-     * 文档内容
+     * 文档描述
      */
-    var content: String = "",
+    val description: String? = null,
     
     /**
-     * 文档格式（如：markdown, html）
+     * 参数列表
      */
-    var format: String = "markdown",
+    val parameters: List<ParameterDocument> = emptyList(),
     
     /**
-     * 服务ID
+     * 返回字段列表
      */
-    var serviceId: String? = null,
+    val returnFields: List<FieldDocument> = emptyList(),
     
     /**
-     * 分组ID
+     * 示例列表
      */
-    var groupId: String? = null,
+    val examples: List<DocumentExample> = emptyList(),
     
     /**
-     * 创建时间
+     * 注意事项
      */
-    var createTime: Long = 0,
+    val notes: String? = null
+)
+
+/**
+ * 参数文档
+ */
+data class ParameterDocument(
+    /**
+     * 参数名
+     */
+    val name: String,
     
     /**
-     * 更新时间
+     * 参数类型
      */
-    var updateTime: Long = 0,
+    val type: String,
     
     /**
-     * 创建用户ID
+     * 是否必填
      */
-    var createUserId: Long = 0,
+    val required: Boolean = false,
     
     /**
-     * 标签
+     * 默认值
      */
-    var tags: List<String> = emptyList(),
+    val defaultValue: String? = null,
     
     /**
-     * 是否公开
+     * 参数描述
      */
-    var isPublic: Boolean = true,
+    val description: String? = null
+)
+
+/**
+ * 字段文档
+ */
+data class FieldDocument(
+    /**
+     * 字段名
+     */
+    val name: String,
     
     /**
-     * 排序
+     * 字段类型
      */
-    var sort: Int = 0,
+    val type: String,
     
     /**
-     * 元数据
+     * 字段描述
      */
-    var metadata: Map<String, Any?> = emptyMap()
-) : Serializable {
-    companion object {
-        private const val serialVersionUID = 1L
-    }
-}
+    val description: String? = null
+)
