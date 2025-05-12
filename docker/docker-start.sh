@@ -1,1 +1,0 @@
-docker run --name=magicdb -p 10824:10824 -v ~/.magicdb-docker:/root/.magicdb  magicdb/magicdb:latest
