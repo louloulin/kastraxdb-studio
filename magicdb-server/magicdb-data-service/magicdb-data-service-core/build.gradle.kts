@@ -67,6 +67,14 @@ dependencies {
     // Quartz Scheduler
     implementation("org.quartz-scheduler:quartz:2.3.2")
 
+    // GraalVM
+    implementation("org.graalvm.sdk:graal-sdk:22.3.1")
+    implementation("org.graalvm.js:js:22.3.1")
+    implementation("org.graalvm.js:js-scriptengine:22.3.1")
+    // 注释掉不存在的依赖
+    // implementation("org.graalvm.tools:tools:22.3.1")
+    // implementation("org.graalvm.tools:chromeinspector:22.3.1")
+
     // Redis
     implementation("org.springframework.boot:spring-boot-starter-data-redis")
     implementation("org.apache.commons:commons-pool2:2.11.1")

@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { Form, Input, Button, Select, Spin, Card, Tabs, message, Divider } from 'antd';
-import { PlayCircleOutlined, SaveOutlined, DeleteOutlined } from '@ant-design/icons';
+import { Form, Input, Button, Select, Spin, Card, Tabs, message, Divider, Modal, Space, Tooltip, Popconfirm } from 'antd';
+import { PlayCircleOutlined, SaveOutlined, DeleteOutlined, CopyOutlined, CheckOutlined } from '@ant-design/icons';
 import { getServiceById, executeService } from '@/service/data-service';
+import { executeTest, saveTestCase, getTestCasesByService, deleteTestCase } from '@/service/api-test';
 import JSONEditor from '@/components/JSONEditor';
 import i18n from '@/i18n';
 import styles from './index.less';
@@ -21,6 +22,10 @@ const ServiceTest: React.FC<ServiceTestProps> = ({ serviceId }) => {
   const [result, setResult] = useState<any>(null);
   const [savedTests, setSavedTests] = useState<any[]>([]);
   const [activeTab, setActiveTab] = useState<string>('params');
+  const [saveModalVisible, setSaveModalVisible] = useState<boolean>(false);
+  const [testCaseName, setTestCaseName] = useState<string>('');
+  const [testCaseDescription, setTestCaseDescription] = useState<string>('');
+  const [copied, setCopied] = useState<boolean>(false);
   const [messageApi, contextHolder] = message.useMessage();
 
   useEffect(() => {
@@ -55,9 +60,17 @@ const ServiceTest: React.FC<ServiceTestProps> = ({ serviceId }) => {
     }
   };
 
-  const loadSavedTests = () => {
-    // Load saved tests from localStorage
+  const loadSavedTests = async () => {
     try {
+      // Try to load from API first
+      const response = await getTestCasesByService(serviceId);
+
+      if (response && response.success && response.data) {
+        setSavedTests(response.data);
+        return;
+      }
+
+      // Fallback to localStorage
       const savedTestsJson = localStorage.getItem(`service-tests-${serviceId}`);
       if (savedTestsJson) {
         const tests = JSON.parse(savedTestsJson);
@@ -65,6 +78,17 @@ const ServiceTest: React.FC<ServiceTestProps> = ({ serviceId }) => {
       }
     } catch (error) {
       console.error('Failed to load saved tests:', error);
+
+      // Fallback to localStorage
+      try {
+        const savedTestsJson = localStorage.getItem(`service-tests-${serviceId}`);
+        if (savedTestsJson) {
+          const tests = JSON.parse(savedTestsJson);
+          setSavedTests(tests);
+        }
+      } catch (e) {
+        console.error('Failed to load saved tests from localStorage:', e);
+      }
     }
   };
 
@@ -74,6 +98,20 @@ const ServiceTest: React.FC<ServiceTestProps> = ({ serviceId }) => {
       setExecuting(true);
       setActiveTab('result');
 
+      // Try to use the new API first
+      try {
+        const response = await executeTest(serviceId, values);
+
+        if (response && response.success) {
+          setResult(response.data);
+          messageApi.success(i18n('data-service.test.execute-success'));
+          return;
+        }
+      } catch (e) {
+        console.error('Failed to execute test with new API, falling back to old API:', e);
+      }
+
+      // Fallback to old API
       const response = await executeService(serviceId, values);
 
       if (response && response.success) {
@@ -93,27 +131,62 @@ const ServiceTest: React.FC<ServiceTestProps> = ({ serviceId }) => {
     }
   };
 
-  const handleSaveTest = async () => {
+  const handleSaveTest = () => {
+    setSaveModalVisible(true);
+  };
+
+  const handleSaveTestConfirm = async () => {
     try {
       const values = await form.validateFields();
-      const testName = window.prompt(i18n('data-service.test.save-prompt'));
-      
-      if (!testName) return;
-      
+
+      if (!testCaseName) {
+        messageApi.error(i18n('data-service.test.name-required'));
+        return;
+      }
+
+      // Try to save using the new API first
+      try {
+        const testCase = {
+          id: '',
+          name: testCaseName,
+          serviceId,
+          parameters: values,
+          description: testCaseDescription
+        };
+
+        const response = await saveTestCase(testCase);
+
+        if (response && response.success) {
+          messageApi.success(i18n('data-service.test.save-success'));
+          setSaveModalVisible(false);
+          setTestCaseName('');
+          setTestCaseDescription('');
+          loadSavedTests();
+          return;
+        }
+      } catch (e) {
+        console.error('Failed to save test case with new API, falling back to localStorage:', e);
+      }
+
+      // Fallback to localStorage
       const newTest = {
         id: Date.now().toString(),
-        name: testName,
+        name: testCaseName,
         parameters: values,
+        description: testCaseDescription,
         createdAt: new Date().toISOString()
       };
-      
+
       const updatedTests = [...savedTests, newTest];
       setSavedTests(updatedTests);
-      
+
       // Save to localStorage
       localStorage.setItem(`service-tests-${serviceId}`, JSON.stringify(updatedTests));
-      
+
       messageApi.success(i18n('data-service.test.save-success'));
+      setSaveModalVisible(false);
+      setTestCaseName('');
+      setTestCaseDescription('');
     } catch (error) {
       console.error('Failed to save test:', error);
       messageApi.error(i18n('data-service.test.save-error'));
@@ -125,14 +198,39 @@ const ServiceTest: React.FC<ServiceTestProps> = ({ serviceId }) => {
     messageApi.success(i18n('data-service.test.load-success'));
   };
 
-  const handleDeleteTest = (testId: string) => {
+  const handleDeleteTest = async (testId: string) => {
+    // Try to delete using the new API first
+    try {
+      const response = await deleteTestCase(testId);
+
+      if (response && response.success) {
+        messageApi.success(i18n('data-service.test.delete-success'));
+        loadSavedTests();
+        return;
+      }
+    } catch (e) {
+      console.error('Failed to delete test case with new API, falling back to localStorage:', e);
+    }
+
+    // Fallback to localStorage
     const updatedTests = savedTests.filter(test => test.id !== testId);
     setSavedTests(updatedTests);
-    
+
     // Save to localStorage
     localStorage.setItem(`service-tests-${serviceId}`, JSON.stringify(updatedTests));
-    
+
     messageApi.success(i18n('data-service.test.delete-success'));
+  };
+
+  // Copy result to clipboard
+  const handleCopyResult = () => {
+    if (result) {
+      const resultText = JSON.stringify(result, null, 2);
+      navigator.clipboard.writeText(resultText);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+      messageApi.success(i18n('data-service.test.copied'));
+    }
   };
 
   const renderParameterInput = (param: any) => {
@@ -169,49 +267,109 @@ const ServiceTest: React.FC<ServiceTestProps> = ({ serviceId }) => {
       {contextHolder}
       <h2>{service.name}</h2>
       <p>{service.description}</p>
-      
-      <Tabs activeKey={activeTab} onChange={setActiveTab}>
+
+      <div className={styles.actions}>
+        <Space>
+          <Button
+            type="primary"
+            icon={<PlayCircleOutlined />}
+            onClick={handleExecute}
+            loading={executing}
+          >
+            {i18n('data-service.test.execute')}
+          </Button>
+          <Button
+            icon={<SaveOutlined />}
+            onClick={handleSaveTest}
+          >
+            {i18n('data-service.test.save')}
+          </Button>
+        </Space>
+      </div>
+
+      <Tabs activeKey={activeTab} onChange={setActiveTab} className={styles.tabs}>
         <TabPane tab={i18n('data-service.test.params')} key="params">
-          <Form form={form} layout="vertical">
-            {service.parameters?.map((param: any) => (
-              <Form.Item
-                key={param.name}
-                name={param.name}
-                label={`${param.name}${param.required ? ' *' : ''}`}
-                tooltip={param.description}
-                rules={[
-                  {
-                    required: param.required,
-                    message: i18n('data-service.test.param-required')
+          <div className={styles.tabContent}>
+            <Form form={form} layout="vertical" className={styles.form}>
+              {service.parameters?.map((param: any) => (
+                <Form.Item
+                  key={param.name}
+                  name={param.name}
+                  label={
+                    <span>
+                      {param.name}
+                      {param.required && <span className={styles.required}>*</span>}
+                      {param.description && (
+                        <Tooltip title={param.description}>
+                          <span className={styles.info}>i</span>
+                        </Tooltip>
+                      )}
+                    </span>
                   }
-                ]}
-              >
-                {renderParameterInput(param)}
-              </Form.Item>
-            ))}
-            
-            <Form.Item>
-              <Button
-                type="primary"
-                icon={<PlayCircleOutlined />}
-                onClick={handleExecute}
-                loading={executing}
-              >
-                {i18n('data-service.test.execute')}
-              </Button>
-              <Button
-                style={{ marginLeft: 8 }}
-                icon={<SaveOutlined />}
-                onClick={handleSaveTest}
-              >
-                {i18n('data-service.test.save')}
-              </Button>
-            </Form.Item>
-          </Form>
-          
-          {savedTests.length > 0 && (
-            <>
-              <Divider>{i18n('data-service.test.saved')}</Divider>
+                  rules={[
+                    {
+                      required: param.required,
+                      message: i18n('data-service.test.param-required')
+                    }
+                  ]}
+                >
+                  {renderParameterInput(param)}
+                </Form.Item>
+              ))}
+            </Form>
+          </div>
+        </TabPane>
+
+        <TabPane tab={i18n('data-service.test.result')} key="result">
+          <div className={styles.tabContent}>
+            <Spin spinning={executing}>
+              {result ? (
+                <div className={styles.resultContainer}>
+                  <div className={styles.resultHeader}>
+                    <div className={styles.resultInfo}>
+                      <div className={styles.resultStatus}>
+                        {result.success !== false ? (
+                          <span className={styles.success}>Success</span>
+                        ) : (
+                          <span className={styles.error}>Error</span>
+                        )}
+                      </div>
+                      {result.executionTime !== undefined && (
+                        <div className={styles.resultTime}>
+                          {result.executionTime} ms
+                        </div>
+                      )}
+                    </div>
+                    <Button
+                      icon={copied ? <CheckOutlined /> : <CopyOutlined />}
+                      onClick={handleCopyResult}
+                    >
+                      {i18n('data-service.test.copy')}
+                    </Button>
+                  </div>
+                  <JSONEditor
+                    value={JSON.stringify(result, null, 2)}
+                    height={400}
+                    readOnly
+                  />
+                  {result.error && (
+                    <div className={styles.resultError}>
+                      {result.error}
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <div className={styles.noResult}>
+                  {i18n('data-service.test.no-result')}
+                </div>
+              )}
+            </Spin>
+          </div>
+        </TabPane>
+
+        <TabPane tab={i18n('data-service.test.saved')} key="saved">
+          <div className={styles.tabContent}>
+            {savedTests.length > 0 ? (
               <div className={styles.savedTests}>
                 {savedTests.map(test => (
                   <Card
@@ -219,53 +377,78 @@ const ServiceTest: React.FC<ServiceTestProps> = ({ serviceId }) => {
                     size="small"
                     title={test.name}
                     extra={
-                      <>
+                      <Space>
                         <Button
-                          type="link"
                           size="small"
                           onClick={() => handleLoadTest(test)}
                         >
                           {i18n('data-service.test.load')}
                         </Button>
-                        <Button
-                          type="link"
-                          danger
-                          size="small"
-                          icon={<DeleteOutlined />}
-                          onClick={() => handleDeleteTest(test.id)}
-                        />
-                      </>
+                        <Popconfirm
+                          title={i18n('data-service.test.delete-confirm')}
+                          onConfirm={() => handleDeleteTest(test.id)}
+                          okText={i18n('common.yes')}
+                          cancelText={i18n('common.no')}
+                        >
+                          <Button
+                            size="small"
+                            danger
+                            icon={<DeleteOutlined />}
+                          />
+                        </Popconfirm>
+                      </Space>
                     }
                     className={styles.savedTestCard}
                   >
+                    {test.description && (
+                      <div className={styles.testDescription}>
+                        {test.description}
+                      </div>
+                    )}
                     <div className={styles.savedTestDate}>
-                      {new Date(test.createdAt).toLocaleString()}
+                      {test.createdAt && new Date(test.createdAt).toLocaleString()}
                     </div>
                   </Card>
                 ))}
               </div>
-            </>
-          )}
-        </TabPane>
-        
-        <TabPane tab={i18n('data-service.test.result')} key="result">
-          <Spin spinning={executing}>
-            {result ? (
-              <div className={styles.resultContainer}>
-                <JSONEditor
-                  value={JSON.stringify(result, null, 2)}
-                  height={400}
-                  readOnly
-                />
-              </div>
             ) : (
-              <div className={styles.noResult}>
-                {i18n('data-service.test.no-result')}
+              <div className={styles.noSavedTests}>
+                {i18n('data-service.test.no-saved-tests')}
               </div>
             )}
-          </Spin>
+          </div>
         </TabPane>
       </Tabs>
+
+      <Modal
+        title={i18n('data-service.test.save-test')}
+        open={saveModalVisible}
+        onOk={handleSaveTestConfirm}
+        onCancel={() => setSaveModalVisible(false)}
+      >
+        <Form layout="vertical">
+          <Form.Item
+            label={i18n('data-service.test.test-name')}
+            required
+          >
+            <Input
+              value={testCaseName}
+              onChange={(e) => setTestCaseName(e.target.value)}
+              placeholder={i18n('data-service.test.test-name-placeholder')}
+            />
+          </Form.Item>
+          <Form.Item
+            label={i18n('data-service.test.test-description')}
+          >
+            <Input.TextArea
+              value={testCaseDescription}
+              onChange={(e) => setTestCaseDescription(e.target.value)}
+              placeholder={i18n('data-service.test.test-description-placeholder')}
+              rows={4}
+            />
+          </Form.Item>
+        </Form>
+      </Modal>
     </div>
   );
 };

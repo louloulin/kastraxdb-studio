@@ -3,7 +3,7 @@ import { request } from 'umi';
 // 测试API
 export async function testApi(data: any) {
   const { method, url, params, headers, body } = data;
-  
+
   // 解析参数
   let parsedParams = {};
   if (params) {
@@ -13,7 +13,7 @@ export async function testApi(data: any) {
       console.error('解析参数出错:', error);
     }
   }
-  
+
   // 解析请求头
   let parsedHeaders = {};
   if (headers) {
@@ -23,7 +23,7 @@ export async function testApi(data: any) {
       console.error('解析请求头出错:', error);
     }
   }
-  
+
   // 解析请求体
   let parsedBody = undefined;
   if (body) {
@@ -34,7 +34,7 @@ export async function testApi(data: any) {
       parsedBody = body;
     }
   }
-  
+
   return request(url, {
     method,
     params: parsedParams,
@@ -58,5 +58,65 @@ export async function testApi(data: any) {
         data: { error: error.message || '请求错误' },
       };
     },
+  });
+}
+
+/**
+ * 执行 API 测试
+ */
+export async function executeTest(serviceId: string, parameters: Record<string, any>) {
+  return request(`/api/data-service/${serviceId}/test`, {
+    method: 'POST',
+    data: parameters
+  });
+}
+
+/**
+ * 验证参数
+ */
+export async function validateParameters(serviceId: string, parameters: Record<string, any>) {
+  return request(`/api/data-service/${serviceId}/validate`, {
+    method: 'POST',
+    data: parameters
+  });
+}
+
+/**
+ * 保存测试用例
+ */
+export async function saveTestCase(testCase: {
+  id?: string;
+  name: string;
+  serviceId: string;
+  parameters: Record<string, any>;
+  description?: string;
+  tags?: string[];
+}) {
+  return request('/api/data-service/test-case', {
+    method: 'POST',
+    data: testCase
+  });
+}
+
+/**
+ * 获取测试用例
+ */
+export async function getTestCase(id: string) {
+  return request(`/api/data-service/test-case/${id}`);
+}
+
+/**
+ * 获取服务的所有测试用例
+ */
+export async function getTestCasesByService(serviceId: string) {
+  return request(`/api/data-service/${serviceId}/test-cases`);
+}
+
+/**
+ * 删除测试用例
+ */
+export async function deleteTestCase(id: string) {
+  return request(`/api/data-service/test-case/${id}`, {
+    method: 'DELETE'
   });
 }
