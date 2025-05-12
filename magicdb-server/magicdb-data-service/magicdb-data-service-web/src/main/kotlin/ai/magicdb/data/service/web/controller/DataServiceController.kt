@@ -3,8 +3,12 @@ package ai.magicdb.data.service.web.controller
 import ai.magicdb.data.service.api.DataServiceManager
 import ai.magicdb.data.service.api.model.DataService
 import ai.magicdb.data.service.api.model.ServiceGroup
+import ai.magicdb.data.service.api.model.ServiceParameter
 import ai.magicdb.data.service.web.dto.DataServiceDTO
 import ai.magicdb.data.service.web.dto.ServiceGroupDTO
+import ai.magicdb.data.service.web.dto.ServiceParameterDTO
+import ai.magicdb.data.service.web.dto.toDTO
+import ai.magicdb.data.service.web.util.DataResultExtensions
 import ai.magicdb.server.tools.base.wrapper.result.ActionResult
 import ai.magicdb.server.tools.base.wrapper.result.DataResult
 import ai.magicdb.server.tools.base.wrapper.result.ListResult
@@ -21,7 +25,7 @@ import java.util.UUID
 class DataServiceController(
     private val dataServiceManager: DataServiceManager
 ) {
-    
+
     /**
      * Get all data services
      */
@@ -30,18 +34,18 @@ class DataServiceController(
         val services = dataServiceManager.getAllServices()
         return ListResult.of(services.map { it.toDTO() })
     }
-    
+
     /**
      * Get a data service by ID
      */
     @GetMapping("/{id}")
     fun getService(@PathVariable id: String): DataResult<DataServiceDTO> {
         val service = dataServiceManager.getService(id)
-            ?: return DataResult.failed("Service not found")
-        
+            ?: return DataResultExtensions.failed("Service not found")
+
         return DataResult.of(service.toDTO())
     }
-    
+
     /**
      * Create a new data service
      */
@@ -49,7 +53,7 @@ class DataServiceController(
     fun createService(@RequestBody dto: DataServiceDTO): DataResult<DataServiceDTO> {
         val userId = ContextUtils.getUserId()
         val now = LocalDateTime.now()
-        
+
         val service = DataService(
             id = dto.id ?: UUID.randomUUID().toString(),
             name = dto.name,
@@ -73,21 +77,21 @@ class DataServiceController(
             metadata = dto.metadata ?: emptyMap(),
             parameters = dto.parameters?.map { it.toModel(dto.id ?: UUID.randomUUID().toString()) } ?: emptyList()
         )
-        
+
         val createdService = dataServiceManager.createService(service)
         return DataResult.of(createdService.toDTO())
     }
-    
+
     /**
      * Update an existing data service
      */
     @PutMapping("/{id}")
     fun updateService(@PathVariable id: String, @RequestBody dto: DataServiceDTO): DataResult<DataServiceDTO> {
         val existingService = dataServiceManager.getService(id)
-            ?: return DataResult.failed("Service not found")
-        
+            ?: return DataResultExtensions.failed("Service not found")
+
         val userId = ContextUtils.getUserId()
-        
+
         val service = DataService(
             id = id,
             name = dto.name,
@@ -111,11 +115,11 @@ class DataServiceController(
             metadata = dto.metadata ?: existingService.metadata,
             parameters = dto.parameters?.map { it.toModel(id) } ?: existingService.parameters
         )
-        
+
         val updatedService = dataServiceManager.updateService(service)
         return DataResult.of(updatedService.toDTO())
     }
-    
+
     /**
      * Delete a data service
      */
@@ -124,7 +128,7 @@ class DataServiceController(
         val deleted = dataServiceManager.deleteService(id)
         return if (deleted) ActionResult.isSuccess() else ActionResult.isFailed("Service not found")
     }
-    
+
     /**
      * Get all service groups
      */
@@ -133,18 +137,18 @@ class DataServiceController(
         val groups = dataServiceManager.getAllGroups()
         return ListResult.of(groups.map { it.toDTO() })
     }
-    
+
     /**
      * Get a service group by ID
      */
     @GetMapping("/group/{id}")
     fun getGroup(@PathVariable id: String): DataResult<ServiceGroupDTO> {
         val group = dataServiceManager.getGroup(id)
-            ?: return DataResult.failed("Group not found")
-        
+            ?: return DataResultExtensions.failed("Group not found")
+
         return DataResult.of(group.toDTO())
     }
-    
+
     /**
      * Create a new service group
      */
@@ -152,7 +156,7 @@ class DataServiceController(
     fun createGroup(@RequestBody dto: ServiceGroupDTO): DataResult<ServiceGroupDTO> {
         val userId = ContextUtils.getUserId()
         val now = LocalDateTime.now()
-        
+
         val group = ServiceGroup(
             id = dto.id ?: UUID.randomUUID().toString(),
             name = dto.name,
@@ -165,21 +169,21 @@ class DataServiceController(
             modifiedUserId = userId,
             metadata = dto.metadata ?: emptyMap()
         )
-        
+
         val createdGroup = dataServiceManager.createGroup(group)
         return DataResult.of(createdGroup.toDTO())
     }
-    
+
     /**
      * Update an existing service group
      */
     @PutMapping("/group/{id}")
     fun updateGroup(@PathVariable id: String, @RequestBody dto: ServiceGroupDTO): DataResult<ServiceGroupDTO> {
         val existingGroup = dataServiceManager.getGroup(id)
-            ?: return DataResult.failed("Group not found")
-        
+            ?: return DataResultExtensions.failed("Group not found")
+
         val userId = ContextUtils.getUserId()
-        
+
         val group = ServiceGroup(
             id = id,
             name = dto.name,
@@ -192,11 +196,11 @@ class DataServiceController(
             modifiedUserId = userId,
             metadata = dto.metadata ?: existingGroup.metadata
         )
-        
+
         val updatedGroup = dataServiceManager.updateGroup(group)
         return DataResult.of(updatedGroup.toDTO())
     }
-    
+
     /**
      * Delete a service group
      */
@@ -205,7 +209,7 @@ class DataServiceController(
         val deleted = dataServiceManager.deleteGroup(id)
         return if (deleted) ActionResult.isSuccess() else ActionResult.isFailed("Group not found")
     }
-    
+
     /**
      * Get services by group ID
      */
@@ -214,7 +218,7 @@ class DataServiceController(
         val services = dataServiceManager.getServicesByGroup(id)
         return ListResult.of(services.map { it.toDTO() })
     }
-    
+
     /**
      * Get groups by parent ID
      */
@@ -223,7 +227,7 @@ class DataServiceController(
         val groups = dataServiceManager.getGroupsByParent(parentId)
         return ListResult.of(groups.map { it.toDTO() })
     }
-    
+
     /**
      * Get root groups
      */
@@ -232,7 +236,7 @@ class DataServiceController(
         val groups = dataServiceManager.getGroupsByParent(null)
         return ListResult.of(groups.map { it.toDTO() })
     }
-    
+
     /**
      * Convert DataService to DTO
      */
@@ -261,7 +265,7 @@ class DataServiceController(
             parameters = parameters.map { it.toDTO() }
         )
     }
-    
+
     /**
      * Convert ServiceGroup to DTO
      */

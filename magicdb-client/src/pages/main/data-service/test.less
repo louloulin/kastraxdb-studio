@@ -1,0 +1,42 @@
+.testContainer {
+  height: 100%;
+  display: flex;
+  flex-direction: row;
+  background-color: #f0f2f5;
+  padding: 16px;
+  gap: 16px;
+
+  .testSider {
+    width: 280px !important;
+    max-width: 280px !important;
+    min-width: 280px !important;
+    overflow: hidden;
+    border-radius: 4px;
+    transition: all 0.3s;
+    
+    .testSiderHeader {
+      padding: 16px;
+      border-bottom: 1px solid #f0f0f0;
+      
+      h3 {
+        margin: 0;
+      }
+    }
+  }
+
+  .testContent {
+    flex: 1;
+    padding: 0;
+    overflow: hidden;
+    border-radius: 4px;
+    transition: all 0.3s;
+    background-color: #fff;
+  }
+  
+  .testEmpty {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+  }
+}

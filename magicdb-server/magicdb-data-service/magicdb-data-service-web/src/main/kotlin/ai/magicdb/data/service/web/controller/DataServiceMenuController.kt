@@ -1,6 +1,7 @@
 package ai.magicdb.data.service.web.controller
 
 import ai.magicdb.data.service.web.dto.MenuConfigDTO
+import ai.magicdb.data.service.web.util.DataResultExtensions
 import ai.magicdb.server.tools.base.wrapper.result.DataResult
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.springframework.core.io.ClassPathResource
@@ -17,7 +18,7 @@ import java.io.IOException
 class DataServiceMenuController(
     private val objectMapper: ObjectMapper
 ) {
-    
+
     /**
      * Get data service menu configuration
      */
@@ -28,7 +29,7 @@ class DataServiceMenuController(
             val menuConfig = objectMapper.readValue(resource.inputStream, MenuConfigDTO::class.java)
             return DataResult.of(menuConfig)
         } catch (e: IOException) {
-            return DataResult.failed("Failed to load menu configuration: ${e.message}")
+            return DataResultExtensions.failed("Failed to load menu configuration: ${e.message}")
         }
     }
 }
