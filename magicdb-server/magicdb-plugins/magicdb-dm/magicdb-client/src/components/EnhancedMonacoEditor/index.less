@@ -1,0 +1,25 @@
+.enhancedMonacoEditor {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--color-border);
+  border-radius: 4px;
+  overflow: hidden;
+  
+  .toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px;
+    background-color: var(--color-bg-subtle);
+    border-bottom: 1px solid var(--color-border);
+    
+    .languageSelect {
+      width: 120px;
+    }
+  }
+  
+  .editorContainer {
+    flex: 1;
+    overflow: hidden;
+  }
+}
