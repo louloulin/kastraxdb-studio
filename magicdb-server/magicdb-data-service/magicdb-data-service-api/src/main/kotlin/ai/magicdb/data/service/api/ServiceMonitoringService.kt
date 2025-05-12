@@ -67,5 +67,3 @@ interface ServiceMonitoringService {
      */
     fun clearExecutionHistory(serviceId: String? = null, before: Date? = null): Int
 }
-
-

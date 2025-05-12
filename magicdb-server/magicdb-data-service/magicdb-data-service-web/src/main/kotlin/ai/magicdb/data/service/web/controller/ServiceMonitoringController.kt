@@ -1,9 +1,9 @@
 package ai.magicdb.data.service.web.controller
 
-import ai.magicdb.data.service.api.ErrorStatistics
-import ai.magicdb.data.service.api.ExecutionRecord
 import ai.magicdb.data.service.api.ServiceMonitoringService
-import ai.magicdb.data.service.api.ServiceStatistics
+import ai.magicdb.data.service.api.model.ErrorStatistics
+import ai.magicdb.data.service.api.model.ExecutionRecord
+import ai.magicdb.data.service.api.model.ServiceStatistics
 import ai.magicdb.server.tools.base.wrapper.result.DataResult
 import org.slf4j.LoggerFactory
 import org.springframework.format.annotation.DateTimeFormat
