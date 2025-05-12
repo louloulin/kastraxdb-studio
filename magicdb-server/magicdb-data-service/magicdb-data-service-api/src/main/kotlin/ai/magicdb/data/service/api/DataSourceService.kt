@@ -1,0 +1,74 @@
+package ai.magicdb.data.service.api
+
+import ai.magicdb.data.service.api.model.DataSourceInfo
+import ai.magicdb.data.service.api.model.DatabaseInfo
+import ai.magicdb.data.service.api.model.TableInfo
+import ai.magicdb.data.service.api.model.ColumnInfo
+
+/**
+ * 数据源服务接口
+ *
+ * @author magicdb
+ */
+interface DataSourceService {
+    
+    /**
+     * 获取所有数据源
+     *
+     * @return 数据源列表
+     */
+    fun getAllDataSources(): List<DataSourceInfo>
+    
+    /**
+     * 获取数据源
+     *
+     * @param dataSourceId 数据源ID
+     * @return 数据源信息
+     */
+    fun getDataSource(dataSourceId: Long): DataSourceInfo?
+    
+    /**
+     * 获取数据库列表
+     *
+     * @param dataSourceId 数据源ID
+     * @return 数据库列表
+     */
+    fun getDatabases(dataSourceId: Long): List<DatabaseInfo>
+    
+    /**
+     * 获取表列表
+     *
+     * @param dataSourceId 数据源ID
+     * @param databaseName 数据库名称
+     * @return 表列表
+     */
+    fun getTables(dataSourceId: Long, databaseName: String): List<TableInfo>
+    
+    /**
+     * 获取列信息
+     *
+     * @param dataSourceId 数据源ID
+     * @param databaseName 数据库名称
+     * @param tableName 表名
+     * @return 列信息列表
+     */
+    fun getColumns(dataSourceId: Long, databaseName: String, tableName: String): List<ColumnInfo>
+    
+    /**
+     * 执行SQL查询
+     *
+     * @param dataSourceId 数据源ID
+     * @param databaseName 数据库名称
+     * @param sql SQL语句
+     * @return 查询结果
+     */
+    fun executeQuery(dataSourceId: Long, databaseName: String, sql: String): Map<String, Any>
+    
+    /**
+     * 测试数据源连接
+     *
+     * @param dataSourceId 数据源ID
+     * @return 是否连接成功
+     */
+    fun testConnection(dataSourceId: Long): Boolean
+}
