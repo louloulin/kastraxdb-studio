@@ -55,7 +55,7 @@ class DataServiceRunController(
         @RequestBody parameters: Map<String, Any?>
     ): DataResult<Map<String, String>> {
         val service = dataServiceManager.getService(id)
-            ?: return DataResult.of(null, "Service not found", false)
+            ?: return DataResultExtensions.failed("Service not found")
 
         val errors = dataServiceExecutor.validateParameters(service, parameters)
         return DataResult.of(errors)

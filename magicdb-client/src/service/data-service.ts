@@ -1,4 +1,4 @@
-import { request } from 'umi';
+import { request } from '@/utils/request';
 
 // 获取数据服务列表
 export async function getServiceList() {
@@ -23,9 +23,9 @@ export async function createService(data: any) {
 }
 
 // 更新数据服务
-export async function updateService(data: any) {
-  return request('/api/data-service', {
-    method: 'POST',
+export async function updateService(id: string, data: any) {
+  return request(`/api/data-service/${id}`, {
+    method: 'PUT',
     data,
   });
 }
@@ -61,9 +61,9 @@ export async function createServiceGroup(data: any) {
 }
 
 // 更新数据服务分组
-export async function updateServiceGroup(data: any) {
-  return request('/api/data-service/group', {
-    method: 'POST',
+export async function updateServiceGroup(id: string, data: any) {
+  return request(`/api/data-service/group/${id}`, {
+    method: 'PUT',
     data,
   });
 }
@@ -102,5 +102,41 @@ export async function importService(data: any) {
   return request('/api/data-service/import', {
     method: 'POST',
     data,
+  });
+}
+
+// 验证数据服务参数
+export async function validateParameters(id: string, params: any) {
+  return request(`/api/data-service/${id}/validate`, {
+    method: 'POST',
+    data: params,
+  });
+}
+
+// 获取根分组
+export async function getRootGroups() {
+  return request('/api/data-service/group/root', {
+    method: 'GET',
+  });
+}
+
+// 获取分组下的服务
+export async function getServicesByGroup(groupId: string) {
+  return request(`/api/data-service/group/${groupId}/services`, {
+    method: 'GET',
+  });
+}
+
+// 直接执行脚本
+export async function executeScript(language: string, script: string, parameters: any) {
+  return request('/api/data-service/execute-script', {
+    method: 'POST',
+    params: {
+      language,
+    },
+    data: {
+      script,
+      parameters,
+    },
   });
 }

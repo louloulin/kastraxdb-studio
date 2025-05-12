@@ -8,6 +8,7 @@ import ai.magicdb.data.service.web.dto.DataServiceDTO
 import ai.magicdb.data.service.web.dto.ServiceGroupDTO
 import ai.magicdb.data.service.web.dto.ServiceParameterDTO
 import ai.magicdb.data.service.web.dto.toDTO
+import ai.magicdb.data.service.web.util.ActionResultExtensions
 import ai.magicdb.data.service.web.util.DataResultExtensions
 import ai.magicdb.server.tools.base.wrapper.result.ActionResult
 import ai.magicdb.server.tools.base.wrapper.result.DataResult
@@ -126,7 +127,7 @@ class DataServiceController(
     @DeleteMapping("/{id}")
     fun deleteService(@PathVariable id: String): ActionResult {
         val deleted = dataServiceManager.deleteService(id)
-        return if (deleted) ActionResult.isSuccess() else ActionResult.isFailed("Service not found")
+        return if (deleted) ActionResult.isSuccess() else ActionResultExtensions.isFailed("Service not found")
     }
 
     /**
@@ -207,7 +208,7 @@ class DataServiceController(
     @DeleteMapping("/group/{id}")
     fun deleteGroup(@PathVariable id: String): ActionResult {
         val deleted = dataServiceManager.deleteGroup(id)
-        return if (deleted) ActionResult.isSuccess() else ActionResult.isFailed("Group not found")
+        return if (deleted) ActionResult.isSuccess() else ActionResultExtensions.isFailed("Group not found")
     }
 
     /**
