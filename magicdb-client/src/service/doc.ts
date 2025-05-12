@@ -28,3 +28,35 @@ export async function exportApiDoc(format: string) {
     params: { format },
   });
 }
+
+/**
+ * 获取服务文档
+ */
+export async function getServiceDoc(serviceId: string) {
+  return request(`/api/data-service/${serviceId}/doc`);
+}
+
+/**
+ * 获取服务 Swagger 规范
+ */
+export async function getServiceSwagger(serviceId: string) {
+  return request(`/api/data-service/${serviceId}/swagger`);
+}
+
+/**
+ * 导出服务文档
+ */
+export async function exportServiceDoc(serviceId: string, format: string) {
+  return request(`/api/data-service/${serviceId}/doc/export`, {
+    method: 'GET',
+    params: { format },
+    responseType: 'blob',
+  });
+}
+
+/**
+ * 获取所有服务的 Swagger 规范
+ */
+export async function getAllServicesSwagger() {
+  return request('/api/data-service/swagger');
+}

@@ -56,6 +56,13 @@ dependencies {
     // Document generation and export
     implementation("com.itextpdf:html2pdf:4.0.5")
     implementation("org.commonmark:commonmark:0.21.0")
+    implementation("org.xhtmlrenderer:flying-saucer-pdf:9.1.22")
+    implementation("org.xhtmlrenderer:flying-saucer-core:9.1.22")
+
+    // Swagger/OpenAPI
+    implementation("io.swagger.core.v3:swagger-models:2.2.8")
+    implementation("io.swagger.core.v3:swagger-core:2.2.8")
+    implementation("io.swagger.core.v3:swagger-annotations:2.2.8")
 
     // Quartz Scheduler
     implementation("org.quartz-scheduler:quartz:2.3.2")
