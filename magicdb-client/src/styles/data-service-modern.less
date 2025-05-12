@@ -1,0 +1,341 @@
+// Data Service Modern Styles
+@import './modern-theme.less';
+
+// Data Service Container Styles
+.ds-container {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  background-color: @background-color;
+  padding: 24px;
+  gap: 24px;
+  .animation-fade-in();
+
+  // Card-like components
+  .ds-card {
+    .modern-card();
+    padding: 20px;
+    height: 100%;
+    overflow: auto;
+    
+    .ds-card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid @border-color;
+      
+      h2, h3 {
+        margin: 0;
+        color: @heading-color;
+        font-weight: 500;
+      }
+      
+      .ds-card-actions {
+        display: flex;
+        gap: 8px;
+      }
+    }
+    
+    .ds-card-content {
+      height: calc(100% - 60px);
+      overflow: auto;
+    }
+  }
+  
+  // Tree component styling
+  .ds-tree {
+    .modern-tree();
+    
+    .ds-tree-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 16px;
+      border-bottom: 1px solid @border-color;
+      
+      h3 {
+        margin: 0;
+        font-size: 16px;
+        font-weight: 500;
+      }
+      
+      .ds-tree-actions {
+        display: flex;
+        gap: 8px;
+      }
+    }
+    
+    .ds-tree-search {
+      padding: 12px 16px;
+      border-bottom: 1px solid @border-color;
+    }
+    
+    .ds-tree-content {
+      padding: 12px;
+      height: calc(100% - 110px);
+      overflow: auto;
+    }
+  }
+  
+  // Editor component styling
+  .ds-editor {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    
+    .ds-editor-toolbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 8px 12px;
+      background-color: fade(@primary-color, 5%);
+      border-bottom: 1px solid @border-color;
+      
+      .ds-editor-actions {
+        display: flex;
+        gap: 8px;
+      }
+      
+      .ds-editor-settings {
+        display: flex;
+        gap: 8px;
+      }
+    }
+    
+    .ds-editor-container {
+      flex: 1;
+      overflow: hidden;
+    }
+  }
+  
+  // Tabs styling
+  .ds-tabs {
+    .modern-tabs();
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    
+    .ant-tabs-content {
+      flex: 1;
+      overflow: auto;
+    }
+    
+    .ds-tab-content {
+      padding: 16px;
+      height: 100%;
+    }
+  }
+  
+  // Form styling
+  .ds-form {
+    .ds-form-item {
+      margin-bottom: 16px;
+      
+      .ds-form-label {
+        display: block;
+        margin-bottom: 8px;
+        font-weight: 500;
+      }
+      
+      .ds-form-input {
+        .modern-input();
+        width: 100%;
+      }
+    }
+    
+    .ds-form-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 8px;
+      margin-top: 24px;
+    }
+  }
+  
+  // Table styling
+  .ds-table {
+    .modern-table();
+    
+    .ds-table-toolbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+      
+      .ds-table-title {
+        font-size: 16px;
+        font-weight: 500;
+      }
+      
+      .ds-table-actions {
+        display: flex;
+        gap: 8px;
+      }
+    }
+  }
+  
+  // Button styling
+  .ds-button {
+    .modern-button();
+    
+    &.ds-button-primary {
+      background-color: @primary-color;
+      color: white;
+      
+      &:hover {
+        background-color: @primary-color-light;
+      }
+    }
+    
+    &.ds-button-secondary {
+      background-color: transparent;
+      border: 1px solid @border-color;
+      
+      &:hover {
+        border-color: @primary-color;
+        color: @primary-color;
+      }
+    }
+  }
+  
+  // Empty state styling
+  .ds-empty {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    padding: 40px;
+    color: @text-color-secondary;
+    
+    .ds-empty-icon {
+      font-size: 48px;
+      margin-bottom: 16px;
+      color: fade(@text-color-secondary, 50%);
+    }
+    
+    .ds-empty-text {
+      font-size: 16px;
+      text-align: center;
+    }
+    
+    .ds-empty-actions {
+      margin-top: 24px;
+    }
+  }
+  
+  // Animation mixins
+  .animation-fade-in() {
+    animation: fadeIn 0.3s ease-in-out;
+    
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+      }
+      to {
+        opacity: 1;
+      }
+    }
+  }
+  
+  .animation-slide-in-up() {
+    animation: slideInUp 0.3s ease-in-out;
+    
+    @keyframes slideInUp {
+      from {
+        transform: translateY(20px);
+        opacity: 0;
+      }
+      to {
+        transform: translateY(0);
+        opacity: 1;
+      }
+    }
+  }
+  
+  .animation-pulse() {
+    animation: pulse 2s infinite;
+    
+    @keyframes pulse {
+      0% {
+        transform: scale(1);
+      }
+      50% {
+        transform: scale(1.05);
+      }
+      100% {
+        transform: scale(1);
+      }
+    }
+  }
+  
+  // Responsive mixins
+  .responsive-xl(@rules) {
+    @media (max-width: @screen-xl) {
+      @rules();
+    }
+  }
+  
+  .responsive-lg(@rules) {
+    @media (max-width: @screen-lg) {
+      @rules();
+    }
+  }
+  
+  .responsive-md(@rules) {
+    @media (max-width: @screen-md) {
+      @rules();
+    }
+  }
+  
+  .responsive-sm(@rules) {
+    @media (max-width: @screen-sm) {
+      @rules();
+    }
+  }
+  
+  // Responsive layout
+  .responsive-xl({
+    padding: 20px;
+    gap: 20px;
+  });
+  
+  .responsive-lg({
+    padding: 16px;
+    gap: 16px;
+    
+    .ds-card {
+      padding: 16px;
+    }
+  });
+  
+  .responsive-md({
+    padding: 12px;
+    gap: 12px;
+    
+    .ds-card {
+      padding: 12px;
+    }
+    
+    .ds-card-header {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 8px;
+      
+      .ds-card-actions {
+        width: 100%;
+        justify-content: flex-end;
+      }
+    }
+  });
+  
+  .responsive-sm({
+    padding: 8px;
+    gap: 8px;
+    
+    .ds-card {
+      padding: 8px;
+    }
+  });
+}

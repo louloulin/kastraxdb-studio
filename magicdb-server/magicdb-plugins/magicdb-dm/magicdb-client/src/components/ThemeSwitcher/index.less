@@ -1,0 +1,27 @@
+@import '../../styles/modern-theme.less';
+
+.themeSwitcher {
+  display: inline-flex;
+  align-items: center;
+  
+  .themeButton {
+    display: flex;
+    align-items: center;
+    padding: 4px 12px;
+    .border-radius(@border-radius-base);
+    .transition();
+    
+    &:hover {
+      background-color: fade(@primary-color, 10%);
+    }
+    
+    .anticon {
+      margin-right: 8px;
+      font-size: 16px;
+    }
+  }
+  
+  .themeText {
+    margin: 0 8px;
+  }
+}
