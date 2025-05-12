@@ -1,4 +1,4 @@
-import { request } from '@/utils/request';
+import { request } from 'umi';
 
 // 获取数据服务列表
 export async function getServiceList() {
