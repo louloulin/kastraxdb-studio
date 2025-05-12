@@ -1,6 +1,6 @@
 package ai.magicdb.data.service.core.document
 
-import ai.magicdb.data.service.api.model.DocumentExample
+import ai.magicdb.data.service.api.model.ServiceDocumentExample
 import ai.magicdb.data.service.api.model.FieldDocument
 import ai.magicdb.data.service.api.model.ParameterDocument
 import org.springframework.stereotype.Component
@@ -43,9 +43,9 @@ class ExampleGenerator {
      * @param returnFields 返回字段列表
      * @return 文档示例
      */
-    fun generateDocumentExample(parameters: List<ParameterDocument>, returnFields: List<FieldDocument>): DocumentExample {
+    fun generateDocumentExample(parameters: List<ParameterDocument>, returnFields: List<FieldDocument>): ServiceDocumentExample {
         // 实现生成文档示例的逻辑
-        return DocumentExample(
+        return ServiceDocumentExample(
             name = "示例",
             request = generateParameterExample(parameters),
             response = generateReturnExample(returnFields),

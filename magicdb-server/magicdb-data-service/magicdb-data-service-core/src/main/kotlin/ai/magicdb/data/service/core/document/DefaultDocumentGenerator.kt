@@ -2,7 +2,7 @@ package ai.magicdb.data.service.core.document
 
 import ai.magicdb.data.service.api.DocumentGenerator
 import ai.magicdb.data.service.api.model.DataService
-import ai.magicdb.data.service.api.model.DocumentExample
+import ai.magicdb.data.service.api.model.ServiceDocumentExample
 import ai.magicdb.data.service.api.model.FieldDocument
 import ai.magicdb.data.service.api.model.ParameterDocument
 import ai.magicdb.data.service.api.model.ServiceDocument
@@ -400,8 +400,8 @@ class DefaultDocumentGenerator(
     /**
      * 生成示例
      */
-    private fun generateExamples(service: DataService): List<DocumentExample> {
-        val examples = mutableListOf<DocumentExample>()
+    private fun generateExamples(service: DataService): List<ServiceDocumentExample> {
+        val examples = mutableListOf<ServiceDocumentExample>()
 
         // 生成默认示例
         val requestParams = mutableMapOf<String, Any?>()
@@ -434,7 +434,7 @@ class DefaultDocumentGenerator(
         val responseJson = objectMapper.writeValueAsString(responseData)
 
         examples.add(
-            DocumentExample(
+            ServiceDocumentExample(
                 name = "基本示例",
                 request = requestJson,
                 response = responseJson,
