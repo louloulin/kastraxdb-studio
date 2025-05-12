@@ -91,6 +91,7 @@ export default {
   'data-service.parameters.description': 'Description',
   'data-service.list.failed': 'Failed to get service list',
   'data-service.list.error': 'Error getting service list',
+  'data-service.retry': 'Retry',
   'data-service.detail.failed': 'Failed to get service details',
   'data-service.detail.error': 'Error getting service details',
   'data-service.tag.add.success': 'Tag added successfully',

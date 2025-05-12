@@ -1,4 +1,5 @@
-import { request } from 'umi';
+
+import request from '@/utils/request';
 
 // 获取数据服务列表
 export async function getServiceList() {
@@ -8,14 +9,14 @@ export async function getServiceList() {
 }
 
 // 获取数据服务详情
-export async function getServiceById(id: string) {
+export async function getServiceById(id) {
   return request(`/api/data-service/${id}`, {
     method: 'GET',
   });
 }
 
 // 创建数据服务
-export async function createService(data: any) {
+export async function createService(data) {
   return request('/api/data-service', {
     method: 'POST',
     data,
@@ -23,22 +24,22 @@ export async function createService(data: any) {
 }
 
 // 更新数据服务
-export async function updateService(id: string, data: any) {
-  return request(`/api/data-service/${id}`, {
+export async function updateService(data) {
+  return request(`/api/data-service/${data.id}`, {
     method: 'PUT',
     data,
   });
 }
 
 // 删除数据服务
-export async function deleteService(id: string) {
+export async function deleteService(id) {
   return request(`/api/data-service/${id}`, {
     method: 'DELETE',
   });
 }
 
 // 执行数据服务
-export async function executeService(id: string, params: any) {
+export async function executeService(id, params) {
   return request(`/api/data-service/${id}/execute`, {
     method: 'POST',
     data: params,
@@ -53,7 +54,7 @@ export async function getServiceGroupList() {
 }
 
 // 创建数据服务分组
-export async function createServiceGroup(data: any) {
+export async function createServiceGroup(data) {
   return request('/api/data-service/group', {
     method: 'POST',
     data,
@@ -61,7 +62,7 @@ export async function createServiceGroup(data: any) {
 }
 
 // 更新数据服务分组
-export async function updateServiceGroup(id: string, data: any) {
+export async function updateServiceGroup(id, data) {
   return request(`/api/data-service/group/${id}`, {
     method: 'PUT',
     data,
@@ -69,28 +70,28 @@ export async function updateServiceGroup(id: string, data: any) {
 }
 
 // 删除数据服务分组
-export async function deleteServiceGroup(id: string) {
+export async function deleteServiceGroup(id) {
   return request(`/api/data-service/group/${id}`, {
     method: 'DELETE',
   });
 }
 
 // 获取数据服务历史记录
-export async function getServiceHistory(id: string) {
+export async function getServiceHistory(id) {
   return request(`/api/data-service/${id}/history`, {
     method: 'GET',
   });
 }
 
 // 恢复数据服务版本
-export async function restoreServiceVersion(serviceId: string, versionId: string) {
+export async function restoreServiceVersion(serviceId, versionId) {
   return request(`/api/data-service/${serviceId}/history/${versionId}/restore`, {
     method: 'POST',
   });
 }
 
 // 导出数据服务
-export async function exportService(id: string, options: any = {}) {
+export async function exportService(id, options = {}) {
   return request(`/api/data-service/${id}/export`, {
     method: 'POST',
     data: options,
@@ -98,7 +99,7 @@ export async function exportService(id: string, options: any = {}) {
 }
 
 // 导入数据服务
-export async function importService(data: any) {
+export async function importService(data) {
   return request('/api/data-service/import', {
     method: 'POST',
     data,
@@ -106,7 +107,7 @@ export async function importService(data: any) {
 }
 
 // 验证数据服务参数
-export async function validateParameters(id: string, params: any) {
+export async function validateParameters(id, params) {
   return request(`/api/data-service/${id}/validate`, {
     method: 'POST',
     data: params,
@@ -121,14 +122,14 @@ export async function getRootGroups() {
 }
 
 // 获取分组下的服务
-export async function getServicesByGroup(groupId: string) {
+export async function getServicesByGroup(groupId) {
   return request(`/api/data-service/group/${groupId}/services`, {
     method: 'GET',
   });
 }
 
 // 直接执行脚本
-export async function executeScript(language: string, script: string, parameters: any) {
+export async function executeScript(language, script, parameters) {
   return request('/api/data-service/execute-script', {
     method: 'POST',
     params: {

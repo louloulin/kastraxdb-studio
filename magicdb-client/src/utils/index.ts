@@ -284,3 +284,5 @@ export function tableCopy(array2D: Array<Array<string | null>>) {
     console.log('copy error');
   }
 }
+
+export { default as request } from './request';

@@ -48,10 +48,8 @@ const desktopServiceUrl = `http://127.0.0.1:${__APP_PORT__ || '10821'}`;
 // 非桌面端的服务器地址
 const prodServiceUrl = location.origin;
 
-// 是否自定义了 _BaseURL || 是否为桌面端地址
-const baseURL =
-  localStorage.getItem('_BaseURL') ||
-  (location.href.indexOf('dist/index.html') > -1 ? desktopServiceUrl : prodServiceUrl);
+// 始终使用桌面端地址
+const baseURL = desktopServiceUrl;
 
 window._BaseURL = baseURL;
 // window._BaseURL = 'http://127.0.0.1:8000';
@@ -129,7 +127,7 @@ export default function createRequest<P = void, R = void>(url: string, options?:
   // 路由跳转
   const {
     method = 'get',
-    mock = false,
+    mock = false /* 禁用mock */,
     errorLevel = 'toast',
     delayTime,
     outside,

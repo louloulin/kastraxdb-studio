@@ -91,6 +91,7 @@ export default {
   'data-service.parameters.description': '参数描述',
   'data-service.list.failed': '获取数据服务列表失败',
   'data-service.list.error': '获取数据服务列表出错',
+  'data-service.retry': '重试',
   'data-service.detail.failed': '获取数据服务详情失败',
   'data-service.detail.error': '获取数据服务详情出错',
   'data-service.tag.add.success': '添加标签成功',

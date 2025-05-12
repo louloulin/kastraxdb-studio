@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { Tree, Input, Button, Dropdown, Menu, Modal, Form, message } from 'antd';
+import { Tree, Input, Button, Dropdown, Modal, Form, message } from 'antd';
+import type { MenuProps } from 'antd';
 import {
   FolderOutlined,
   ApiOutlined,
@@ -176,16 +177,22 @@ const ServiceTree: React.FC<ServiceTreeProps> = ({ serviceList, onSelectService,
         />
         <div className={styles.serviceTreeActions}>
           <Dropdown
-            overlay={
-              <Menu>
-                <Menu.Item key="service" onClick={() => setCreateModalVisible(true)}>
-                  <ApiOutlined /> {i18n('data-service.create')}
-                </Menu.Item>
-                <Menu.Item key="group" onClick={() => setCreateGroupModalVisible(true)}>
-                  <FolderOutlined /> {i18n('data-service.group.create')}
-                </Menu.Item>
-              </Menu>
-            }
+            menu={{
+              items: [
+                {
+                  key: 'service',
+                  icon: <ApiOutlined />,
+                  label: i18n('data-service.create'),
+                  onClick: () => setCreateModalVisible(true)
+                },
+                {
+                  key: 'group',
+                  icon: <FolderOutlined />,
+                  label: i18n('data-service.group.create'),
+                  onClick: () => setCreateGroupModalVisible(true)
+                }
+              ]
+            }}
             trigger={['click']}
           >
             <Button type="primary" icon={<PlusOutlined />} size="small" />
