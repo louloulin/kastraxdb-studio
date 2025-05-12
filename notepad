@@ -1,2 +1,4 @@
 按照 @magicdb-client/plan3.md 实现相关功能，前后端都是实现，后端使用kotlin，实现后增测试验证，验证通过后更新 @magicdb-client/plan3.md 标记实现的功能，前端在magicdb-client，后端在magicdb-server实现
 @magicdb-server/service2.md 按计划实现相关功能，实现后增加测试验证，验证通过后更新 @magicdb-server/service2.md 标记实现的功能，优先实现后端功能
+
+@magicdb-server/service2.md 按计划实现相关功能，实现后增加测试验证，验证通过后更新 @magicdb-server/service2.md 标记实现的功能，在 magicdb-client目录实现前端功能，
