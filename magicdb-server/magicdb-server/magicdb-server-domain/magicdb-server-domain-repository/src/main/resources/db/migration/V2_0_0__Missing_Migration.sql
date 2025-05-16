@@ -1,0 +1,3 @@
+-- This is a placeholder for the missing V2.0.0 migration
+-- This file was created to match an existing migration in the database
+-- Do not modify this file as it may cause database inconsistencies

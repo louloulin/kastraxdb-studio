@@ -1,0 +1,15 @@
+plugins {
+    id 'org.flywaydb.flyway' version '9.19.4'
+}
+
+flyway {
+    url = 'jdbc:h2:~/.magicdb/db/magicdb_dev;FILE_LOCK=NO;MODE=MYSQL'
+    user = ''
+    password = ''
+    locations = ['classpath:db/migration']
+}
+
+// This task will run the Flyway repair command
+task repairFlyway(type: org.flywaydb.gradle.task.FlywayRepairTask) {
+    description = 'Repairs the Flyway schema history table'
+}
