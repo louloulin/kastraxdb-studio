@@ -4,7 +4,11 @@ spring:
     url: jdbc:h2:~/.magicdb/db/magicdb_dev;FILE_LOCK=NO;MODE=MYSQL
     driver-class-name: org.h2.Driver
   flyway:
-    enabled: false
+    enabled: true
+    validate-on-migrate: false
+    clean-disabled: false
+    clean-on-validation-error: true
+    baseline-on-migrate: true
 
 # The port number
 server:
